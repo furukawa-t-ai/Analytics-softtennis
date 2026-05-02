@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>ST-ANALYTICS | プロ仕様分析ツール</title>
+    
+    <!-- スタイルとアイコン -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,285 +18,253 @@
         .direction-btn { transition: all 0.2s; }
         .direction-btn.active { background-color: #eff6ff; border-color: #2563eb; color: #1e40af; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     </style>
-    
-    <!-- ホワイトアウト防止：エラーを画面に表示するシステム -->
+
+    <!-- エラー完全監視システム -->
     <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            document.getElementById('root').innerHTML = `
-                <div style="padding: 30px; background: #fee2e2; color: #991b1b; font-family: sans-serif; border-radius: 12px; margin: 20px;">
-                    <h2 style="font-weight: 900; font-size: 20px; margin-bottom: 10px;">⚠️ エラーが発生しました</h2>
-                    <p style="margin-bottom: 10px;">コピーミスや設定エラーの可能性があります。以下のエラー内容をAIにコピペして伝えてください。</p>
-                    <div style="background: white; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px;">
-                        <strong>エラー内容:</strong> ${message}<br>
-                        <strong>発生行数:</strong> ${lineno}行目付近<br>
-                    </div>
-                </div>
-            `;
-            return true;
+        window.onerror = function(msg, url, line) {
+            alert("エラー発生: " + msg + " (" + line + "行目)\n※スクショして伝えてください");
         };
     </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     <div id="root">
-        <div style="text-align: center; padding: 50px; color: #64748b; font-weight: bold;">アプリを読み込み中...</div>
+        <div style="text-align: center; padding: 50px; font-weight: bold; color: #64748b;">
+            システムを起動中...<br><br>
+            ※もしこの画面から進まない場合は、<br>画面を下に引っ張ってリロードしてください。
+        </div>
     </div>
 
-    <!-- React Libraries -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- React (ブロックされない旧方式) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    <!-- Firebase (ブロックされない旧方式) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 
-        try {
-            // --- Firebase Configuration ---
-            const firebaseConfig = {
-                apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-                authDomain: "softtennis-data.firebaseapp.com",
-                projectId: "softtennis-data",
-                storageBucket: "softtennis-data.firebasestorage.app",
-                messagingSenderId: "1082808525053",
-                appId: "1:1082808525053:web:76ad357138a2b81a9a1e94",
-                measurementId: "G-N9EYK4ZNSR"
+    <!-- メインプログラム (翻訳機能Babelを使わない純粋なJavaScript) -->
+    <script>
+        // 通信がブロックされていないかチェック
+        window.onload = function() {
+            if (typeof React === 'undefined' || typeof firebase === 'undefined') {
+                alert("セキュリティ設定によりシステムの一部がブロックされています。Safariをご利用の場合は、Chromeなどで開いてみてください。");
+            }
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+            authDomain: "softtennis-data.firebaseapp.com",
+            projectId: "softtennis-data",
+            storageBucket: "softtennis-data.firebasestorage.app",
+            messagingSenderId: "1082808525053",
+            appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const APP_ID = "soft-tennis-v1";
+
+        const el = React.createElement;
+        const { useState, useEffect, useMemo } = React;
+
+        const PT = [
+            { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' },
+            { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' },
+            { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' }
+        ];
+        const MT = [
+            { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' },
+            { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' },
+            { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' },
+            { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' }
+        ];
+        const MG = ['ネット', 'バック', 'サイド', 'その他'];
+        
+        const SVG_ARROW = (p, isAct) => el('svg', { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: `w-8 h-8 mb-2 mx-auto ${isAct ? 'text-blue-600' : 'text-slate-400'}` }, [
+            el('line', { key: 1, x1: p[0], y1: p[1], x2: p[2], y2: p[3] }), 
+            el('polyline', { key: 2, points: p[4] })
+        ]);
+        const FMS = [
+            { id: 'cross_left', label: '正クロス', icon: (act) => SVG_ARROW(["17","17","7","7","7 17 7 7 17 7"], act) },
+            { id: 'straight', label: 'ストレート', icon: (act) => SVG_ARROW(["12","19","12","5","5 12 12 5 19 12"], act) },
+            { id: 'cross_right', label: '逆クロス', icon: (act) => SVG_ARROW(["7","17","17","7","7 7 17 7 17 17"], act) }
+        ];
+
+        function App() {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('input');
+            const [matches, setMatches] = useState([]);
+
+            useEffect(() => {
+                return auth.onAuthStateChanged((u) => { if(u) setUser(u); else auth.signInAnonymously(); });
+            }, []);
+
+            useEffect(() => {
+                if (!user) return;
+                return db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches').onSnapshot((snap) => {
+                    setMatches(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
+                    setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
+                });
+            }, [user]);
+
+            useEffect(() => { setTimeout(() => window.lucide && window.lucide.createIcons(), 100); }, [view, matches]);
+
+            return el('div', { className: 'min-h-screen pb-10' }, [
+                el('header', { key: 'h', className: 'bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between shadow-lg' }, [
+                    el('div', { className: 'flex items-center gap-2 font-black italic' }, [ el('i', { 'data-lucide': 'activity', className: 'text-yellow-400' }), 'ST-ANALYTICS' ]),
+                    user && el('span', { className: 'text-[8px] opacity-40 font-mono' }, user.uid.substring(0,8))
+                ]),
+                el('main', { key: 'm', className: 'max-w-4xl mx-auto p-4' }, [
+                    view === 'input' && el(InputSection, { key: 'i', user }),
+                    view === 'player' && el(PlayerDash, { key: 'p', matches }),
+                    view === 'team' && el(TeamDash, { key: 't', matches })
+                ]),
+                el('nav', { key: 'n', className: 'fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50' }, [
+                    { id: 'input', icon: 'plus-circle', label: '入力' }, { id: 'player', icon: 'user', label: '個人' }, { id: 'team', icon: 'users', label: 'チーム' }
+                ].map(i => el('button', { key: i.id, onClick: () => setView(i.id), className: `flex flex-col items-center p-2 rounded-xl transition-all ${view === i.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}` }, [
+                    el('i', { 'data-lucide': i.icon, className: 'w-6 h-6' }), el('span', { className: 'text-[10px] mt-1 font-bold' }, i.label)
+                ])))
+            ]);
+        }
+
+        function InputSection({ user }) {
+            const [step, setStep] = useState('meta');
+            const [mi, setMi] = useState({ type: 'doubles', gc: 7, t: '', p1: '', p2: '', opp: '', pts: [] });
+            const [sc, setSc] = useState({ p1: 0, p2: 0, g1: 0, g2: 0 });
+            const [st, setSt] = useState(null); const [fm, setFm] = useState(null);
+            const [his, setHis] = useState([]); const [isUsSrv, setIsUsSrv] = useState(true);
+
+            const rec = (wSide, sLbl, type, code) => {
+                setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: {...sc}, isUsSrv }]);
+                const newPt = { winnerSide: wSide, sideLabel: sLbl, type, code, serveStatus: st, formation: fm, gameIndex: sc.g1+sc.g2, isOurServe: isUsSrv };
+                const newMi = { ...mi, pts: [...mi.pts, newPt] };
+                let { p1, p2, g1, g2 } = sc;
+                if (wSide === 1) p1++; else p2++;
+                if (p1 >= 4 && p1 - p2 >= 2) { g1++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
+                else if (p2 >= 4 && p2 - p1 >= 2) { g2++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
+                setMi(newMi); setSc({ p1, p2, g1, g2 }); setSt(null); setFm(null);
+                if (g1 >= Math.ceil(mi.gc/2) || g2 >= Math.ceil(mi.gc/2)) setStep('sum');
             };
 
-            const APP_ID = "soft-tennis-v1";
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
+            const undo = () => {
+                if (!his.length) return;
+                const l = his[his.length-1]; setMi(l.mi); setSc(l.sc); setIsUsSrv(l.isUsSrv); setHis(his.slice(0,-1));
+            };
 
-            // React記述を短くするショートカット関数
-            const el = React.createElement;
-            const { useState, useEffect, useMemo } = React;
+            if (step === 'meta') return el('div', { className: 'bg-white p-6 rounded-2xl shadow-sm border space-y-6' }, [
+                el('h2', { key: 'h', className: 'text-xl font-bold border-b pb-2' }, '試合設定'),
+                el('div', { key: 'd', className: 'space-y-4' }, [
+                    el('div', { className: 'flex gap-2' }, [{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => el('button', { key: t.id, onClick: () => setMi({...mi, type: t.id}), className: `flex-1 py-3 border-2 font-bold rounded-xl ${mi.type===t.id?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-400'}` }, t.l))),
+                    el('div', { className: 'flex gap-2' }, [5,7,9].map(n => el('button', { key: n, onClick: () => setMi({...mi, gc: n}), className: `flex-1 py-3 border-2 font-bold rounded-xl ${mi.gc===n?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-400'}` }, n+'回戦'))),
+                    el('input', { className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '大会名', value: mi.t, onChange: e=>setMi({...mi, t:e.target.value}) }),
+                    el('div', { className: 'grid grid-cols-2 gap-2' }, [
+                        el('input', { key: 1, className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '選手1', value: mi.p1, onChange: e=>setMi({...mi, p1:e.target.value}) }),
+                        mi.type==='doubles' && el('input', { key: 2, className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '選手2', value: mi.p2, onChange: e=>setMi({...mi, p2:e.target.value}) })
+                    ]),
+                    el('input', { className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600', placeholder: '相手チーム名', value: mi.opp, onChange: e=>setMi({...mi, opp:e.target.value}) })
+                ]),
+                el('button', { key: 'b', className: 'w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95', onClick: () => mi.p1&&mi.opp ? setStep('rec') : alert('入力不足です') }, '開始')
+            ]);
 
-            // --- Constants ---
-            const POINT_TYPES = [
-                { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' },
-                { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' },
-                { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' },
-                { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' },
-                { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' },
-            ];
-            const MISS_TYPES = [
-                { id: 'FPN', label: 'FPN', group: 'ネット' }, { id: 'BPN', label: 'BPN', group: 'ネット' },
-                { id: 'FVN', label: 'FVN', group: 'ネット' }, { id: 'BVN', label: 'BVN', group: 'ネット' },
-                { id: 'SMN', label: 'SMN', group: 'ネット' }, { id: 'FPB', label: 'FPB', group: 'バック' },
-                { id: 'BPB', label: 'BPB', group: 'バック' }, { id: 'FLB', label: 'FLB', group: 'バック' },
-                { id: 'BLB', label: 'BLB', group: 'バック' }, { id: 'FVB', label: 'FVB', group: 'バック' },
-                { id: 'BVB', label: 'BVB', group: 'バック' }, { id: 'SMB', label: 'SMB', group: 'バック' },
-                { id: 'FPS', label: 'FPS', group: 'サイド' }, { id: 'BPS', label: 'BPS', group: 'サイド' },
-                { id: 'FLS', label: 'FLS', group: 'サイド' }, { id: 'BLS', label: 'BLS', group: 'サイド' },
-                { id: 'FVS', label: 'FVS', group: 'サイド' }, { id: 'BVS', label: 'BVS', group: 'サイド' },
-                { id: 'SMS', label: 'SMS', group: 'サイド' }, { id: 'W', label: 'W', group: 'その他' },
-            ];
-            const MISS_GROUPS = ['ネット', 'バック', 'サイド', 'その他'];
+            if (step === 'rec') return el('div', { className: 'space-y-4' }, [
+                el('div', { key: 'sb', className: 'bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative' }, [
+                    el('div', { className: 'text-center flex-1', onClick: () => setIsUsSrv(true) }, [
+                        isUsSrv && el('div', { className: 'absolute -top-2 left-0 text-3xl animate-bounce' }, '🎾'),
+                        el('div', { className: 'text-[10px] text-blue-400 font-black mb-2' }, 'OURS'),
+                        el('div', { className: 'text-6xl font-black mb-2' }, sc.g1),
+                        el('div', { className: 'px-6 py-1 bg-blue-600 rounded-full text-lg font-black inline-block' }, sc.p1)
+                    ]),
+                    el('div', { className: 'h-24 w-px bg-slate-700 mx-4 self-center' }),
+                    el('div', { className: 'text-center flex-1', onClick: () => setIsUsSrv(false) }, [
+                        !isUsSrv && el('div', { className: 'absolute -top-2 right-0 text-3xl animate-bounce' }, '🎾'),
+                        el('div', { className: 'text-[10px] text-red-400 font-black mb-2' }, 'OPP'),
+                        el('div', { className: 'text-6xl font-black mb-2' }, sc.g2),
+                        el('div', { className: 'px-6 py-1 bg-red-600 rounded-full text-lg font-black inline-block' }, sc.p2)
+                    ])
+                ]),
+                el('button', { key: 'u', onClick: undo, disabled: !his.length, className: 'mx-auto flex items-center gap-2 bg-slate-200 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30' }, '1手戻る'),
+                
+                el('div', { key: 'sf', className: 'grid grid-cols-2 gap-3' }, [
+                    el('div', { className: 'bg-white p-3 rounded-2xl border' }, [
+                        el('label', { className: 'text-[10px] font-black text-slate-400 mb-2 block' }, '1. サーブ'),
+                        el('div', { className: 'flex gap-2 h-20' }, [1,2].map(s => el('button', { key: s, onClick: () => setSt(s), className: `flex-1 rounded-xl border-2 font-black text-2xl ${st===s?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-300'}` }, `${s}st`)))
+                    ]),
+                    el('div', { className: 'bg-white p-3 rounded-2xl border' }, [
+                        el('label', { className: 'text-[10px] font-black text-slate-400 mb-2 block' }, '2. 展開'),
+                        el('div', { className: 'flex gap-1 h-20' }, FMS.map(f => el('button', { key: f.id, onClick: () => setFm(f.id), className: `flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'border-blue-600 bg-blue-50':'text-slate-400'}` }, [ f.icon(fm===f.id), el('span', { className: 'text-xs font-black' }, f.label) ])))
+                    ])
+                ]),
+
+                el('div', { key: 'g', className: 'grid grid-cols-2 gap-3' }, [
+                    el('div', { className: 'bg-blue-50 p-3 rounded-2xl border border-blue-100' }, [
+                        el('p', { className: 'text-[11px] font-black text-blue-800 mb-2' }, '自チーム得点'),
+                        el('div', { className: 'grid grid-cols-2 gap-2 mb-4' }, PT.map(p => el('button', { key: p.id, disabled: !st||!fm, onClick: () => rec(1, 'US', 'point', p.id), className: 'py-3 bg-blue-700 text-white font-black rounded-xl disabled:opacity-30 active:scale-95' }, p.label))),
+                        el('div', { className: 'h-64 overflow-y-auto custom-scrollbar space-y-2' }, MG.map(g => el('div', { key: g }, [
+                            el('div', { className: 'text-[10px] font-black text-slate-400 mb-1' }, g),
+                            el('div', { className: 'grid grid-cols-2 gap-2' }, MT.filter(m=>m.g===g).map(m => el('button', { key: m.id, disabled: !st||!fm, onClick: () => rec(1, 'OPP', 'miss', m.id), className: 'py-2.5 bg-white border-2 text-sm font-black rounded-xl disabled:opacity-30 active:scale-95' }, m.label)))
+                        ])))
+                    ]),
+                    el('div', { className: 'bg-red-50 p-3 rounded-2xl border border-red-100' }, [
+                        el('p', { className: 'text-[11px] font-black text-red-800 mb-2' }, '相手の得点'),
+                        el('div', { className: 'grid grid-cols-2 gap-2 mb-4' }, PT.map(p => el('button', { key: p.id, disabled: !st||!fm, onClick: () => rec(2, 'OPP', 'point', p.id), className: 'py-3 bg-red-700 text-white font-black rounded-xl disabled:opacity-30 active:scale-95' }, p.label))),
+                        el('div', { className: 'h-64 overflow-y-auto custom-scrollbar space-y-2' }, MG.map(g => el('div', { key: g }, [
+                            el('div', { className: 'text-[10px] font-black text-slate-400 mb-1' }, g),
+                            el('div', { className: 'grid grid-cols-2 gap-2' }, MT.filter(m=>m.g===g).map(m => el('button', { key: m.id, disabled: !st||!fm, onClick: () => rec(2, 'US', 'miss', m.id), className: 'py-2.5 bg-white border-2 text-sm font-black rounded-xl disabled:opacity-30 active:scale-95' }, m.label)))
+                        ])))
+                    ])
+                ])
+            ]);
+
+            if (step === 'sum') return el('div', { className: 'bg-white p-10 rounded-3xl shadow-2xl text-center' }, [
+                el('h2', { key: 1, className: 'text-2xl font-black mb-6' }, 'MATCH COMPLETE'),
+                el('button', { key: 2, onClick: async () => {
+                    await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches').add({ ...mi, finalScore: sc, winner: sc.g1 > sc.g2 ? 1 : 2, createdAt: Date.now(), recorder: user.uid });
+                    setStep('meta'); setSc({p1:0,p2:0,g1:0,g2:0}); setMi({type:'doubles',gc:7,t:'',p1:'',p2:'',opp:'',pts:[]}); setIsUsSrv(true);
+                }, className: 'w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg' }, '保存して終了')
+            ]);
+        }
+
+        function PlayerDash({ matches }) {
+            const pls = Array.from(new Set(matches.flatMap(m => [m?.player1, m?.player2].filter(Boolean)))).sort();
+            const [sel, setSel] = useState('');
             
-            const FORMATIONS = [
-                { 
-                    id: 'cross_left', label: '正クロス', 
-                    icon: (isActive) => el('svg', { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: `w-8 h-8 mb-2 mx-auto ${isActive ? 'text-blue-600' : 'text-slate-400'}` }, [
-                        el('line', { key: 1, x1: "17", y1: "17", x2: "7", y2: "7" }),
-                        el('polyline', { key: 2, points: "7 17 7 7 17 7" })
-                    ])
-                },
-                { 
-                    id: 'straight', label: 'ストレート', 
-                    icon: (isActive) => el('svg', { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: `w-8 h-8 mb-2 mx-auto ${isActive ? 'text-blue-600' : 'text-slate-400'}` }, [
-                        el('line', { key: 1, x1: "12", y1: "19", x2: "12", y2: "5" }),
-                        el('polyline', { key: 2, points: "5 12 12 5 19 12" })
-                    ])
-                },
-                { 
-                    id: 'cross_right', label: '逆クロス', 
-                    icon: (isActive) => el('svg', { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: `w-8 h-8 mb-2 mx-auto ${isActive ? 'text-blue-600' : 'text-slate-400'}` }, [
-                        el('line', { key: 1, x1: "7", y1: "17", x2: "17", y2: "7" }),
-                        el('polyline', { key: 2, points: "7 7 17 7 17 17" })
-                    ])
-                },
-            ];
-
-            // --- Main App ---
-            function App() {
-                const [user, setUser] = useState(null);
-                const [view, setView] = useState('input');
-                const [matches, setMatches] = useState([]);
-
-                useEffect(() => {
-                    const unsub = onAuthStateChanged(auth, (u) => {
-                        if (u) setUser(u);
-                        else signInAnonymously(auth).catch(err => {
-                            console.error(err);
-                            alert("Firebase認証エラー: " + err.message);
-                        });
+            const sts = useMemo(() => {
+                if(!sel) return null;
+                const pm = matches.filter(m => m?.player1 === sel || m?.player2 === sel);
+                let w = 0, srvTot = 0, s1in = 0, s2in = 0;
+                let pts = {}, mp = 0, ms = {}, mm = 0;
+                pm.forEach(m => {
+                    if(m.winner === 1) w++;
+                    (m.points||[]).forEach(p => {
+                        if(p.isOurServe) {
+                            srvTot++;
+                            if(p.serveStatus===1) s1in++;
+                            if(p.serveStatus===2 && p.code!=='W') s2in++;
+                        }
+                        if(p.winnerSide === 1 && p.sideLabel === 'US' && p.type === 'point') { mp++; pts[p.code] = (pts[p.code] || 0) + 1; }
+                        if(p.winnerSide === 2 && p.sideLabel === 'US' && p.type === 'miss') { mm++; ms[p.code] = (ms[p.code] || 0) + 1; }
                     });
-                    return () => unsub();
-                }, []);
-
-                useEffect(() => {
-                    if (!user) return;
-                    try {
-                        const q = query(collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches'));
-                        return onSnapshot(q, (snapshot) => {
-                            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                            setMatches(data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
-                            setTimeout(() => lucide.createIcons(), 100);
-                        }, (err) => {
-                            console.error("Firestore通信エラー:", err);
-                        });
-                    } catch(e) {
-                        console.error("Query設定エラー:", e);
-                    }
-                }, [user]);
-
-                useEffect(() => { lucide.createIcons(); }, [view, matches]);
-
-                return el('div', { className: 'min-h-screen pb-10' }, [
-                    el('header', { key: 'head', className: 'bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg' }, [
-                        el('div', { className: 'flex items-center gap-2' }, [
-                            el('i', { 'data-lucide': 'activity', className: 'w-6 h-6 text-yellow-400' }),
-                            el('h1', { className: 'text-xl font-black italic tracking-tighter' }, 'ST-ANALYTICS')
-                        ]),
-                        user && el('span', { className: 'text-[8px] opacity-40 font-mono' }, user.uid.substring(0,8))
-                    ]),
-
-                    el('main', { key: 'main', className: 'max-w-4xl mx-auto p-4' }, [
-                        view === 'input' && el(InputSection, { key: 'in', user, db }),
-                        view === 'player' && el(PlayerDashboard, { key: 'pl', matches }),
-                        view === 'team' && el(TeamDashboard, { key: 'tm', matches, db })
-                    ]),
-
-                    el('nav', { key: 'nav', className: 'fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50' }, 
-                        [
-                            { id: 'input', icon: 'plus-circle', label: '入力' },
-                            { id: 'player', icon: 'user', label: '個人' },
-                            { id: 'team', icon: 'users', label: 'チーム' }
-                        ].map(item => 
-                            el('button', {
-                                key: item.id,
-                                onClick: () => setView(item.id),
-                                className: `flex flex-col items-center p-2 rounded-xl transition-all ${view === item.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`
-                            }, [
-                                el('i', { 'data-lucide': item.icon, className: 'w-6 h-6' }),
-                                el('span', { className: 'text-[10px] mt-1 font-bold' }, item.label)
-                            ])
-                        )
-                    )
-                ]);
-            }
-
-            // --- Input Section ---
-            function InputSection({ user, db }) {
-                const [step, setStep] = useState('meta');
-                const [matchInfo, setMatchInfo] = useState({
-                    type: 'doubles', gameCount: 7, tournament: '', player1: '', player2: '', opponent: '', points: []
                 });
-                const [scores, setScores] = useState({ p1: 0, p2: 0, g1: 0, g2: 0 });
-                const [serveStatus, setServeStatus] = useState(null);
-                const [formation, setFormation] = useState(null);
-                const [history, setHistory] = useState([]);
-                const [isUsServing, setIsUsServing] = useState(true);
-
-                const recordPoint = (winnerSide, sideLabel, type, code) => {
-                    setHistory([...history, { 
-                        matchInfo: JSON.parse(JSON.stringify(matchInfo)), 
-                        scores: {...scores},
-                        isUsServing 
-                    }]);
-                    
-                    const newPoint = { winnerSide, sideLabel, type, code, serveStatus, formation, gameIndex: scores.g1 + scores.g2, isOurServe: isUsServing };
-                    const newMatchInfo = { ...matchInfo, points: [...matchInfo.points, newPoint] };
-                    
-                    let { p1, p2, g1, g2 } = scores;
-                    if (winnerSide === 1) p1++; else p2++;
-
-                    if (p1 >= 4 && p1 - p2 >= 2) { 
-                        g1++; p1 = 0; p2 = 0; 
-                        setIsUsServing(!isUsServing); 
-                    }
-                    else if (p2 >= 4 && p2 - p1 >= 2) { 
-                        g2++; p1 = 0; p2 = 0; 
-                        setIsUsServing(!isUsServing); 
-                    }
-
-                    setMatchInfo(newMatchInfo);
-                    setScores({ p1, p2, g1, g2 });
-                    setServeStatus(null); setFormation(null);
-
-                    const limit = Math.ceil(matchInfo.gameCount / 2);
-                    if (g1 >= limit || g2 >= limit) setStep('summary');
+                return { 
+                    wr: pm.length ? (w/pm.length*100).toFixed(1) : 0, 
+                    s1: srvTot ? (s1in/srvTot*100).toFixed(1) : 0, 
+                    sT: srvTot ? ((s1in+s2in)/srvTot*100).toFixed(1) : 0,
+                    pr: Object.entries(pts).sort((a,b)=>b[1]-a[1]).map(([c, cnt]) => ({ l: PT.find(t=>t.id===c)?.label||c, r: ((cnt/mp)*100).toFixed(1) })),
+                    mr: Object.entries(ms).sort((a,b)=>b[1]-a[1]).map(([c, cnt]) => ({ l: MT.find(t=>t.id===c)?.label||c, r: ((cnt/mm)*100).toFixed(1) }))
                 };
+            }, [sel, matches]);
 
-                const undo = () => {
-                    if (history.length === 0) return;
-                    const last = history[history.length - 1];
-                    setMatchInfo(last.matchInfo);
-                    setScores(last.scores);
-                    setIsUsServing(last.isUsServing);
-                    setHistory(history.slice(0, -1));
-                };
-
-                if (step === 'meta') {
-                    return el('div', { className: 'bg-white p-6 rounded-2xl shadow-sm border space-y-6' }, [
-                        el('h2', { key: 't', className: 'text-xl font-bold border-b pb-2' }, '試合設定'),
-                        el('div', { key: 'form', className: 'space-y-4' }, [
-                            el('div', { key: 'f1' }, [
-                                el('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, '種目'),
-                                el('div', { className: 'flex gap-2' }, [
-                                    { id: 'doubles', label: 'ダブルス' }, { id: 'singles', label: 'シングルス' }
-                                ].map(t => el('button', { key: t.id, onClick: () => setMatchInfo({...matchInfo, type: t.id}), className: `flex-1 py-3 rounded-xl border-2 font-bold ${matchInfo.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 text-slate-400'}` }, t.label)))
-                            ]),
-                            el('div', { key: 'f2' }, [
-                                el('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, 'ゲーム数'),
-                                el('div', { className: 'flex gap-2' }, [5, 7, 9].map(num => el('button', { key: num, onClick: () => setMatchInfo({...matchInfo, gameCount: num}), className: `flex-1 py-3 rounded-xl border-2 font-bold ${matchInfo.gameCount === num ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 text-slate-400'}` }, `${num}回戦`)))
-                            ]),
-                            el('input', { key: 'i1', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '大会名', value: matchInfo.tournament, onChange: e => setMatchInfo({...matchInfo, tournament: e.target.value}) }),
-                            el('div', { key: 'grid', className: 'grid grid-cols-2 gap-2' }, [
-                                el('input', { key: 'p1', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手1', value: matchInfo.player1, onChange: e => setMatchInfo({...matchInfo, player1: e.target.value}) }),
-                                matchInfo.type === 'doubles' ? el('input', { key: 'p2', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手2', value: matchInfo.player2, onChange: e => setMatchInfo({...matchInfo, player2: e.target.value}) }) : null,
-                            ]),
-                            el('input', { key: 'opp', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600', placeholder: '相手チーム名 / 選手名', value: matchInfo.opponent, onChange: e => setMatchInfo({...matchInfo, opponent: e.target.value}) }),
-                        ]),
-                        el('button', { key: 'btn', className: 'w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform', onClick: () => (matchInfo.player1 && matchInfo.opponent) ? setStep('recording') : alert('選手名と相手チームを入力してください') }, '試合開始')
-                    ]);
-                }
-
-                if (step === 'recording') {
-                    return el('div', { className: 'space-y-4' }, [
-                        // --- Scoreboard ---
-                        el('div', { key: 'sb', className: 'bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-stretch relative' }, [
-                            el('div', { className: 'absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap' }, '※🎾マークをタップでサーブ権を変更'),
-                            el('div', { className: 'text-center flex-1 flex flex-col justify-between relative', onClick: () => setIsUsServing(true) }, [
-                                isUsServing ? el('div', { className: 'absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
-                                el('div', { className: 'mb-3' }, [
-                                    el('div', { className: 'text-[10px] font-black text-blue-400 uppercase tracking-widest' }, 'OUR TEAM'),
-                                    el('div', { className: 'text-xl font-black leading-tight break-words px-2' }, `${matchInfo.player1}${matchInfo.player2 ? ' / ' + matchInfo.player2 : ''}`)
-                                ]),
-                                el('div', { className: 'text-6xl font-black mb-1' }, scores.g1),
-                                el('div', { className: 'inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black' }, scores.p1)
-                            ]),
-                            el('div', { className: 'flex items-center px-4' }, [ el('div', { className: 'h-24 w-px bg-slate-700' }) ]),
-                            el('div', { className: 'text-center flex-1 flex flex-col justify-between relative', onClick: () => setIsUsServing(false) }, [
-                                !isUsServing ? el('div', { className: 'absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
-                                el('div', { className: 'mb-3' }, [
-                                    el('div', { className: 'text-[10px] font-black text-red-400 uppercase tracking-widest' }, 'OPPONENT'),
-                                    el('div', { className: 'text-xl font-black leading-tight break-words px-2' }, matchInfo.opponent)
-                                ]),
-                                el('div', { className: 'text-6xl font-black mb-1' }, scores.g2),
-                                el('div', { className: 'inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black' }, scores.p2)
-                            ])
-                        ]),
-                        
-                        el('div', { key: 'undo', className: 'flex justify-center' }, 
-                            el('button', { onClick: undo, disabled: history.length === 0, className: 'flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform' }, [
-                                el('i', { 'data-lucide': 'undo-2', className: 'w-3 h-3' }), '訂正（1手戻る）'
-                            ])
-                        ),
-
-                        // --- Serve & Formation ---
-                        el('div', { key: 'options', className: 'grid grid-cols-2 gap-3' }, [
-                            el('div', { className: 'bg-white p-3 rounded-2xl border shadow-sm' }, [
-                                el('label', { className: 'text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-wider' }, '1. サーブ'),
-                                
+            return el('div', { className: 'space-y-6' }, [
+                el('select', { key: 's', className: 'w-full p-4 border rounded-xl font-black', value: sel, onChange: e => setSel(e.target.value) }, [
+                    el('option', { key: 'd', value: '' }, '選手を選択'), ...pls.map(p => el('option', { key: p, value: p }, p))
+                ]),
+                sts && el('div', { key: 'st', className: 'space-y-6' }, [
+                    el('div', { key: 'c', className: 'grid grid-cols-2 gap-3' }, [
+                        { l: '勝率', v: sts.wr+'%', c: 'bg-blue-600' }, { l: '全体サーブ率', v: sts.sT+'%', c: 'bg-emerald-600' }
+                    ].map(s => el('div', { key: s.l, className: `${s.c} text-white p-4 rounded-2xl` }, [ el('p', { className: 'text-[9px] font-black' }, s.l), el('p', { className: 'text-3xl font-black' }, s.v) ]))),
+                    el('div', { key: 'b', className: 'bg-white p-6 rounded-3xl border space-y-6' }, [
+                        el('div', { key: 'p1' }, [ el('h3', { className: 'text-xs font-black text-blue-800 mb-2' }, '得点傾向'), sts.pr.map(p => el('div', { key: p.l, className: 'mb-2' }, [ el('div', { className: 'flex justify-between text-xs font-bold' }, [ el('span', null, p.l), el
