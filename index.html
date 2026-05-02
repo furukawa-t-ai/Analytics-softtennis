@@ -22,7 +22,7 @@
     <!-- エラー監視 -->
     <script>
         window.onerror = function(msg, url, line) {
-            alert("エラーが発生しました: " + msg + " (行: " + line + ")\n※スクショして伝えてください。");
+            alert("エラー発生: " + msg + " (行: " + line + ")");
         };
     </script>
 </head>
@@ -30,7 +30,7 @@
     <div id="root">
         <div style="text-align: center; padding: 50px; font-weight: bold; color: #64748b;">
             システムを起動中...<br><br>
-            <span style="font-size: 12px; color: #94a3b8;">ライブラリを読み込んでいます。数秒お待ちください。</span>
+            <span style="font-size: 12px; color: #94a3b8;">※10秒以上進まない場合はリロードしてください</span>
         </div>
     </div>
 
@@ -41,14 +41,14 @@
     <!-- 3. Babel (JSXをブラウザで翻訳するため) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 4. Firebase (ブロックされないCompat版を使用・importは使わない) -->
+    <!-- 4. Firebase (スマホに絶対にブロックされない旧方式のCompat版) -->
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 
-    <!-- メインプログラム (Babelで翻訳) -->
+    <!-- メインプログラム (importを使わない純粋なBabel翻訳) -->
     <script type="text/babel">
-        // --- Firebase 初期化 (importを使わない書き方) ---
+        // --- Firebase 初期化 ---
         const firebaseConfig = {
             apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
             authDomain: "softtennis-data.firebaseapp.com",
@@ -110,25 +110,19 @@
                 return () => unsub();
             }, []);
 
-            // データ取得
+            // データ取得 (旧方式のDB通信)
             useEffect(() => {
                 if (!user) return;
                 const ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
                 const unsub = ref.onSnapshot(snapshot => {
                     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     setMatches(data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
-                }, (error) => {
-                    console.error("Firestore通信エラー", error);
+                    setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
                 });
                 return () => unsub();
             }, [user]);
 
-            // アイコンの再描画 (画面が変わるたびに実行)
-            useEffect(() => {
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            });
+            useEffect(() => { setTimeout(() => window.lucide && window.lucide.createIcons(), 100); }, [view, matches]);
 
             return (
                 <div className="min-h-screen pb-10">
@@ -202,7 +196,7 @@
                                 <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">種目</label>
                                 <div className="flex gap-2">
                                     {[{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => (
-                                        <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 text-slate-400'}`}>{t.l}</button>
+                                        <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
                                     ))}
                                 </div>
                             </div>
@@ -210,7 +204,7 @@
                                 <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">ゲーム数</label>
                                 <div className="flex gap-2">
                                     {[5,7,9].map(n => (
-                                        <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 text-slate-400'}`}>{n}回戦</button>
+                                        <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
                                     ))}
                                 </div>
                             </div>
@@ -269,7 +263,7 @@
                                 <label className="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
                                 <div className="flex gap-2 h-24">
                                     {FMS.map(f => (
-                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
+                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
                                             {f.icon(fm===f.id)}<span className="text-sm font-black">{f.label}</span>
                                         </button>
                                     ))}
@@ -306,4 +300,6 @@
                                             <div className="grid grid-cols-2 gap-2">
                                                 {MT.filter(m=>m.g===g).map(m => <button key={m.id} disabled={!st||!fm} onClick={()=>rec(2, 'US', 'miss', m.id)} className="py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95">{m.label}</button>)}
                                             </div>
- 
+                                        </div>
+                                    ))}
+               
