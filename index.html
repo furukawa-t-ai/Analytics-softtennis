@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex, nofollow">
     <title>ST-ANALYTICS | プロ仕様分析ツール</title>
     
-    <!-- 1. スタイルとアイコン -->
+    <!-- スタイルとアイコン -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,13 +18,6 @@
         .direction-btn { transition: all 0.2s; }
         .direction-btn.active { background-color: #eff6ff; border-color: #2563eb; color: #1e40af; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     </style>
-
-    <!-- エラー監視 -->
-    <script>
-        window.onerror = function(msg, url, line) {
-            alert("エラー発生: " + msg + " (行: " + line + ")");
-        };
-    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     <div id="root">
@@ -34,272 +27,264 @@
         </div>
     </div>
 
-    <!-- 2. React (安定版CDN) -->
+    <!-- React (安定版) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- 3. Babel (JSXをブラウザで翻訳するため) -->
+    <!-- コード翻訳機能 -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 4. Firebase (スマホに絶対にブロックされない旧方式のCompat版) -->
+    <!-- Firebase (スマホの通信ブロックを回避する安定版) -->
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 
-    <!-- メインプログラム (importを使わない純粋なBabel翻訳) -->
+    <!-- メインプログラム -->
     <script type="text/babel">
-        // --- Firebase 初期化 ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-            authDomain: "softtennis-data.firebaseapp.com",
-            projectId: "softtennis-data",
-            storageBucket: "softtennis-data.firebasestorage.app",
-            messagingSenderId: "1082808525053",
-            appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
-        };
+        try {
+            // --- Firebase 初期化 ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+                authDomain: "softtennis-data.firebaseapp.com",
+                projectId: "softtennis-data",
+                storageBucket: "softtennis-data.firebasestorage.app",
+                messagingSenderId: "1082808525053",
+                appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
+            };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const APP_ID = "soft-tennis-v1";
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            const APP_ID = "soft-tennis-v1";
 
-        const { useState, useEffect, useMemo } = React;
+            const { useState, useEffect, useMemo } = React;
 
-        // --- 定数データ ---
-        const PT = [
-            { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' },
-            { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' },
-            { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' }
-        ];
-        const MT = [
-            { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' },
-            { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' },
-            { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' },
-            { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' }
-        ];
-        const MG = ['ネット', 'バック', 'サイド', 'その他'];
+            // --- 定数データ ---
+            const PT = [
+                { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' },
+                { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' },
+                { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' }
+            ];
+            const MT = [
+                { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' },
+                { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' },
+                { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' },
+                { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' }
+            ];
+            const MG = ['ネット', 'バック', 'サイド', 'その他'];
 
-        // アイコンコンポーネント
-        const SVGIcon = ({ p, isAct }) => (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 mb-2 mx-auto ${isAct ? 'text-blue-600' : 'text-slate-400'}`}>
-                <line x1={p[0]} y1={p[1]} x2={p[2]} y2={p[3]} />
-                <polyline points={p[4]} />
-            </svg>
-        );
-
-        const FMS = [
-            { id: 'cross_left', label: '正クロス', icon: (act) => <SVGIcon p={["17","17","7","7","7 17 7 7 17 7"]} isAct={act} /> },
-            { id: 'straight', label: 'ストレート', icon: (act) => <SVGIcon p={["12","19","12","5","5 12 12 5 19 12"]} isAct={act} /> },
-            { id: 'cross_right', label: '逆クロス', icon: (act) => <SVGIcon p={["7","17","17","7","7 7 17 7 17 17"]} isAct={act} /> }
-        ];
-
-        // --- メインアプリ ---
-        function App() {
-            const [user, setUser] = useState(null);
-            const [view, setView] = useState('input');
-            const [matches, setMatches] = useState([]);
-
-            // 認証
-            useEffect(() => {
-                const unsub = auth.onAuthStateChanged((u) => {
-                    if (u) setUser(u);
-                    else auth.signInAnonymously().catch(console.error);
-                });
-                return () => unsub();
-            }, []);
-
-            // データ取得 (旧方式のDB通信)
-            useEffect(() => {
-                if (!user) return;
-                const ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
-                const unsub = ref.onSnapshot(snapshot => {
-                    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setMatches(data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
-                    setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
-                });
-                return () => unsub();
-            }, [user]);
-
-            useEffect(() => { setTimeout(() => window.lucide && window.lucide.createIcons(), 100); }, [view, matches]);
-
-            return (
-                <div className="min-h-screen pb-10">
-                    <header className="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-                        <div className="flex items-center gap-2">
-                            <i data-lucide="activity" className="w-6 h-6 text-yellow-400"></i>
-                            <h1 className="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
-                        </div>
-                        {user && <span className="text-[8px] opacity-40 font-mono">{user.uid.substring(0,8)}</span>}
-                    </header>
-
-                    <main className="max-w-4xl mx-auto p-4">
-                        {view === 'input' && <InputSection user={user} />}
-                        {view === 'player' && <PlayerDash matches={matches} />}
-                        {view === 'team' && <TeamDash matches={matches} />}
-                    </main>
-
-                    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
-                        {[
-                            { id: 'input', icon: 'plus-circle', label: '入力' },
-                            { id: 'player', icon: 'user', label: '個人' },
-                            { id: 'team', icon: 'users', label: 'チーム' }
-                        ].map(item => (
-                            <button key={item.id} onClick={() => setView(item.id)} className={`flex flex-col items-center p-2 rounded-xl transition-all ${view === item.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`}>
-                                <i data-lucide={item.icon} className="w-6 h-6"></i>
-                                <span className="text-[10px] mt-1 font-bold">{item.label}</span>
-                            </button>
-                        ))}
-                    </nav>
-                </div>
+            const SVGIcon = ({ p, isAct }) => (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 mb-2 mx-auto ${isAct ? 'text-blue-600' : 'text-slate-400'}`}>
+                    <line x1={p[0]} y1={p[1]} x2={p[2]} y2={p[3]} />
+                    <polyline points={p[4]} />
+                </svg>
             );
-        }
 
-        // --- 入力画面 ---
-        function InputSection({ user }) {
-            const [step, setStep] = useState('meta');
-            const [mi, setMi] = useState({ type: 'doubles', gc: 7, t: '', p1: '', p2: '', opp: '', pts: [] });
-            const [sc, setSc] = useState({ p1: 0, p2: 0, g1: 0, g2: 0 });
-            const [st, setSt] = useState(null);
-            const [fm, setFm] = useState(null);
-            const [his, setHis] = useState([]);
-            const [isUsSrv, setIsUsSrv] = useState(true);
+            const FMS = [
+                { id: 'cross_left', label: '正クロス', icon: (act) => <SVGIcon p={["17","17","7","7","7 17 7 7 17 7"]} isAct={act} /> },
+                { id: 'straight', label: 'ストレート', icon: (act) => <SVGIcon p={["12","19","12","5","5 12 12 5 19 12"]} isAct={act} /> },
+                { id: 'cross_right', label: '逆クロス', icon: (act) => <SVGIcon p={["7","17","17","7","7 7 17 7 17 17"]} isAct={act} /> }
+            ];
 
-            const rec = (wSide, sLbl, type, code) => {
-                setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: {...sc}, isUsSrv }]);
-                const newPt = { winnerSide: wSide, sideLabel: sLbl, type, code, serveStatus: st, formation: fm, gameIndex: sc.g1+sc.g2, isOurServe: isUsSrv };
-                const newMi = { ...mi, pts: [...mi.pts, newPt] };
-                let { p1, p2, g1, g2 } = sc;
-                
-                if (wSide === 1) p1++; else p2++;
-                
-                if (p1 >= 4 && p1 - p2 >= 2) { g1++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
-                else if (p2 >= 4 && p2 - p1 >= 2) { g2++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
+            // --- メインアプリ ---
+            function App() {
+                const [user, setUser] = useState(null);
+                const [view, setView] = useState('input');
+                const [matches, setMatches] = useState([]);
 
-                setMi(newMi); setSc({ p1, p2, g1, g2 }); setSt(null); setFm(null);
-                if (g1 >= Math.ceil(mi.gc/2) || g2 >= Math.ceil(mi.gc/2)) setStep('sum');
-            };
+                useEffect(() => {
+                    const unsub = auth.onAuthStateChanged((u) => {
+                        if (u) setUser(u);
+                        else auth.signInAnonymously().catch(console.error);
+                    });
+                    return () => unsub();
+                }, []);
 
-            const undo = () => {
-                if (!his.length) return;
-                const l = his[his.length-1]; 
-                setMi(l.mi); setSc(l.sc); setIsUsSrv(l.isUsSrv); setHis(his.slice(0,-1));
-            };
+                useEffect(() => {
+                    if (!user) return;
+                    const ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
+                    const unsub = ref.onSnapshot(snapshot => {
+                        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setMatches(data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
+                        setTimeout(() => window.lucide && window.lucide.createIcons(), 100);
+                    });
+                    return () => unsub();
+                }, [user]);
 
-            if (step === 'meta') {
+                useEffect(() => { setTimeout(() => window.lucide && window.lucide.createIcons(), 100); }, [view, matches]);
+
                 return (
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-                        <h2 className="text-xl font-bold border-b pb-2">試合設定</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">種目</label>
-                                <div className="flex gap-2">
-                                    {[{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => (
-                                        <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
-                                    ))}
-                                </div>
+                    <div className="min-h-screen pb-10">
+                        <header className="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
+                            <div className="flex items-center gap-2">
+                                <i data-lucide="activity" className="w-6 h-6 text-yellow-400"></i>
+                                <h1 className="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
                             </div>
-                            <div>
-                                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">ゲーム数</label>
-                                <div className="flex gap-2">
-                                    {[5,7,9].map(n => (
-                                        <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
-                                    ))}
-                                </div>
-                            </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名" value={mi.t} onChange={e=>setMi({...mi, t:e.target.value})} />
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1" value={mi.p1} onChange={e=>setMi({...mi, p1:e.target.value})} />
-                                {mi.type === 'doubles' && <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2" value={mi.p2} onChange={e=>setMi({...mi, p2:e.target.value})} />}
-                            </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名" value={mi.opp} onChange={e=>setMi({...mi, opp:e.target.value})} />
-                        </div>
-                        <button className="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform" onClick={() => (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください')}>試合開始</button>
+                            {user && <span className="text-[8px] opacity-40 font-mono">{user.uid.substring(0,8)}</span>}
+                        </header>
+
+                        <main className="max-w-4xl mx-auto p-4">
+                            {view === 'input' && <InputSection user={user} />}
+                            {view === 'player' && <PlayerDash matches={matches} />}
+                            {view === 'team' && <TeamDash matches={matches} />}
+                        </main>
+
+                        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
+                            {[
+                                { id: 'input', icon: 'plus-circle', label: '入力' },
+                                { id: 'player', icon: 'user', label: '個人' },
+                                { id: 'team', icon: 'users', label: 'チーム' }
+                            ].map(item => (
+                                <button key={item.id} onClick={() => setView(item.id)} className={`flex flex-col items-center p-2 rounded-xl transition-all ${view === item.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`}>
+                                    <i data-lucide={item.icon} className="w-6 h-6"></i>
+                                    <span className="text-[10px] mt-1 font-bold">{item.label}</span>
+                                </button>
+                            ))}
+                        </nav>
                     </div>
                 );
             }
 
-            if (step === 'rec') {
-                return (
-                    <div className="space-y-4">
-                        <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch">
-                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap">※🎾をタップでサーブ変更</div>
-                            <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(true)}>
-                                {isUsSrv && <div className="absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
-                                <div className="mb-3">
-                                    <div className="text-[10px] text-blue-400 font-black uppercase">OURS</div>
-                                    <div className="text-xl font-black leading-tight">{mi.p1}{mi.p2?' / '+mi.p2:''}</div>
-                                </div>
-                                <div className="text-6xl font-black mb-1">{sc.g1}</div>
-                                <div className="inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black">{sc.p1}</div>
-                            </div>
-                            <div className="flex items-center px-4"><div className="h-24 w-px bg-slate-700"></div></div>
-                            <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(false)}>
-                                {!isUsSrv && <div className="absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
-                                <div className="mb-3">
-                                    <div className="text-[10px] text-red-400 font-black uppercase">OPP</div>
-                                    <div className="text-xl font-black leading-tight">{mi.opp}</div>
-                                </div>
-                                <div className="text-6xl font-black mb-1">{sc.g2}</div>
-                                <div className="inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black">{sc.p2}</div>
-                            </div>
-                        </div>
+            // --- 入力画面 ---
+            function InputSection({ user }) {
+                const [step, setStep] = useState('meta');
+                const [mi, setMi] = useState({ type: 'doubles', gc: 7, t: '', p1: '', p2: '', opp: '', pts: [] });
+                const [sc, setSc] = useState({ p1: 0, p2: 0, g1: 0, g2: 0 });
+                const [st, setSt] = useState(null);
+                const [fm, setFm] = useState(null);
+                const [his, setHis] = useState([]);
+                const [isUsSrv, setIsUsSrv] = useState(true);
 
-                        <div className="flex justify-center">
-                            <button onClick={undo} disabled={!his.length} className="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
-                                <i data-lucide="undo-2" className="w-3 h-3"></i>訂正（1手戻る）
-                            </button>
-                        </div>
+                const rec = (wSide, sLbl, type, code) => {
+                    setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: {...sc}, isUsSrv }]);
+                    const newPt = { winnerSide: wSide, sideLabel: sLbl, type, code, serveStatus: st, formation: fm, gameIndex: sc.g1+sc.g2, isOurServe: isUsSrv };
+                    const newMi = { ...mi, pts: [...mi.pts, newPt] };
+                    let { p1, p2, g1, g2 } = sc;
+                    
+                    if (wSide === 1) p1++; else p2++;
+                    
+                    if (p1 >= 4 && p1 - p2 >= 2) { g1++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
+                    else if (p2 >= 4 && p2 - p1 >= 2) { g2++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white p-3 rounded-2xl border shadow-sm">
-                                <label className="text-[10px] font-black text-slate-400 block mb-2">1. サーブ</label>
-                                <div className="flex gap-2 h-24">
-                                    {[1,2].map(s => <button key={s} onClick={()=>setSt(s)} className={`flex-1 rounded-xl border-2 font-black text-2xl ${st===s?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-300'}`}>{s}st</button>)}
+                    setMi(newMi); setSc({ p1, p2, g1, g2 }); setSt(null); setFm(null);
+                    if (g1 >= Math.ceil(mi.gc/2) || g2 >= Math.ceil(mi.gc/2)) setStep('sum');
+                };
+
+                const undo = () => {
+                    if (!his.length) return;
+                    const l = his[his.length-1]; 
+                    setMi(l.mi); setSc(l.sc); setIsUsSrv(l.isUsSrv); setHis(his.slice(0,-1));
+                };
+
+                if (step === 'meta') {
+                    return (
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
+                            <h2 className="text-xl font-bold border-b pb-2">試合設定</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">種目</label>
+                                    <div className="flex gap-2">
+                                        {[{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => (
+                                            <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">ゲーム数</label>
+                                    <div className="flex gap-2">
+                                        {[5,7,9].map(n => (
+                                            <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名" value={mi.t} onChange={e=>setMi({...mi, t:e.target.value})} />
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手名1" value={mi.p1} onChange={e=>setMi({...mi, p1:e.target.value})} />
+                                    {mi.type === 'doubles' && <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手名2" value={mi.p2} onChange={e=>setMi({...mi, p2:e.target.value})} />}
+                                </div>
+                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手所属/選手名" value={mi.opp} onChange={e=>setMi({...mi, opp:e.target.value})} />
+                            </div>
+                            <button className="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform" onClick={() => (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください')}>試合開始</button>
+                        </div>
+                    );
+                }
+
+                if (step === 'rec') {
+                    return (
+                        <div className="space-y-4">
+                            <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch">
+                                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap">※🎾をタップでサーブ変更</div>
+                                <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(true)}>
+                                    {isUsSrv && <div className="absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
+                                    <div className="mb-3">
+                                        <div className="text-[10px] text-blue-400 font-black uppercase">OURS</div>
+                                        <div className="text-xl font-black leading-tight">{mi.p1}{mi.p2?' / '+mi.p2:''}</div>
+                                    </div>
+                                    <div className="text-6xl font-black mb-1">{sc.g1}</div>
+                                    <div className="inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black">{sc.p1}</div>
+                                </div>
+                                <div className="flex items-center px-4"><div className="h-24 w-px bg-slate-700"></div></div>
+                                <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(false)}>
+                                    {!isUsSrv && <div className="absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
+                                    <div className="mb-3">
+                                        <div className="text-[10px] text-red-400 font-black uppercase">OPP</div>
+                                        <div className="text-xl font-black leading-tight">{mi.opp}</div>
+                                    </div>
+                                    <div className="text-6xl font-black mb-1">{sc.g2}</div>
+                                    <div className="inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black">{sc.p2}</div>
                                 </div>
                             </div>
-                            <div className="bg-white p-3 rounded-2xl border shadow-sm">
-                                <label className="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
-                                <div className="flex gap-2 h-24">
-                                    {FMS.map(f => (
-                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
-                                            {f.icon(fm===f.id)}<span className="text-sm font-black">{f.label}</span>
-                                        </button>
-                                    ))}
+
+                            <div className="flex justify-center">
+                                <button onClick={undo} disabled={!his.length} className="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
+                                    <i data-lucide="undo-2" className="w-3 h-3"></i>訂正（1手戻る）
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white p-3 rounded-2xl border shadow-sm">
+                                    <label className="text-[10px] font-black text-slate-400 block mb-2">1. サーブ</label>
+                                    <div className="flex gap-2 h-24">
+                                        {[1,2].map(s => <button key={s} onClick={()=>setSt(s)} className={`flex-1 rounded-xl border-2 font-black text-2xl ${st===s?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-300'}`}>{s}st</button>)}
+                                    </div>
+                                </div>
+                                <div className="bg-white p-3 rounded-2xl border shadow-sm">
+                                    <label className="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
+                                    <div className="flex gap-2 h-24">
+                                        {FMS.map(f => (
+                                            <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
+                                                {f.icon(fm===f.id)}<span className="text-sm font-black">{f.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-inner">
-                                <p className="text-[11px] font-black text-blue-800 mb-3 px-1">自チームの得点</p>
-                                <div className="grid grid-cols-2 gap-2 mb-5">
-                                    {PT.map(p => <button key={p.id} disabled={!st||!fm} onClick={()=>rec(1, 'US', 'point', p.id)} className="py-4 bg-blue-700 text-white text-base font-black rounded-xl disabled:opacity-20 shadow-md active:scale-95">{p.label}</button>)}
-                                </div>
-                                <div className="h-64 overflow-y-auto custom-scrollbar space-y-3 pr-1">
-                                    {MG.map(g => (
-                                        <div key={g}>
-                                            <div className="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">{g}</div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {MT.filter(m=>m.g===g).map(m => <button key={m.id} disabled={!st||!fm} onClick={()=>rec(1, 'OPP', 'miss', m.id)} className="py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95">{m.label}</button>)}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-inner">
+                                    <p className="text-[11px] font-black text-blue-800 mb-3 px-1">自チームの得点</p>
+                                    <div className="grid grid-cols-2 gap-2 mb-5">
+                                        {PT.map(p => <button key={p.id} disabled={!st||!fm} onClick={()=>rec(1, 'US', 'point', p.id)} className="py-4 bg-blue-700 text-white text-base font-black rounded-xl disabled:opacity-20 shadow-md active:scale-95">{p.label}</button>)}
+                                    </div>
+                                    <div className="h-64 overflow-y-auto custom-scrollbar space-y-3 pr-1">
+                                        {MG.map(g => (
+                                            <div key={g}>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">{g}</div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {MT.filter(m=>m.g===g).map(m => <button key={m.id} disabled={!st||!fm} onClick={()=>rec(1, 'OPP', 'miss', m.id)} className="py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95">{m.label}</button>)}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-inner">
-                                <p className="text-[11px] font-black text-red-800 mb-3 px-1">相手の得点</p>
-                                <div className="grid grid-cols-2 gap-2 mb-5">
-                                    {PT.map(p => <button key={p.id} disabled={!st||!fm} onClick={()=>rec(2, 'OPP', 'point', p.id)} className="py-4 bg-red-700 text-white text-base font-black rounded-xl disabled:opacity-20 shadow-md active:scale-95">{p.label}</button>)}
-                                </div>
-                                <div className="h-64 overflow-y-auto custom-scrollbar space-y-3 pr-1">
-                                    {MG.map(g => (
-                                        <div key={g}>
-                                            <div className="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">{g}</div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {MT.filter(m=>m.g===g).map(m => <button key={m.id} disabled={!st||!fm} onClick={()=>rec(2, 'US', 'miss', m.id)} className="py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95">{m.label}</button>)}
-                                            </div>
-                                        </div>
-                                    ))}
-               
+                                <div className="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-inner">
+                                    <p className="text-[11px] font-black text-red-800 mb-3 px-1">相手の得点</p>
+                                    <div className="grid grid-cols-2 gap-2 mb-5">
+                                        {PT.map(p => <button key={p.id} disabled={!st||!fm} onClick={()=>rec(2, 'OPP', 'point', p.id)} className="py-4 bg-red-700 text-white text-base font-black rounded-xl disabled:opacity-20 shadow-md active:scale-95">{p.label}</button>)}
+                                    </div>
+                                    <div className="h-64 overflow-y-auto custom-scrollbar space-y-3 pr-1">
+                                        {MG.map(g => (
+                                            <div key={g}>
+                                                <div cla
