@@ -19,7 +19,7 @@
 
     <script>
         window.addEventListener('error', function(e) {
-            document.getElementById('root').innerHTML = '<div style="padding:20px;color:red;font-weight:bold;">【システムエラー】<br>' + (e.message || 'Script error') + '</div>';
+            document.getElementById('root').innerHTML = '<div style="padding:20px;color:#b91c1c;font-weight:bold;background:#fee2e2;border-radius:10px;margin:20px;">【システムエラー】<br>' + (e.message || 'Script error') + '</div>';
         });
     </script>
 </head>
@@ -31,13 +31,15 @@
         </div>
     </div>
 
-    <!-- テストで成功したCDN -->
+    <!-- React -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+
+    <!-- Firebase v8 (最も枯れていてズレが起きない安定バージョン) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script type="text/babel">
         // --- Firebase 初期化 ---
@@ -169,10 +171,10 @@
             const [isUsSrv, setIsUsSrv] = useState(true);
 
             const rec = (wSide, sLbl, type, code) => {
-                setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: {...sc}, isUsSrv }]);
+                setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: Object.assign({}, sc), isUsSrv }]);
                 const newPt = { winnerSide: wSide, sideLabel: sLbl, type, code, serveStatus: st, formation: fm, gameIndex: sc.g1+sc.g2, isOurServe: isUsSrv };
-                const newMi = { ...mi, pts: [...mi.pts, newPt] };
-                let { p1, p2, g1, g2 } = sc;
+                const newMi = Object.assign({}, mi, { pts: [...mi.pts, newPt] });
+                let p1 = sc.p1, p2 = sc.p2, g1 = sc.g1, g2 = sc.g2;
                 
                 if (wSide === 1) p1++; else p2++;
                 if (p1 >= 4 && p1 - p2 >= 2) { g1++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
@@ -197,7 +199,7 @@
                                 <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">種目</label>
                                 <div className="flex gap-2">
                                     {[{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => (
-                                        <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
+                                        <button key={t.id} onClick={() => setMi(Object.assign({}, mi, {type: t.id}))} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
                                     ))}
                                 </div>
                             </div>
@@ -205,16 +207,16 @@
                                 <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">ゲーム数</label>
                                 <div className="flex gap-2">
                                     {[5,7,9].map(n => (
-                                        <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
+                                        <button key={n} onClick={() => setMi(Object.assign({}, mi, {gc: n}))} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
                                     ))}
                                 </div>
                             </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名" value={mi.t} onChange={e=>setMi({...mi, t:e.target.value})} />
+                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名" value={mi.t} onChange={e => setMi(Object.assign({}, mi, {t: e.target.value}))} />
                             <div className="grid grid-cols-2 gap-2">
-                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1" value={mi.p1} onChange={e=>setMi({...mi, p1:e.target.value})} />
-                                {mi.type === 'doubles' && <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2" value={mi.p2} onChange={e=>setMi({...mi, p2:e.target.value})} />}
+                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1" value={mi.p1} onChange={e => setMi(Object.assign({}, mi, {p1: e.target.value}))} />
+                                {mi.type === 'doubles' && <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2" value={mi.p2} onChange={e => setMi(Object.assign({}, mi, {p2: e.target.value}))} />}
                             </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名" value={mi.opp} onChange={e=>setMi({...mi, opp:e.target.value})} />
+                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名" value={mi.opp} onChange={e => setMi(Object.assign({}, mi, {opp: e.target.value}))} />
                         </div>
                         <button className="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform" onClick={() => (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください')}>試合開始</button>
                     </div>
@@ -264,240 +266,4 @@
                                 <label className="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
                                 <div className="flex gap-2 h-24">
                                     {FMS.map(f => (
-                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
-                                            {f.icon(fm===f.id)}<span className="text-sm font-black">{f.label}</span>
-               
-    <!-- 3. アプリ本体 -->
-    <script type="text/babel">
-        // --- Firebase 初期化 ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-            authDomain: "softtennis-data.firebaseapp.com",
-            projectId: "softtennis-data",
-            storageBucket: "softtennis-data.firebasestorage.app",
-            messagingSenderId: "1082808525053",
-            appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const APP_ID = "soft-tennis-v1";
-
-        const { useState, useEffect, useMemo } = React;
-
-        // --- 手作りアイコン (外部通信エラー防止) ---
-        const IconActivity = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-yellow-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>;
-        const IconPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>;
-        const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-        const IconUsers = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
-        const IconUndo = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>;
-        const IconAward = ({w, h}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-${w} h-${h} mx-auto`}><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>;
-        const IconTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>;
-        const IconZap = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-        const IconCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
-        const IconAlert = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
-        const IconDL = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
-
-        const SVG_ARROW = ({ p, isAct }) => (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={`w-8 h-8 mb-2 mx-auto ${isAct ? 'text-blue-600' : 'text-slate-400'}`}>
-                <line x1={p[0]} y1={p[1]} x2={p[2]} y2={p[3]} />
-                <polyline points={p[4]} />
-            </svg>
-        );
-
-        const FMS = [
-            { id: 'cross_left', label: '正クロス', icon: (act) => <SVG_ARROW p={["17","17","7","7","7 17 7 7 17 7"]} isAct={act} /> },
-            { id: 'straight', label: 'ストレート', icon: (act) => <SVG_ARROW p={["12","19","12","5","5 12 12 5 19 12"]} isAct={act} /> },
-            { id: 'cross_right', label: '逆クロス', icon: (act) => <SVG_ARROW p={["7","17","17","7","7 7 17 7 17 17"]} isAct={act} /> }
-        ];
-
-        // --- 定数データ ---
-        const PT = [
-            { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' },
-            { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' },
-            { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' }
-        ];
-        const MT = [
-            { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' },
-            { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' },
-            { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' },
-            { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' }
-        ];
-        const MG = ['ネット', 'バック', 'サイド', 'その他'];
-
-        // --- メインアプリ ---
-        function App() {
-            const [user, setUser] = useState(null);
-            const [view, setView] = useState('input');
-            const [matches, setMatches] = useState([]);
-
-            useEffect(() => {
-                const unsub = auth.onAuthStateChanged((u) => {
-                    if (u) setUser(u);
-                    else auth.signInAnonymously().catch(e => console.error('認証エラー: ', e));
-                });
-                return () => unsub();
-            }, []);
-
-            useEffect(() => {
-                if (!user) return;
-                const ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
-                const unsub = ref.onSnapshot(snapshot => {
-                    const dataArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    dataArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                    setMatches(dataArray);
-                }, (error) => {
-                    console.error("Firestore通信エラー", error);
-                });
-                return () => unsub();
-            }, [user]);
-
-            return (
-                <div className="min-h-screen pb-20">
-                    <header className="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-                        <div className="flex items-center gap-2">
-                            <IconActivity />
-                            <h1 className="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
-                        </div>
-                        {user && <span className="text-[8px] opacity-40 font-mono">{user.uid.substring(0,8)}</span>}
-                    </header>
-
-                    <main className="max-w-4xl mx-auto p-4">
-                        {view === 'input' && <InputSection user={user} />}
-                        {view === 'player' && <PlayerDash matches={matches} />}
-                        {view === 'team' && <TeamDash matches={matches} />}
-                    </main>
-
-                    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
-                        <button onClick={() => setView('input')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${view === 'input' ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`}>
-                            <IconPlus />
-                            <span className="text-[10px] mt-1 font-bold">入力</span>
-                        </button>
-                        <button onClick={() => setView('player')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${view === 'player' ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`}>
-                            <IconUser />
-                            <span className="text-[10px] mt-1 font-bold">個人</span>
-                        </button>
-                        <button onClick={() => setView('team')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${view === 'team' ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400'}`}>
-                            <IconUsers />
-                            <span className="text-[10px] mt-1 font-bold">チーム</span>
-                        </button>
-                    </nav>
-                </div>
-            );
-        }
-
-        function InputSection({ user }) {
-            const [step, setStep] = useState('meta');
-            const [mi, setMi] = useState({ type: 'doubles', gc: 7, t: '', p1: '', p2: '', opp: '', pts: [] });
-            const [sc, setSc] = useState({ p1: 0, p2: 0, g1: 0, g2: 0 });
-            const [st, setSt] = useState(null);
-            const [fm, setFm] = useState(null);
-            const [his, setHis] = useState([]);
-            const [isUsSrv, setIsUsSrv] = useState(true);
-
-            const rec = (wSide, sLbl, type, code) => {
-                setHis([...his, { mi: JSON.parse(JSON.stringify(mi)), sc: {...sc}, isUsSrv }]);
-                const newPt = { winnerSide: wSide, sideLabel: sLbl, type, code, serveStatus: st, formation: fm, gameIndex: sc.g1+sc.g2, isOurServe: isUsSrv };
-                const newMi = { ...mi, pts: [...mi.pts, newPt] };
-                let { p1, p2, g1, g2 } = sc;
-                
-                if (wSide === 1) p1++; else p2++;
-                
-                if (p1 >= 4 && p1 - p2 >= 2) { g1++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
-                else if (p2 >= 4 && p2 - p1 >= 2) { g2++; p1 = 0; p2 = 0; setIsUsSrv(!isUsSrv); }
-
-                setMi(newMi); setSc({ p1, p2, g1, g2 }); setSt(null); setFm(null);
-                if (g1 >= Math.ceil(mi.gc/2) || g2 >= Math.ceil(mi.gc/2)) setStep('sum');
-            };
-
-            const undo = () => {
-                if (!his.length) return;
-                const l = his[his.length-1]; 
-                setMi(l.mi); setSc(l.sc); setIsUsSrv(l.isUsSrv); setHis(his.slice(0,-1));
-            };
-
-            if (step === 'meta') {
-                return (
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-                        <h2 className="text-xl font-bold border-b pb-2">試合設定</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">種目</label>
-                                <div className="flex gap-2">
-                                    {[{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(t => (
-                                        <button key={t.id} onClick={() => setMi({...mi, type: t.id})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{t.l}</button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase">ゲーム数</label>
-                                <div className="flex gap-2">
-                                    {[5,7,9].map(n => (
-                                        <button key={n} onClick={() => setMi({...mi, gc: n})} className={`flex-1 py-3 rounded-xl border-2 font-bold ${mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400'}`}>{n}回戦</button>
-                                    ))}
-                                </div>
-                            </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名" value={mi.t} onChange={e=>setMi({...mi, t:e.target.value})} />
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1" value={mi.p1} onChange={e=>setMi({...mi, p1:e.target.value})} />
-                                {mi.type === 'doubles' && <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2" value={mi.p2} onChange={e=>setMi({...mi, p2:e.target.value})} />}
-                            </div>
-                            <input className="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名" value={mi.opp} onChange={e=>setMi({...mi, opp:e.target.value})} />
-                        </div>
-                        <button className="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform" onClick={() => (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください')}>試合開始</button>
-                    </div>
-                );
-            }
-
-            if (step === 'rec') {
-                return (
-                    <div className="space-y-4">
-                        <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch">
-                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap">※🎾をタップでサーブ変更</div>
-                            <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(true)}>
-                                {isUsSrv && <div className="absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
-                                <div className="mb-3">
-                                    <div className="text-[10px] text-blue-400 font-black uppercase">OURS</div>
-                                    <div className="text-xl font-black leading-tight">{mi.p1}{mi.p2?' / '+mi.p2:''}</div>
-                                </div>
-                                <div className="text-6xl font-black mb-1">{sc.g1}</div>
-                                <div className="inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black">{sc.p1}</div>
-                            </div>
-                            <div className="flex items-center px-4"><div className="h-24 w-px bg-slate-700"></div></div>
-                            <div className="text-center flex-1 flex flex-col justify-between relative" onClick={() => setIsUsSrv(false)}>
-                                {!isUsSrv && <div className="absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md">🎾</div>}
-                                <div className="mb-3">
-                                    <div className="text-[10px] text-red-400 font-black uppercase">OPP</div>
-                                    <div className="text-xl font-black leading-tight">{mi.opp}</div>
-                                </div>
-                                <div className="text-6xl font-black mb-1">{sc.g2}</div>
-                                <div className="inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black">{sc.p2}</div>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center">
-                            <button onClick={undo} disabled={!his.length} className="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
-                                <IconUndo />訂正（1手戻る）
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white p-3 rounded-2xl border shadow-sm">
-                                <label className="text-[10px] font-black text-slate-400 block mb-2">1. サーブ</label>
-                                <div className="flex gap-2 h-24">
-                                    {[1,2].map(s => <button key={s} onClick={()=>setSt(s)} className={`flex-1 rounded-xl border-2 font-black text-2xl ${st===s?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-300'}`}>{s}st</button>)}
-                                </div>
-                            </div>
-                            <div className="bg-white p-3 rounded-2xl border shadow-sm">
-                                <label className="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
-                                <div className="flex gap-2 h-24">
-                                    {FMS.map(f => (
-                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
-                                            {f.icon(fm===f.id)}<span className="text-sm font-black">{f.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            
+                                        <button key={f.id} onClick={()=>setFm(f.id)} className={`direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${fm===f.id?'ac
