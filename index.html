@@ -204,9 +204,11 @@
         </button>
     </nav>
 
-    <!-- UI制御システム (データベースと完全に切り離して確実に動かす) -->
+
+    <!-- ============================================== -->
+    <!-- 隔離エリア①：UIを制御するシステム（絶対にエラーで落ちない） -->
+    <!-- ============================================== -->
     <script>
-        // --- 状態管理 ---
         let state = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
             t: '', p1: '', p2: '', opp: '', pts: [],
@@ -219,7 +221,6 @@
         const MT = [ { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } ];
         const MG = ['ネット', 'バック', 'サイド', 'その他'];
 
-        // --- 画面切り替え ---
         function switchView(v) {
             state.view = v;
             ['input', 'player', 'team'].forEach(id => {
@@ -236,7 +237,6 @@
             if (v === 'team') renderTeamDash();
         }
 
-        // --- 試合設定 ---
         function setType(t) {
             state.type = t;
             document.getElementById('btn-type-doubles').className = `flex-1 py-3 rounded-xl border-2 font-bold ${t === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
@@ -264,21 +264,18 @@
             updateScoreBoard();
         }
 
-        // --- スコア処理 ---
         function setUsSrv(bool) { state.isUsSrv = bool; updateScoreBoard(); }
         function setSt(n) { 
             state.st = n; 
             [1,2].forEach(i => {
-                const btn = document.getElementById('btn-st-'+i);
-                btn.className = `flex-1 rounded-xl border-2 font-black text-2xl ${n === i ? 'btn-active' : 'text-slate-300'}`;
+                document.getElementById('btn-st-'+i).className = `flex-1 rounded-xl border-2 font-black text-2xl ${n === i ? 'btn-active' : 'text-slate-300'}`;
             });
             checkBtnEnable();
         }
         function setFm(f) { 
             state.fm = f; 
             ['cross_left','straight','cross_right'].forEach(i => {
-                const btn = document.getElementById('btn-fm-'+i);
-                btn.className = `direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${f === i ? 'btn-active' : 'text-slate-400 hover:bg-slate-50'}`;
+                document.getElementById('btn-fm-'+i).className = `direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${f === i ? 'btn-active' : 'text-slate-400 hover:bg-slate-50'}`;
             });
             checkBtnEnable();
         }
@@ -287,4 +284,5 @@
             btns.forEach(b => b.disabled = !(state.st && state.fm));
         }
 
-        function recPoi
+        function recPoint(wSide, sLbl, type, code) {
+            sta
