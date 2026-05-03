@@ -14,14 +14,26 @@
         .hidden { display: none !important; }
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
+
+    <!-- エラー監視エリア -->
+    <script>
+        window.addEventListener('error', function(e) {
+            const errBox = document.getElementById('error-box');
+            if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【エラー】' + e.message + '<br>'; }
+        });
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
+    
+    <!-- 万が一のエラー表示用 -->
+    <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs"></div>
+
     <header class="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-yellow-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             <h1 class="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
         </div>
-        <span id="uid-display" class="text-[8px] opacity-40 font-mono"></span>
+        <span id="uid-display" class="text-[8px] opacity-40 font-mono">Guest</span>
     </header>
 
     <main class="max-w-4xl mx-auto p-4">
@@ -192,12 +204,7 @@
         </button>
     </nav>
 
-    <!-- Firebase v8 (最も安定しており、エラーを引き起こさないバージョン) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-    <!-- Pure JavaScript (React完全排除) -->
+    <!-- UI制御システム (データベースと完全に切り離して確実に動かす) -->
     <script>
         // --- 状態管理 ---
         let state = {
@@ -212,39 +219,6 @@
         const MT = [ { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } ];
         const MG = ['ネット', 'バック', 'サイド', 'その他'];
 
-        // --- Firebase 初期化 ---
-        const APP_ID = "soft-tennis-v1";
-        if (!firebase.apps.length) {
-            firebase.initializeApp({
-                apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-                authDomain: "softtennis-data.firebaseapp.com",
-                projectId: "softtennis-data",
-                storageBucket: "softtennis-data.firebasestorage.app",
-                messagingSenderId: "1082808525053",
-                appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
-            });
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        auth.onAuthStateChanged(u => {
-            if (u) {
-                state.user = u;
-                document.getElementById('uid-display').textContent = u.uid.substring(0,8);
-                loadMatches();
-            } else {
-                auth.signInAnonymously().catch(console.error);
-            }
-        });
-
-        function loadMatches() {
-            db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches').onSnapshot(snap => {
-                state.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                renderTeamDash();
-                updatePlayerSelect();
-            });
-        }
-
         // --- 画面切り替え ---
         function switchView(v) {
             state.view = v;
@@ -258,24 +232,25 @@
             const activeNav = document.getElementById('nav-' + v);
             activeNav.classList.remove('text-slate-400');
             activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+            if (v === 'player') updatePlayerSelect();
+            if (v === 'team') renderTeamDash();
         }
 
         // --- 試合設定 ---
         function setType(t) {
             state.type = t;
-            document.getElementById('btn-type-doubles').classList.toggle('btn-active', t === 'doubles');
-            document.getElementById('btn-type-doubles').classList.toggle('text-slate-400', t !== 'doubles');
-            document.getElementById('btn-type-singles').classList.toggle('btn-active', t === 'singles');
-            document.getElementById('btn-type-singles').classList.toggle('text-slate-400', t !== 'singles');
+            document.getElementById('btn-type-doubles').className = `flex-1 py-3 rounded-xl border-2 font-bold ${t === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
+            document.getElementById('btn-type-singles').className = `flex-1 py-3 rounded-xl border-2 font-bold ${t === 'singles' ? 'btn-active' : 'text-slate-400'}`;
             document.getElementById('in-p2').style.display = t === 'doubles' ? 'block' : 'none';
         }
+
         function setGC(n) {
             state.gc = n;
             [5,7,9].forEach(num => {
-                document.getElementById('btn-gc-' + num).classList.toggle('btn-active', n === num);
-                document.getElementById('btn-gc-' + num).classList.toggle('text-slate-400', n !== num);
+                document.getElementById('btn-gc-' + num).className = `flex-1 py-3 rounded-xl border-2 font-bold ${n === num ? 'btn-active' : 'text-slate-400'}`;
             });
         }
+
         function startMatch() {
             state.t = document.getElementById('in-t').value;
             state.p1 = document.getElementById('in-p1').value;
@@ -283,4 +258,33 @@
             state.opp = document.getElementById('in-opp').value;
             if (!state.p1 || !state.opp) return alert('選手名と相手チームを入力してください');
             
-          
+            state.step = 'rec';
+            document.getElementById('step-meta').classList.add('hidden');
+            document.getElementById('step-rec').classList.remove('hidden');
+            updateScoreBoard();
+        }
+
+        // --- スコア処理 ---
+        function setUsSrv(bool) { state.isUsSrv = bool; updateScoreBoard(); }
+        function setSt(n) { 
+            state.st = n; 
+            [1,2].forEach(i => {
+                const btn = document.getElementById('btn-st-'+i);
+                btn.className = `flex-1 rounded-xl border-2 font-black text-2xl ${n === i ? 'btn-active' : 'text-slate-300'}`;
+            });
+            checkBtnEnable();
+        }
+        function setFm(f) { 
+            state.fm = f; 
+            ['cross_left','straight','cross_right'].forEach(i => {
+                const btn = document.getElementById('btn-fm-'+i);
+                btn.className = `direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${f === i ? 'btn-active' : 'text-slate-400 hover:bg-slate-50'}`;
+            });
+            checkBtnEnable();
+        }
+        function checkBtnEnable() {
+            const btns = document.querySelectorAll('.pt-btn');
+            btns.forEach(b => b.disabled = !(state.st && state.fm));
+        }
+
+        function recPoi
