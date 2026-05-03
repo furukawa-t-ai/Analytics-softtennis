@@ -14,9 +14,26 @@
         .hidden { display: none !important; }
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
+
+    <!-- エラー監視エリア -->
+    <script>
+        window.addEventListener('error', function(e) {
+            const errBox = document.getElementById('error-box');
+            if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【エラー】' + e.message + '<br>'; }
+        });
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     
+    <!-- 起動時のローディングカバー -->
+    <div id="loading-screen" class="fixed inset-0 bg-slate-50 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <div class="text-slate-500 font-bold text-sm tracking-widest">SYSTEM LOADING...</div>
+    </div>
+
+    <!-- 万が一のエラー表示用 -->
+    <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs"></div>
+
     <!-- ヘッダー -->
     <header class="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2">
@@ -194,7 +211,7 @@
         </button>
     </nav>
 
-    <!-- Firebase v8 (安定稼働版) -->
+    <!-- Firebase v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -213,9 +230,24 @@
             st: null, fm: null, his: [], isUsSrv: true,
             user: null, matches: [],
             
-            // 基礎データ
-            PT: [ { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' }, { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' }, { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' } ],
-            MT: [ { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } ],
+            // 基礎データ（GitHubで色が消えないように改行して定義）
+            PT: [ 
+                { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, 
+                { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' }, 
+                { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, 
+                { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' }, 
+                { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' } 
+            ],
+            MT: [ 
+                { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, 
+                { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, 
+                { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, 
+                { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, 
+                { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, 
+                { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, 
+                { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, 
+                { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } 
+            ],
             MG: ['ネット', 'バック', 'サイド', 'その他']
         };
 
@@ -233,7 +265,7 @@
                 if (isFinalGame) {
                     if (p1 >= 7 && p1 - p2 >= 2) gameWonBy = 1;
                     else if (p2 >= 7 && p2 - p1 >= 2) gameWonBy = 2;
-                    if ((p1 + p2) % 2 === 1) State.isUsSrv = !State.isUsSrv; // 奇数ポイント後交代
+                    if ((p1 + p2) % 2 === 1) State.isUsSrv = !State.isUsSrv;
                 } else {
                     if (p1 >= 4 && p1 - p2 >= 2) gameWonBy = 1;
                     else if (p2 >= 4 && p2 - p1 >= 2) gameWonBy = 2;
@@ -242,7 +274,7 @@
                 if (gameWonBy !== 0) {
                     if (gameWonBy === 1) g1++; else g2++;
                     p1 = 0; p2 = 0;
-                    if (!isFinalGame) State.isUsSrv = !State.isUsSrv; // 通常ゲーム終了時交代
+                    if (!isFinalGame) State.isUsSrv = !State.isUsSrv;
                 }
 
                 State.sc = { p1, p2, g1, g2 };
@@ -269,23 +301,4 @@
                     }
                     const auth = firebase.auth();
                     const db = firebase.firestore();
-                    DB.ref = db.collection('artifacts').doc("soft-tennis-v1").collection('public').doc('data').collection('matches');
-
-                    auth.onAuthStateChanged(u => {
-                        if (u) {
-                            State.user = u;
-                            document.getElementById('uid-display').textContent = u.uid.substring(0,8);
-                            DB.ref.onSnapshot(snap => {
-                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                                if(State.view === 'team') UI.renderTeam();
-                                if(State.view === 'player') UI.renderPlayerSelect();
-                            });
-                        } else {
-                            auth.signInAnonymously().catch(e => console.warn(e));
-                        }
-                    });
-                } catch (e) {
-                    console.error("DB Init Error:", e);
-                }
-            },
-            saveMatch: function(
+                    DB.ref = db.collection('artifacts').doc(
