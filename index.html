@@ -14,48 +14,40 @@
         .hidden { display: none !important; }
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
-
-    <!-- エラー監視エリア -->
-    <script>
-        window.addEventListener('error', function(e) {
-            const errBox = document.getElementById('error-box');
-            if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【エラー】' + e.message + '<br>'; }
-        });
-    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     
-    <!-- 万が一のエラー表示用 -->
-    <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs"></div>
-
+    <!-- ヘッダー -->
     <header class="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-yellow-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             <h1 class="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
         </div>
-        <span id="uid-display" class="text-[8px] opacity-40 font-mono">Guest</span>
+        <span id="uid-display" class="text-[8px] opacity-40 font-mono">Loading...</span>
     </header>
 
+    <!-- メインコンテンツ -->
     <main class="max-w-4xl mx-auto p-4">
-        <!-- ===== 入力画面 ===== -->
+        
+        <!-- ===== 1. 入力画面 ===== -->
         <div id="view-input">
-            <!-- 1. 試合設定 -->
+            <!-- 1-1. 試合設定 -->
             <div id="step-meta" class="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
                 <h2 class="text-xl font-bold border-b pb-2">試合設定</h2>
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">種目</label>
                         <div class="flex gap-2">
-                            <button id="btn-type-doubles" class="flex-1 py-3 rounded-xl border-2 font-bold btn-active" onclick="setType('doubles')">ダブルス</button>
-                            <button id="btn-type-singles" class="flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" onclick="setType('singles')">シングルス</button>
+                            <button id="btn-type-doubles" class="btn-type flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="doubles">ダブルス</button>
+                            <button id="btn-type-singles" class="btn-type flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="singles">シングルス</button>
                         </div>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" onclick="setGC(5)">5回戦</button>
-                            <button id="btn-gc-7" class="flex-1 py-3 rounded-xl border-2 font-bold btn-active" onclick="setGC(7)">7回戦</button>
-                            <button id="btn-gc-9" class="flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" onclick="setGC(9)">9回戦</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
                         </div>
                     </div>
                     <input type="text" id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名">
@@ -65,16 +57,16 @@
                     </div>
                     <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名">
                 </div>
-                <button onclick="startMatch()" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
+                <button id="btn-start" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
             </div>
 
-            <!-- 2. スコア記録 -->
+            <!-- 1-2. スコア記録 -->
             <div id="step-rec" class="hidden space-y-4">
-                <div id="sc-board" class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch">
+                <div id="sc-board" class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch transition-all">
                     <div id="badge-final" class="hidden absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black shadow-lg z-10 whitespace-nowrap tracking-widest border border-white">🔥 FINAL GAME 🔥</div>
                     <div id="badge-normal" class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap">※🎾をタップでサーブ変更</div>
                     
-                    <div class="text-center flex-1 flex flex-col justify-between relative" onclick="setUsSrv(true)">
+                    <div id="area-us-srv" class="text-center flex-1 flex flex-col justify-between relative cursor-pointer">
                         <div id="srv-us" class="absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md">🎾</div>
                         <div class="mb-3">
                             <div class="text-[10px] text-blue-400 font-black uppercase">OURS</div>
@@ -86,7 +78,7 @@
                     
                     <div class="flex items-center px-4"><div class="h-24 w-px bg-slate-700"></div></div>
                     
-                    <div class="text-center flex-1 flex flex-col justify-between relative" onclick="setUsSrv(false)">
+                    <div id="area-opp-srv" class="text-center flex-1 flex flex-col justify-between relative cursor-pointer">
                         <div id="srv-opp" class="hidden absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md">🎾</div>
                         <div class="mb-3">
                             <div class="text-[10px] text-red-400 font-black uppercase">OPP</div>
@@ -98,7 +90,7 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <button onclick="undo()" id="btn-undo" disabled class="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
+                    <button id="btn-undo" disabled class="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
                         訂正（1手戻る）
                     </button>
@@ -108,24 +100,21 @@
                     <div class="bg-white p-3 rounded-2xl border shadow-sm">
                         <label class="text-[10px] font-black text-slate-400 block mb-2">1. サーブ</label>
                         <div class="flex gap-2 h-24">
-                            <button id="btn-st-1" class="flex-1 rounded-xl border-2 font-black text-2xl text-slate-300" onclick="setSt(1)">1st</button>
-                            <button id="btn-st-2" class="flex-1 rounded-xl border-2 font-black text-2xl text-slate-300" onclick="setSt(2)">2nd</button>
+                            <button class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300" data-val="1">1st</button>
+                            <button class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300" data-val="2">2nd</button>
                         </div>
                     </div>
                     <div class="bg-white p-3 rounded-2xl border shadow-sm">
                         <label class="text-[10px] font-black text-slate-400 block mb-2">2. 展開</label>
-                        <div class="flex gap-2 h-24">
-                            <button id="btn-fm-cross_left" class="flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400" onclick="setFm('cross_left')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-2 mx-auto"><line x1="17" y1="17" x2="7" y2="7"></line><polyline points="7 17 7 7 17 7"></polyline></svg>
-                                <span class="text-sm font-black">正クロス</span>
+                        <div class="flex gap-1 h-24">
+                            <button class="btn-fm flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50" data-val="cross_left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mb-1"><line x1="17" y1="17" x2="7" y2="7"></line><polyline points="7 17 7 7 17 7"></polyline></svg><span class="text-[10px] font-black">正クロス</span>
                             </button>
-                            <button id="btn-fm-straight" class="flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400" onclick="setFm('straight')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-2 mx-auto"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                <span class="text-sm font-black">ストレート</span>
+                            <button class="btn-fm flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50" data-val="straight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mb-1"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg><span class="text-[10px] font-black">ストレート</span>
                             </button>
-                            <button id="btn-fm-cross_right" class="flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400" onclick="setFm('cross_right')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-2 mx-auto"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-                                <span class="text-sm font-black">逆クロス</span>
+                            <button class="btn-fm flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50" data-val="cross_right">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mb-1"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg><span class="text-[10px] font-black">逆クロス</span>
                             </button>
                         </div>
                     </div>
@@ -145,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- 3. 結果サマリー -->
+            <!-- 1-3. 結果サマリー -->
             <div id="step-sum" class="hidden bg-white p-10 rounded-3xl shadow-2xl text-center">
                 <div class="flex justify-center mb-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-16 h-16 text-yellow-400"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></div>
                 <h2 class="text-2xl font-black mb-2 italic mt-4">MATCH COMPLETE</h2>
@@ -161,26 +150,26 @@
                         <div id="sum-opp-g" class="text-6xl font-black text-red-600">0</div>
                     </div>
                 </div>
-                <button onclick="saveMatch()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform">データを保存して終了</button>
+                <button id="btn-save" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform">データを保存して終了</button>
             </div>
         </div>
 
-        <!-- ===== 個人分析画面 ===== -->
+        <!-- ===== 2. 個人分析画面 ===== -->
         <div id="view-player" class="hidden space-y-6">
             <div class="bg-white p-5 rounded-2xl border shadow-sm">
                 <label class="text-[10px] font-black text-slate-400 block mb-2">選手を選択して分析</label>
-                <select id="sel-player" onchange="renderPlayerStats()" class="w-full p-4 border rounded-xl font-black bg-slate-50">
+                <select id="sel-player" class="w-full p-4 border rounded-xl font-black bg-slate-50">
                     <option value="">-- 選手を選択 --</option>
                 </select>
             </div>
             <div id="player-stats" class="hidden space-y-6"></div>
         </div>
 
-        <!-- ===== チーム画面 ===== -->
+        <!-- ===== 3. チーム画面 ===== -->
         <div id="view-team" class="hidden space-y-4">
             <div class="flex justify-between items-center px-1 mb-2">
                 <h3 class="text-sm font-black text-slate-400">全試合履歴</h3>
-                <button onclick="downloadCSV()" class="flex items-center gap-1 text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 shadow-sm active:scale-95">
+                <button id="btn-csv" class="flex items-center gap-1 text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 shadow-sm active:scale-95">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     CSVダウンロード
                 </button>
@@ -189,100 +178,114 @@
         </div>
     </main>
 
+    <!-- ナビゲーションバー -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
-        <button id="nav-input" onclick="switchView('input')" class="flex flex-col items-center p-2 rounded-xl transition-all text-blue-600 bg-blue-50 scale-105">
+        <button id="nav-input" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-blue-600 bg-blue-50 scale-105" data-val="input">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span class="text-[10px] mt-1 font-bold">入力</span>
         </button>
-        <button id="nav-player" onclick="switchView('player')" class="flex flex-col items-center p-2 rounded-xl transition-all text-slate-400">
+        <button id="nav-player" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-slate-400" data-val="player">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span class="text-[10px] mt-1 font-bold">個人</span>
         </button>
-        <button id="nav-team" onclick="switchView('team')" class="flex flex-col items-center p-2 rounded-xl transition-all text-slate-400">
+        <button id="nav-team" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-slate-400" data-val="team">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <span class="text-[10px] mt-1 font-bold">チーム</span>
         </button>
     </nav>
 
+    <!-- Firebase v8 (安定稼働版) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-    <!-- ============================================== -->
-    <!-- 隔離エリア①：UIを制御するシステム（絶対にエラーで落ちない） -->
-    <!-- ============================================== -->
+    <!-- ==============================================================
+         メンター様ご提案のアーキテクチャ（Vanilla JS モジュールパターン）
+         ============================================================== -->
     <script>
-        let state = {
+        // ----------------------------------------------------
+        // 📁 /js/state.js (状態管理)
+        // ----------------------------------------------------
+        const State = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
             t: '', p1: '', p2: '', opp: '', pts: [],
             sc: { p1: 0, p2: 0, g1: 0, g2: 0 },
             st: null, fm: null, his: [], isUsSrv: true,
-            user: null, matches: []
+            user: null, matches: [],
+            
+            // 基礎データ
+            PT: [ { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' }, { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' }, { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' } ],
+            MT: [ { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } ],
+            MG: ['ネット', 'バック', 'サイド', 'その他']
         };
 
-        const PT = [ { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' }, { id: 'FR', label: 'FR' }, { id: 'BR', label: 'BR' }, { id: 'SM', label: 'SM' }, { id: 'SA', label: 'SA' }, { id: 'FL', label: 'FL' }, { id: 'BL', label: 'BL' } ];
-        const MT = [ { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } ];
-        const MG = ['ネット', 'バック', 'サイド', 'その他'];
+        // ----------------------------------------------------
+        // 📁 /js/logic.js (スコア計算ロジック)
+        // ----------------------------------------------------
+        const Logic = {
+            calcNextScore: function(wSide) {
+                let p1 = State.sc.p1, p2 = State.sc.p2, g1 = State.sc.g1, g2 = State.sc.g2;
+                if (wSide === 1) p1++; else p2++;
 
-        function switchView(v) {
-            state.view = v;
-            ['input', 'player', 'team'].forEach(id => {
-                document.getElementById('view-' + id).classList.add('hidden');
-                const nav = document.getElementById('nav-' + id);
-                nav.classList.remove('text-blue-600', 'bg-blue-50', 'scale-105');
-                nav.classList.add('text-slate-400');
-            });
-            document.getElementById('view-' + v).classList.remove('hidden');
-            const activeNav = document.getElementById('nav-' + v);
-            activeNav.classList.remove('text-slate-400');
-            activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
-            if (v === 'player') updatePlayerSelect();
-            if (v === 'team') renderTeamDash();
-        }
+                let gameWonBy = 0;
+                const isFinalGame = (g1 + g2 === State.gc - 1);
 
-        function setType(t) {
-            state.type = t;
-            document.getElementById('btn-type-doubles').className = `flex-1 py-3 rounded-xl border-2 font-bold ${t === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
-            document.getElementById('btn-type-singles').className = `flex-1 py-3 rounded-xl border-2 font-bold ${t === 'singles' ? 'btn-active' : 'text-slate-400'}`;
-            document.getElementById('in-p2').style.display = t === 'doubles' ? 'block' : 'none';
-        }
+                if (isFinalGame) {
+                    if (p1 >= 7 && p1 - p2 >= 2) gameWonBy = 1;
+                    else if (p2 >= 7 && p2 - p1 >= 2) gameWonBy = 2;
+                    if ((p1 + p2) % 2 === 1) State.isUsSrv = !State.isUsSrv; // 奇数ポイント後交代
+                } else {
+                    if (p1 >= 4 && p1 - p2 >= 2) gameWonBy = 1;
+                    else if (p2 >= 4 && p2 - p1 >= 2) gameWonBy = 2;
+                }
 
-        function setGC(n) {
-            state.gc = n;
-            [5,7,9].forEach(num => {
-                document.getElementById('btn-gc-' + num).className = `flex-1 py-3 rounded-xl border-2 font-bold ${n === num ? 'btn-active' : 'text-slate-400'}`;
-            });
-        }
+                if (gameWonBy !== 0) {
+                    if (gameWonBy === 1) g1++; else g2++;
+                    p1 = 0; p2 = 0;
+                    if (!isFinalGame) State.isUsSrv = !State.isUsSrv; // 通常ゲーム終了時交代
+                }
 
-        function startMatch() {
-            state.t = document.getElementById('in-t').value;
-            state.p1 = document.getElementById('in-p1').value;
-            state.p2 = document.getElementById('in-p2').value;
-            state.opp = document.getElementById('in-opp').value;
-            if (!state.p1 || !state.opp) return alert('選手名と相手チームを入力してください');
-            
-            state.step = 'rec';
-            document.getElementById('step-meta').classList.add('hidden');
-            document.getElementById('step-rec').classList.remove('hidden');
-            updateScoreBoard();
-        }
+                State.sc = { p1, p2, g1, g2 };
+                State.st = null; 
+                State.fm = null;
+                
+                return (g1 >= Math.ceil(State.gc/2) || g2 >= Math.ceil(State.gc/2)); // 試合終了か
+            }
+        };
 
-        function setUsSrv(bool) { state.isUsSrv = bool; updateScoreBoard(); }
-        function setSt(n) { 
-            state.st = n; 
-            [1,2].forEach(i => {
-                document.getElementById('btn-st-'+i).className = `flex-1 rounded-xl border-2 font-black text-2xl ${n === i ? 'btn-active' : 'text-slate-300'}`;
-            });
-            checkBtnEnable();
-        }
-        function setFm(f) { 
-            state.fm = f; 
-            ['cross_left','straight','cross_right'].forEach(i => {
-                document.getElementById('btn-fm-'+i).className = `direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center ${f === i ? 'btn-active' : 'text-slate-400 hover:bg-slate-50'}`;
-            });
-            checkBtnEnable();
-        }
-        function checkBtnEnable() {
-            const btns = document.querySelectorAll('.pt-btn');
-            btns.forEach(b => b.disabled = !(state.st && state.fm));
-        }
+        // ----------------------------------------------------
+        // 📁 /js/db.js (Firebase連携)
+        // ----------------------------------------------------
+        const DB = {
+            ref: null,
+            init: function() {
+                try {
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp({
+                            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+                            authDomain: "softtennis-data.firebaseapp.com",
+                            projectId: "softtennis-data"
+                        });
+                    }
+                    const auth = firebase.auth();
+                    const db = firebase.firestore();
+                    DB.ref = db.collection('artifacts').doc("soft-tennis-v1").collection('public').doc('data').collection('matches');
 
-        function recPoint(wSide, sLbl, type, code) {
-            sta
+                    auth.onAuthStateChanged(u => {
+                        if (u) {
+                            State.user = u;
+                            document.getElementById('uid-display').textContent = u.uid.substring(0,8);
+                            DB.ref.onSnapshot(snap => {
+                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                                if(State.view === 'team') UI.renderTeam();
+                                if(State.view === 'player') UI.renderPlayerSelect();
+                            });
+                        } else {
+                            auth.signInAnonymously().catch(e => console.warn(e));
+                        }
+                    });
+                } catch (e) {
+                    console.error("DB Init Error:", e);
+                }
+            },
+            saveMatch: function(
