@@ -19,28 +19,31 @@
 
     <script>
         window.addEventListener('error', function(e) {
-            document.getElementById('root').innerHTML = '<div style="padding:20px;color:#b91c1c;font-weight:bold;background:#fee2e2;">【システムエラー】<br>' + (e.message || 'Script error') + '</div>';
+            var root = document.getElementById('root');
+            if(root) root.innerHTML = '<div style="padding:20px;color:#b91c1c;font-weight:bold;background:#fee2e2;">【システムエラー】<br>' + (e.message || 'Script error') + '</div>';
         });
     </script>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     <div id="root">
         <div style="text-align: center; padding: 50px; font-weight: bold; color: #64748b;">
-            システムを起動中...
+            システムを起動中...<br><br>
+            <span style="font-size: 12px; color: #94a3b8;">※数秒しても進まない場合はリロードしてください</span>
         </div>
     </div>
 
-    <!-- 1. React (CDN) -->
+    <!-- 1. React (Babelは使わず、純粋なJSで動かします) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-    <!-- 2. Firebase v10 Compat (モダンかつ安定) -->
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+    <!-- 2. メインプログラム (Firebase v12.12.1 のモジュールとして実行) -->
+    <script type="module">
+        // ご提示いただいたFirebase v12.12.1のモジュールをインポート
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    <!-- 3. メインプログラム (純粋なJavaScript・Babel不要) -->
-    <script>
         // --- Firebase 初期化 ---
         const firebaseConfig = {
             apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
@@ -48,19 +51,32 @@
             projectId: "softtennis-data",
             storageBucket: "softtennis-data.firebasestorage.app",
             messagingSenderId: "1082808525053",
-            appId: "1:1082808525053:web:76ad357138a2b81a9a1e94"
+            appId: "1:1082808525053:web:76ad357138a2b81a9a1e94",
+            measurementId: "G-N9EYK4ZNSR"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
         const APP_ID = "soft-tennis-v1";
 
         // Reactショートカット
-        const el = React.createElement;
+        const e = React.createElement;
         const { useState, useEffect, useMemo } = React;
+
+        // --- 手作りSVGアイコン ---
+        const I_Act = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-6 h-6 text-yellow-400"}, e('polyline', {points:"22 12 18 12 15 21 9 3 6 12 2 12"}));
+        const I_Plus = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-6 h-6"}, e('circle', {cx:"12", cy:"12", r:"10"}), e('line', {x1:"12",y1:"8",x2:"12",y2:"16"}), e('line', {x1:"8",y1:"12",x2:"16",y2:"12"}));
+        const I_User = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-6 h-6"}, e('path', {d:"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"}), e('circle', {cx:"12", cy:"7", r:"4"}));
+        const I_Users = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-6 h-6"}, e('path', {d:"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"}), e('circle', {cx:"9", cy:"7", r:"4"}), e('path', {d:"M22 21v-2a4 4 0 0 0-3-3.87"}), e('path', {d:"M16 3.13a4 4 0 0 1 0 7.75"}));
+        const I_Undo = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-3 h-3"}, e('path', {d:"M3 7v6h6"}), e('path', {d:"M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"}));
+        const I_Award = (props) => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:`w-${props.w||"4"} h-${props.h||"4"} mx-auto`}, e('circle', {cx:"12",cy:"8",r:"7"}), e('polyline', {points:"8.21 13.89 7 23 12 20 17 23 15.79 13.88"}));
+        const I_Target = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-4 h-4"}, e('circle', {cx:"12",cy:"12",r:"10"}), e('circle', {cx:"12",cy:"12",r:"6"}), e('circle', {cx:"12",cy:"12",r:"2"}));
+        const I_Zap = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-4 h-4"}, e('polygon', {points:"13 2 3 14 12 14 11 22 21 10 12 10 13 2"}));
+        const I_Check = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-4 h-4"}, e('path', {d:"M22 11.08V12a10 10 0 1 1-5.93-9.14"}), e('polyline', {points:"22 4 12 14.01 9 11.01"}));
+        const I_Alert = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-4 h-4"}, e('path', {d:"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"}), e('line', {x1:"12",y1:"9",x2:"12",y2:"13"}), e('line', {x1:"12",y1:"17",x2:"12.01",y2:"17"}));
+        const I_DL = () => e('svg', {viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"w-3 h-3"}, e('path', {d:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"}), e('polyline', {points:"7 10 12 15 17 10"}), e('line', {x1:"12",y1:"15",x2:"12",y2:"3"}));
 
         // --- データ定義 ---
         const PT = [
@@ -76,19 +92,18 @@
         ];
         const MG = ['ネット', 'バック', 'サイド', 'その他'];
 
-        // --- アイコンコンポーネント ---
         const SvgArrow = function(props) {
             const colorClass = props.isAct ? 'text-blue-600' : 'text-slate-400';
-            return el('svg', { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: "w-8 h-8 mb-2 mx-auto " + colorClass }, [
-                el('line', { key: 1, x1: props.p[0], y1: props.p[1], x2: props.p[2], y2: props.p[3] }), 
-                el('polyline', { key: 2, points: props.p[4] })
+            return e('svg', { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round", className: "w-8 h-8 mb-2 mx-auto " + colorClass }, [
+                e('line', { key: 1, x1: props.p[0], y1: props.p[1], x2: props.p[2], y2: props.p[3] }), 
+                e('polyline', { key: 2, points: props.p[4] })
             ]);
         };
 
         const FMS = [
-            { id: 'cross_left', label: '正クロス', icon: function(act) { return el(SvgArrow, { p: ["17","17","7","7","7 17 7 7 17 7"], isAct: act }); } },
-            { id: 'straight', label: 'ストレート', icon: function(act) { return el(SvgArrow, { p: ["12","19","12","5","5 12 12 5 19 12"], isAct: act }); } },
-            { id: 'cross_right', label: '逆クロス', icon: function(act) { return el(SvgArrow, { p: ["7","17","17","7","7 7 17 7 17 17"], isAct: act }); } }
+            { id: 'cross_left', label: '正クロス', icon: function(act) { return e(SvgArrow, { p: ["17","17","7","7","7 17 7 7 17 7"], isAct: act }); } },
+            { id: 'straight', label: 'ストレート', icon: function(act) { return e(SvgArrow, { p: ["12","19","12","5","5 12 12 5 19 12"], isAct: act }); } },
+            { id: 'cross_right', label: '逆クロス', icon: function(act) { return e(SvgArrow, { p: ["7","17","17","7","7 7 17 7 17 17"], isAct: act }); } }
         ];
 
         // --- メインアプリ ---
@@ -98,17 +113,18 @@
             const [matches, setMatches] = useState([]);
 
             useEffect(function() {
-                const unsub = auth.onAuthStateChanged(function(u) {
+                const unsub = onAuthStateChanged(auth, function(u) {
                     if (u) setUser(u);
-                    else auth.signInAnonymously().catch(console.error);
+                    else signInAnonymously(auth).catch(console.error);
                 });
                 return function() { unsub(); };
             }, []);
 
             useEffect(function() {
                 if (!user) return;
-                const ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
-                const unsub = ref.onSnapshot(function(snap) {
+                // v12 Module構文でのFirestoreリスナー
+                const q = query(collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches'));
+                const unsub = onSnapshot(q, function(snap) {
                     const dataArray = snap.docs.map(function(doc) { return Object.assign({ id: doc.id }, doc.data()); });
                     dataArray.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
                     setMatches(dataArray);
@@ -116,29 +132,29 @@
                 return function() { unsub(); };
             }, [user]);
 
-            return el('div', { className: 'min-h-screen pb-20' }, [
-                el('header', { key: 'head', className: 'bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg' }, [
-                    el('div', { key: 'logo', className: 'flex items-center gap-2' }, [
-                        el('span', { key: 'i', className: 'text-xl' }, '📊'),
-                        el('h1', { key: 't', className: 'text-xl font-black italic tracking-tighter' }, 'ST-ANALYTICS')
+            return e('div', { className: 'min-h-screen pb-20' }, [
+                e('header', { key: 'head', className: 'bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg' }, [
+                    e('div', { key: 'logo', className: 'flex items-center gap-2' }, [
+                        e(I_Act, { key: 'i' }),
+                        e('h1', { key: 't', className: 'text-xl font-black italic tracking-tighter' }, 'ST-ANALYTICS')
                     ]),
-                    user ? el('span', { key: 'uid', className: 'text-[8px] opacity-40 font-mono' }, user.uid.substring(0,8)) : null
+                    user ? e('span', { key: 'uid', className: 'text-[8px] opacity-40 font-mono' }, user.uid.substring(0,8)) : null
                 ]),
 
-                el('main', { key: 'main', className: 'max-w-4xl mx-auto p-4' }, [
-                    view === 'input' ? el(InputSection, { key: 'v1', user: user }) : null,
-                    view === 'player' ? el(PlayerDash, { key: 'v2', matches: matches }) : null,
-                    view === 'team' ? el(TeamDash, { key: 'v3', matches: matches }) : null
+                e('main', { key: 'main', className: 'max-w-4xl mx-auto p-4' }, [
+                    view === 'input' ? e(InputSection, { key: 'v1', user: user }) : null,
+                    view === 'player' ? e(PlayerDash, { key: 'v2', matches: matches }) : null,
+                    view === 'team' ? e(TeamDash, { key: 'v3', matches: matches }) : null
                 ]),
 
-                el('nav', { key: 'nav', className: 'fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50' }, [
-                    { id: 'input', icon: '➕', label: '入力' },
-                    { id: 'player', icon: '👤', label: '個人' },
-                    { id: 'team', icon: '👥', label: 'チーム' }
+                e('nav', { key: 'nav', className: 'fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50' }, [
+                    { id: 'input', icon: I_Plus, label: '入力' },
+                    { id: 'player', icon: I_User, label: '個人' },
+                    { id: 'team', icon: I_Users, label: 'チーム' }
                 ].map(function(item) {
-                    return el('button', { key: item.id, onClick: function() { setView(item.id); }, className: "flex flex-col items-center p-2 rounded-xl transition-all " + (view === item.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400') }, [
-                        el('span', { key: 'i', className: 'text-2xl' }, item.icon),
-                        el('span', { key: 'l', className: 'text-[10px] mt-1 font-bold' }, item.label)
+                    return e('button', { key: item.id, onClick: function() { setView(item.id); }, className: "flex flex-col items-center p-2 rounded-xl transition-all " + (view === item.id ? 'text-blue-600 bg-blue-50 scale-105' : 'text-slate-400') }, [
+                        e(item.icon, { key: 'i' }),
+                        e('span', { key: 'l', className: 'text-[10px] mt-1 font-bold' }, item.label)
                     ]);
                 }))
             ]);
@@ -155,7 +171,7 @@
             const [his, setHis] = useState([]);
             const [isUsSrv, setIsUsSrv] = useState(true);
 
-            // ★ファイナルゲーム判定★
+            // ファイナルゲーム判定
             const isFinalGame = (sc.g1 + sc.g2 === mi.gc - 1);
 
             const rec = function(wSide, sLbl, type, code) {
@@ -166,17 +182,14 @@
                 let p1 = sc.p1; let p2 = sc.p2; let g1 = sc.g1; let g2 = sc.g2;
                 if (wSide === 1) p1++; else p2++;
 
-                let gameWonBy = 0; // 0: 継続, 1: 自チーム勝利, 2: 相手勝利
+                let gameWonBy = 0; // 0:継続, 1:自チーム, 2:相手
 
-                // ★スコア計算ロジック（ファイナルゲーム考慮）★
+                // ファイナルゲームと通常ゲームのルール対応
                 if (isFinalGame) {
                     if (p1 >= 7 && p1 - p2 >= 2) gameWonBy = 1;
                     else if (p2 >= 7 && p2 - p1 >= 2) gameWonBy = 2;
 
-                    // ファイナルのサーブ権交代 (1本目終了後、以降2本ごと)
-                    if ((p1 + p2) % 2 === 1) {
-                        setIsUsSrv(!isUsSrv);
-                    }
+                    if ((p1 + p2) % 2 === 1) setIsUsSrv(!isUsSrv);
                 } else {
                     if (p1 >= 4 && p1 - p2 >= 2) gameWonBy = 1;
                     else if (p2 >= 4 && p2 - p1 >= 2) gameWonBy = 2;
@@ -185,10 +198,7 @@
                 if (gameWonBy !== 0) {
                     if (gameWonBy === 1) g1++; else g2++;
                     p1 = 0; p2 = 0;
-                    if (!isFinalGame) {
-                        // 通常ゲーム終了時はサーブ権交代
-                        setIsUsSrv(!isUsSrv);
-                    }
+                    if (!isFinalGame) setIsUsSrv(!isUsSrv);
                 }
 
                 setMi(newMi); setSc({ p1: p1, p2: p2, g1: g1, g2: g2 }); setSt(null); setFm(null);
@@ -203,83 +213,49 @@
             };
 
             if (step === 'meta') {
-                return el('div', { className: 'bg-white p-6 rounded-2xl shadow-sm border space-y-6' }, [
-                    el('h2', { key: 'h', className: 'text-xl font-bold border-b pb-2' }, '試合設定'),
-                    el('div', { key: 'f', className: 'space-y-4' }, [
-                        el('div', { key: 'f1' }, [
-                            el('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, '種目'),
-                            el('div', { className: 'flex gap-2' }, [{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(function(t) {
-                                return el('button', { key: t.id, onClick: function() { setMi(Object.assign({}, mi, {type: t.id})); }, className: "flex-1 py-3 rounded-xl border-2 font-bold " + (mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400') }, t.l);
+                return e('div', { className: 'bg-white p-6 rounded-2xl shadow-sm border space-y-6' }, [
+                    e('h2', { key: 'h', className: 'text-xl font-bold border-b pb-2' }, '試合設定'),
+                    e('div', { key: 'f', className: 'space-y-4' }, [
+                        e('div', { key: 'f1' }, [
+                            e('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, '種目'),
+                            e('div', { className: 'flex gap-2' }, [{id:'doubles',l:'ダブルス'},{id:'singles',l:'シングルス'}].map(function(t) {
+                                return e('button', { key: t.id, onClick: function() { setMi(Object.assign({}, mi, {type: t.id})); }, className: "flex-1 py-3 rounded-xl border-2 font-bold " + (mi.type === t.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400') }, t.l);
                             }))
                         ]),
-                        el('div', { key: 'f2' }, [
-                            el('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, 'ゲーム数'),
-                            el('div', { className: 'flex gap-2' }, [5,7,9].map(function(n) {
-                                return el('button', { key: n, onClick: function() { setMi(Object.assign({}, mi, {gc: n})); }, className: "flex-1 py-3 rounded-xl border-2 font-bold " + (mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400') }, n + '回戦');
+                        e('div', { key: 'f2' }, [
+                            e('label', { className: 'text-[10px] font-bold text-slate-400 block mb-1 uppercase' }, 'ゲーム数'),
+                            e('div', { className: 'flex gap-2' }, [5,7,9].map(function(n) {
+                                return e('button', { key: n, onClick: function() { setMi(Object.assign({}, mi, {gc: n})); }, className: "flex-1 py-3 rounded-xl border-2 font-bold " + (mi.gc === n ? 'border-blue-600 bg-blue-50 text-blue-700' : 'text-slate-400') }, n + '回戦');
                             }))
                         ]),
-                        el('input', { key: 'i1', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '大会名', value: mi.t, onChange: function(ev) { setMi(Object.assign({}, mi, {t: ev.target.value})); } }),
-                        el('div', { key: 'g1', className: 'grid grid-cols-2 gap-2' }, [
-                            el('input', { key: 'i2', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手1', value: mi.p1, onChange: function(ev) { setMi(Object.assign({}, mi, {p1: ev.target.value})); } }),
-                            mi.type === 'doubles' ? el('input', { key: 'i3', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手2', value: mi.p2, onChange: function(ev) { setMi(Object.assign({}, mi, {p2: ev.target.value})); } }) : null
+                        e('input', { key: 'i1', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '大会名', value: mi.t, onChange: function(ev) { setMi(Object.assign({}, mi, {t: ev.target.value})); } }),
+                        e('div', { key: 'g1', className: 'grid grid-cols-2 gap-2' }, [
+                            e('input', { key: 'i2', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手1', value: mi.p1, onChange: function(ev) { setMi(Object.assign({}, mi, {p1: ev.target.value})); } }),
+                            mi.type === 'doubles' ? e('input', { key: 'i3', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold', placeholder: '自チーム選手2', value: mi.p2, onChange: function(ev) { setMi(Object.assign({}, mi, {p2: ev.target.value})); } }) : null
                         ]),
-                        el('input', { key: 'i4', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600', placeholder: '相手チーム名', value: mi.opp, onChange: function(ev) { setMi(Object.assign({}, mi, {opp: ev.target.value})); } })
+                        e('input', { key: 'i4', className: 'w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600', placeholder: '相手チーム名', value: mi.opp, onChange: function(ev) { setMi(Object.assign({}, mi, {opp: ev.target.value})); } })
                     ]),
-                    el('button', { key: 'b', onClick: function() { (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください'); }, className: 'w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform' }, '試合開始')
+                    e('button', { key: 'b', onClick: function() { (mi.p1 && mi.opp) ? setStep('rec') : alert('選手名と相手チームを入力してください'); }, className: 'w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform' }, '試合開始')
                 ]);
             }
 
             if (step === 'rec') {
-                return el('div', { className: 'space-y-4' }, [
-                    el('div', { key: 'scb', className: "bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch " + (isFinalGame ? 'border-4 border-yellow-500 shadow-yellow-500/30' : '') }, [
+                return e('div', { className: 'space-y-4' }, [
+                    e('div', { key: 'scb', className: "bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch " + (isFinalGame ? 'border-4 border-yellow-500 shadow-yellow-500/30' : '') }, [
                         isFinalGame 
-                            ? el('div', { key: 'fin', className: 'absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black shadow-lg z-10 whitespace-nowrap tracking-widest border border-white' }, '🔥 FINAL GAME 🔥')
-                            : el('div', { key: 'msg', className: 'absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap' }, '※🎾をタップでサーブ変更'),
-                        el('div', { key: 'us', className: 'text-center flex-1 flex flex-col justify-between relative', onClick: function() { setIsUsSrv(true); } }, [
-                            isUsSrv ? el('div', { key: 'ball', className: 'absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
-                            el('div', { key: 'n', className: 'mb-3' }, [ el('div', { key: 'l', className: 'text-[10px] text-blue-400 font-black uppercase' }, 'OURS'), el('div', { key: 'v', className: 'text-xl font-black leading-tight' }, mi.p1 + (mi.p2?' / '+mi.p2:'')) ]),
-                            el('div', { key: 'g', className: 'text-6xl font-black mb-1' }, sc.g1),
-                            el('div', { key: 'p', className: 'inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black' }, sc.p1)
+                            ? e('div', { key: 'fin', className: 'absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black shadow-lg z-10 whitespace-nowrap tracking-widest border border-white' }, '🔥 FINAL GAME 🔥')
+                            : e('div', { key: 'msg', className: 'absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap' }, '※🎾をタップでサーブ変更'),
+                        e('div', { key: 'us', className: 'text-center flex-1 flex flex-col justify-between relative', onClick: function() { setIsUsSrv(true); } }, [
+                            isUsSrv ? e('div', { key: 'ball', className: 'absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
+                            e('div', { key: 'n', className: 'mb-3' }, [ e('div', { key: 'l', className: 'text-[10px] text-blue-400 font-black uppercase' }, 'OURS'), e('div', { key: 'v', className: 'text-xl font-black leading-tight' }, mi.p1 + (mi.p2?' / '+mi.p2:'')) ]),
+                            e('div', { key: 'g', className: 'text-6xl font-black mb-1' }, sc.g1),
+                            e('div', { key: 'p', className: 'inline-block self-center px-6 py-1 bg-blue-600 rounded-full text-lg font-black' }, sc.p1)
                         ]),
-                        el('div', { key: 'line', className: 'flex items-center px-4' }, el('div', { className: 'h-24 w-px bg-slate-700' })),
-                        el('div', { key: 'opp', className: 'text-center flex-1 flex flex-col justify-between relative', onClick: function() { setIsUsSrv(false); } }, [
-                            !isUsSrv ? el('div', { key: 'ball', className: 'absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
-                            el('div', { key: 'n', className: 'mb-3' }, [ el('div', { key: 'l', className: 'text-[10px] text-red-400 font-black uppercase' }, 'OPP'), el('div', { key: 'v', className: 'text-xl font-black leading-tight' }, mi.opp) ]),
-                            el('div', { key: 'g', className: 'text-6xl font-black mb-1' }, sc.g2),
-                            el('div', { key: 'p', className: 'inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black' }, sc.p2)
+                        e('div', { key: 'line', className: 'flex items-center px-4' }, e('div', { className: 'h-24 w-px bg-slate-700' })),
+                        e('div', { key: 'opp', className: 'text-center flex-1 flex flex-col justify-between relative', onClick: function() { setIsUsSrv(false); } }, [
+                            !isUsSrv ? e('div', { key: 'ball', className: 'absolute -top-2 right-0 text-3xl animate-bounce drop-shadow-md' }, '🎾') : null,
+                            e('div', { key: 'n', className: 'mb-3' }, [ e('div', { key: 'l', className: 'text-[10px] text-red-400 font-black uppercase' }, 'OPP'), e('div', { key: 'v', className: 'text-xl font-black leading-tight' }, mi.opp) ]),
+                            e('div', { key: 'g', className: 'text-6xl font-black mb-1' }, sc.g2),
+                            e('div', { key: 'p', className: 'inline-block self-center px-6 py-1 bg-red-600 rounded-full text-lg font-black' }, sc.p2)
                         ])
-                    ]),
-                    
-                    el('div', { key: 'undo', className: 'flex justify-center' }, 
-                        e('button', { onClick: undo, disabled: his.length===0, className: 'flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform' }, '↩️ 訂正（1手戻る）')
-                    ),
-                    
-                    el('div', { key: 'opts', className: 'grid grid-cols-2 gap-3' }, [
-                        el('div', { key: 'srv', className: 'bg-white p-3 rounded-2xl border shadow-sm' }, [
-                            el('label', { className: 'text-[10px] font-black text-slate-400 block mb-2' }, '1. サーブ'),
-                            el('div', { className: 'flex gap-2 h-24' }, [1,2].map(function(s) {
-                                return el('button', { key: s, onClick: function() { setSt(s); }, className: "flex-1 rounded-xl border-2 font-black text-2xl " + (st===s?'border-blue-600 bg-blue-50 text-blue-700':'text-slate-300') }, s + 'st');
-                            }))
-                        ]),
-                        el('div', { key: 'fm', className: 'bg-white p-3 rounded-2xl border shadow-sm' }, [
-                            el('label', { className: 'text-[10px] font-black text-slate-400 block mb-2' }, '2. 展開'),
-                            el('div', { className: 'flex gap-2 h-24' }, FMS.map(function(f) {
-                                return el('button', { key: f.id, onClick: function() { setFm(f.id); }, className: "direction-btn flex-1 rounded-xl border-2 flex flex-col items-center justify-center " + (fm===f.id?'active border-blue-600 bg-blue-50 text-blue-700':'border-slate-100 text-slate-400 hover:bg-slate-50') }, [
-                                    f.icon(fm===f.id), el('span', { key: 't', className: 'text-sm font-black' }, f.label)
-                                ]);
-                            }))
-                        ])
-                    ]),
-                    
-                    // --- メンター様ご指摘：途切れないよう慎重に記述 ---
-                    el('div', { key: 'grid', className: 'grid grid-cols-2 gap-4' }, [
-                        el('div', { key: 'us', className: 'bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-inner' }, [
-                            el('p', { className: 'text-[11px] font-black text-blue-800 mb-3 px-1' }, '自チームの得点'),
-                            el('div', { className: 'grid grid-cols-2 gap-2 mb-5' }, PT.map(function(p) {
-                                return el('button', { key: p.id, disabled: !st||!fm, onClick: function() { rec(1, 'US', 'point', p.id); }, className: 'py-4 bg-blue-700 text-white text-base font-black rounded-xl disabled:opacity-20 shadow-md active:scale-95' }, p.label);
-                            })),
-                            el('div', { className: 'h-64 overflow-y-auto custom-scrollbar space-y-3 pr-1' }, MG.map(function(g) {
-                                return el('div', { key: g }, [
-                                    el('div', { className: 'text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1' }, g),
-                                    el('div', { className: 'grid grid-cols-2 gap-2' }, MT.filter(function(m) { return m.g === g; }).map(function(m) {
-                                        return el('button', { key: m.id, disabled: !st||!fm, onClick: function() { rec(1, 'OPP', 'miss', m.id); }, className: 'py-3.5 bg-white border-2 text-slate-800 
+                  
