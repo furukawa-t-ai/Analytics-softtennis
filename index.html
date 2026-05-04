@@ -15,7 +15,6 @@
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
 
-    <!-- エラー監視エリア -->
     <script>
         window.addEventListener('error', function(e) {
             const errBox = document.getElementById('error-box');
@@ -25,13 +24,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     
-    <!-- 起動時のローディングカバー -->
-    <div id="loading-screen" class="fixed inset-0 bg-slate-50 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
-        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-        <div class="text-slate-500 font-bold text-sm tracking-widest">SYSTEM LOADING...</div>
-    </div>
-
-    <!-- 万が一のエラー表示用 -->
+    <!-- エラー表示用 -->
     <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs"></div>
 
     <!-- ヘッダー -->
@@ -40,7 +33,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-yellow-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             <h1 class="text-xl font-black italic tracking-tighter">ST-ANALYTICS</h1>
         </div>
-        <span id="uid-display" class="text-[8px] opacity-40 font-mono">Loading...</span>
+        <span id="uid-display" class="text-[8px] opacity-40 font-mono">Offline</span>
     </header>
 
     <!-- メインコンテンツ -->
@@ -211,17 +204,13 @@
         </button>
     </nav>
 
-    <!-- Firebase v8 -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <!-- ==============================================================
-         システムロジック
+         最優先で実行するコアシステム（外部通信なしで即座にUIを立ち上げる）
          ============================================================== -->
     <script>
         // ----------------------------------------------------
-        // 📁 State (状態管理)
+        // 状態管理 (State)
         // ----------------------------------------------------
         const State = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
@@ -252,7 +241,7 @@
         };
 
         // ----------------------------------------------------
-        // 📁 Logic (スコア計算ロジック)
+        // スコア計算ロジック (Logic)
         // ----------------------------------------------------
         const Logic = {
             calcNextScore: function(wSide) {
@@ -286,79 +275,54 @@
         };
 
         // ----------------------------------------------------
-        // 📁 DB (Firebase連携)
-        // ----------------------------------------------------
-        const DB = {
-            ref: null,
-            init: function() {
-                try {
-                    if (!firebase.apps.length) {
-                        firebase.initializeApp({
-                            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-                            authDomain: "softtennis-data.firebaseapp.com",
-                            projectId: "softtennis-data"
-                        });
-                    }
-                    const auth = firebase.auth();
-                    const db = firebase.firestore();
-                    DB.ref = db.collection('artifacts').doc("soft-tennis-v1").collection('public').doc('data').collection('matches');
-
-                    auth.onAuthStateChanged(u => {
-                        if (u) {
-                            State.user = u;
-                            document.getElementById('uid-display').textContent = u.uid.substring(0,8);
-                            DB.ref.onSnapshot(snap => {
-                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                                if(State.view === 'team') UI.renderTeam();
-                                if(State.view === 'player') UI.renderPlayerSelect();
-                            });
-                        } else {
-                            auth.signInAnonymously().catch(e => console.warn(e));
-                        }
-                    });
-                } catch (e) {
-                    console.error("DB Init Error:", e);
-                }
-            },
-            saveMatch: function() {
-                const finalData = { type: State.type, gc: State.gc, t: State.t, p1: State.p1, p2: State.p2, opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' };
-                if (DB.ref) {
-                    DB.ref.add(finalData).then(() => {
-                        UI.resetToMeta();
-                    }).catch(e => alert("保存失敗: " + e.message));
-                } else {
-                    alert("通信環境によりクラウド保存できませんでした。初期画面に戻ります。");
-                    UI.resetToMeta();
-                }
-            },
-            deleteMatch: function(id) {
-                if (confirm('削除しますか？') && DB.ref) DB.ref.doc(id).delete();
-            }
-        };
-----------------------------------------------------
-        // 📁 UI (画面の描画・DOM操作)
+        // 画面描画ロジック (UI)
         // ----------------------------------------------------
         const UI = {
             initPointsButtons: function() {
                 const usPts = document.getElementById('us-pts');
                 const oppPts = document.getElementById('opp-pts');
+                
+                // 得点ボタン生成
                 State.PT.forEach(p => {
-                    usPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-4 bg-blue-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="1" data-lbl="US" data-type="point" data-code="${p.id}">${p.label}</button>`);
-                    oppPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-4 bg-red-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="OPP" data-type="point" data-code="${p.id}">${p.label}</button>`);
+                    let b1 = document.createElement('button');
+                    b1.className = 'pt-btn py-4 bg-blue-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform';
+                    b1.disabled = true; b1.dataset.side = "1"; b1.dataset.lbl = "US"; b1.dataset.type = "point"; b1.dataset.code = p.id; b1.textContent = p.label;
+                    usPts.appendChild(b1);
+
+                    let b2 = document.createElement('button');
+                    b2.className = 'pt-btn py-4 bg-red-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform';
+                    b2.disabled = true; b2.dataset.side = "2"; b2.dataset.lbl = "OPP"; b2.dataset.type = "point"; b2.dataset.code = p.id; b2.textContent = p.label;
+                    oppPts.appendChild(b2);
                 });
 
+                // ミスボタン生成
                 const usMiss = document.getElementById('us-miss');
                 const oppMiss = document.getElementById('opp-miss');
+                
                 State.MG.forEach(g => {
-                    let h1 = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div><div class="grid grid-cols-2 gap-2">`;
-                    State.MT.filter(m => m.g === g).forEach(m => { h1 += `<button class="pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="1" data-lbl="OPP" data-type="miss" data-code="${m.id}">${m.label}</button>`; });
-                    h1 += `</div>`;
-                    usMiss.insertAdjacentHTML('beforeend', h1);
+                    // 自チーム側のミス枠（相手の得点要因）
+                    let w1 = document.createElement('div');
+                    w1.innerHTML = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div>`;
+                    let grid1 = document.createElement('div'); grid1.className = "grid grid-cols-2 gap-2";
+                    State.MT.filter(m => m.g === g).forEach(m => {
+                        let b = document.createElement('button');
+                        b.className = 'pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform';
+                        b.disabled = true; b.dataset.side = "1"; b.dataset.lbl = "OPP"; b.dataset.type = "miss"; b.dataset.code = m.id; b.textContent = m.label;
+                        grid1.appendChild(b);
+                    });
+                    w1.appendChild(grid1); usMiss.appendChild(w1);
 
-                    let h2 = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div><div class="grid grid-cols-2 gap-2">`;
-                    State.MT.filter(m => m.g === g).forEach(m => { h2 += `<button class="pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="US" data-type="miss" data-code="${m.id}">${m.label}</button>`; });
-                    h2 += `</div>`;
-                    oppMiss.insertAdjacentHTML('beforeend', h2);
+                    // 相手チーム側のミス枠（自チームの得点要因）
+                    let w2 = document.createElement('div');
+                    w2.innerHTML = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div>`;
+                    let grid2 = document.createElement('div'); grid2.className = "grid grid-cols-2 gap-2";
+                    State.MT.filter(m => m.g === g).forEach(m => {
+                        let b = document.createElement('button');
+                        b.className = 'pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform';
+                        b.disabled = true; b.dataset.side = "2"; b.dataset.lbl = "US"; b.dataset.type = "miss"; b.dataset.code = m.id; b.textContent = m.label;
+                        grid2.appendChild(b);
+                    });
+                    w2.appendChild(grid2); oppMiss.appendChild(w2);
                 });
             },
             switchNav: function(v) {
@@ -511,9 +475,8 @@
             }
         };
 
-        //
-----------------------------------------------------
-        // 📁 Events (イベント紐付け)
+        // ----------------------------------------------------
+        // イベント紐付け (Events)
         // ----------------------------------------------------
         const Events = {
             init: function() {
@@ -565,7 +528,14 @@
                         const d = m.createdAt ? new Date(m.createdAt).toLocaleString('ja-JP').replace(/,/g, '') : '';
                         if (!m.pts) return;
                         m.pts.forEach((p, idx) => {
-                            csv += `"${d}","${m.t||''}","${m.type}","${m.p1||''}","${m.p2||''}","${m.opp||''}","${m.winner===1?'WIN':'LOSE'}",${m.finalScore.g1},${m.finalScore.g2},${idx+1},${(p.gameIndex||0)+1},"${p.isOurServe?'自':'相手'}","${p.serveStatus||''}","${p.formation||''}","${p.winnerSide===1?'自':'相手'}","${p.type}","${p.code}"\n`;
+                            let row = [
+                                d, m.t || '', m.type, m.p1 || '', m.p2 || '', m.opp || '',
+                                m.winner === 1 ? 'WIN' : 'LOSE', m.finalScore.g1, m.finalScore.g2,
+                                idx + 1, (p.gameIndex || 0) + 1, p.isOurServe ? '自' : '相手',
+                                p.serveStatus || '', p.formation || '', p.winnerSide === 1 ? '自' : '相手',
+                                p.type, p.code
+                            ];
+                            csv += '"' + row.join('","') + '"\n';
                         });
                     });
                     const link = document.createElement("a");
@@ -576,8 +546,7 @@
                 // ポイント記録
                 document.addEventListener('click', function(e) {
                     const btn = e.target.closest('.pt-btn');
-                    if (!btn) return;
-                    if (btn.disabled) return;
+                    if (!btn || btn.disabled) return;
                     
                     State.his.push({ sc: Object.assign({}, State.sc), pts: [...State.pts], isUsSrv: State.isUsSrv });
                     
@@ -592,34 +561,84 @@
             }
         };
 
-        //
-----------------------------------------------------
-        // 📁 App (エントリ・起動処理  // ----------------------------------------------------
-        function initApp() {
+        // ----------------------------------------------------
+        // 最速でUIを起動するエントリーポイント
+        // ----------------------------------------------------
+        document.addEventListener('DOMContentLoaded', function() {
             try {
                 UI.initPointsButtons();
                 Events.init();
-                DB.init();
-                
-                // ロード画面を消す
-                const loader = document.getElementById('loading-screen');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.style.display = 'none', 300);
-                }
+                // 通信環境に依存せず、この時点でアプリは操作可能になる
             } catch (err) {
                 const errBox = document.getElementById('error-box');
-                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【起動エラー】' + err.message + '<br>'; }
+                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【UI起動エラー】' + err.message + '<br>'; }
             }
-        }
+        });
+    </script>
 
-        // 確実なタイミングで起動
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
+    <!-- ==============================================================
+         裏側で遅れて読み込むFirebaseシステム（通信ブロック対策）
+         ============================================================== -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script defer>
+        const DB = {
+            ref: null,
+            init: function() {
+                try {
+                    if (typeof firebase === 'undefined') return;
+                    const APP_ID = "soft-tennis-v1";
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp({
+                            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+                            authDomain: "softtennis-data.firebaseapp.com",
+                            projectId: "softtennis-data"
+                        });
+                    }
+                    const auth = firebase.auth();
+                    const db = firebase.firestore();
+                    DB.ref = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('matches');
+
+                    auth.onAuthStateChanged(u => {
+                        if (u) {
+                            State.user = u;
+                            document.getElementById('uid-display').textContent = u.uid.substring(0,8);
+                            DB.ref.onSnapshot(snap => {
+                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                                if(State.view === 'team') UI.renderTeam();
+                                if(State.view === 'player') UI.renderPlayerSelect();
+                            });
+                        } else {
+                            auth.signInAnonymously().catch(e => console.warn(e));
+                        }
+                    });
+                } catch (e) {
+                    console.error("DB Init Error:", e);
+                }
+            },
+            saveMatch: function() {
+                const finalData = { type: State.type, gc: State.gc, t: State.t, p1: State.p1, p2: State.p2, opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' };
+                if (DB.ref) {
+                    DB.ref.add(finalData).then(() => {
+                        UI.resetToMeta();
+                    }).catch(e => alert("保存失敗: " + e.message));
+                } else {
+                    alert("通信環境によりクラウド保存できませんでした。（記録はリセットされます）");
+                    UI.resetToMeta();
+                }
+            },
+            deleteMatch: function(id) {
+                if (confirm('削除しますか？') && DB.ref) DB.ref.doc(id).delete();
+            }
+        };
+
+        // Firebaseの読み込みを待ってからDBを初期化
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                DB.init();
+            }, 1000);
+        });
     </script>
 </body>
 </html>
-         
