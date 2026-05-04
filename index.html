@@ -15,7 +15,6 @@
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
 
-    <!-- エラー監視エリア -->
     <script>
         window.addEventListener('error', function(e) {
             const errBox = document.getElementById('error-box');
@@ -25,16 +24,13 @@
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 font-sans">
     
-    <!-- 起動時のローディングカバー -->
     <div id="loading-screen" class="fixed inset-0 bg-slate-50 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
         <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
         <div class="text-slate-500 font-bold text-sm tracking-widest">SYSTEM LOADING...</div>
     </div>
 
-    <!-- 万が一のエラー表示用 -->
     <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs"></div>
 
-    <!-- ヘッダー -->
     <header class="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-yellow-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
@@ -43,7 +39,6 @@
         <span id="uid-display" class="text-[8px] opacity-40 font-mono">Loading...</span>
     </header>
 
-    <!-- メインコンテンツ -->
     <main class="max-w-4xl mx-auto p-4">
         
         <!-- ===== 1. 入力画面 ===== -->
@@ -62,17 +57,52 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5ゲーム</button>
-                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7ゲーム</button>
-                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9ゲーム</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
                         </div>
                     </div>
-                    <input type="text" id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="大会名">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="in-p1" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1">
-                        <input type="text" id="in-p2" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2">
+                    
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1">試合日</label>
+                        <input type="date" id="in-date" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
                     </div>
-                    <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手大学名 選手名">
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
+                        <select id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
+                            <option value="〇〇大会">〇〇大会</option>
+                            <option value="練習試合（練習含む）">練習試合（練習含む）</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="space-y-2">
+                            <input type="text" id="in-p1" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手1">
+                            <!-- ★学年プルダウン -->
+                            <select id="in-p1-grade" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-sm text-slate-600">
+                                <option value="">学年</option>
+                                <option value="1年">1年</option>
+                                <option value="2年">2年</option>
+                                <option value="3年">3年</option>
+                                <option value="4年">4年</option>
+                            </select>
+                        </div>
+                        <div id="area-p2" class="space-y-2">
+                            <input type="text" id="in-p2" class="w-full bg-slate-50 border p-4 rounded-xl font-bold" placeholder="自チーム選手2">
+                            <!-- ★学年プルダウン -->
+                            <select id="in-p2-grade" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-sm text-slate-600">
+                                <option value="">学年</option>
+                                <option value="1年">1年</option>
+                                <option value="2年">2年</option>
+                                <option value="3年">3年</option>
+                                <option value="4年">4年</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名">
                 </div>
                 <button id="btn-start" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
             </div>
@@ -84,7 +114,6 @@
                     <div id="badge-normal" class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[9px] font-bold shadow-sm z-10 whitespace-nowrap">※🎾をタップでサーブ変更</div>
                     
                     <div id="area-us-srv" class="text-center flex-1 flex flex-col justify-between relative cursor-pointer">
-                        <!-- ★修正1: 初期状態をhiddenにし、JSで制御する -->
                         <div id="srv-us" class="absolute -top-2 left-0 text-3xl animate-bounce drop-shadow-md hidden">🎾</div>
                         <div class="mb-3">
                             <div class="text-[10px] text-blue-400 font-black uppercase">OURS</div>
@@ -138,22 +167,18 @@
                     </div>
                 </div>
 
-                <!-- ★修正2＆3: スクロール枠の固定と、表記の明確化 -->
-                <div class="grid grid-cols-2 gap-2 sm:gap-4">
-                    <div class="bg-blue-50 p-2 sm:p-4 rounded-2xl border border-blue-100 shadow-inner flex flex-col h-[400px]">
+                <div class="grid grid-cols-2 gap-2 sm:gap-4 h-[55vh] min-h-[500px]">
+                    <div class="bg-blue-50 p-2 sm:p-4 rounded-2xl border border-blue-100 shadow-inner flex flex-col overflow-hidden">
                         <p class="text-[10px] sm:text-xs font-black text-blue-800 mb-2 px-1 shrink-0">自チームが獲得したポイント</p>
                         <div id="us-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-2 shrink-0"></div>
-                        
                         <p class="text-[10px] sm:text-xs font-black text-blue-800 mt-2 mb-2 px-1 border-t border-blue-200 pt-2 shrink-0">相手のミスによるポイント</p>
-                        <div id="us-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow"></div>
+                        <div id="us-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow h-0"></div>
                     </div>
-                    
-                    <div class="bg-red-50 p-2 sm:p-4 rounded-2xl border border-red-100 shadow-inner flex flex-col h-[400px]">
+                    <div class="bg-red-50 p-2 sm:p-4 rounded-2xl border border-red-100 shadow-inner flex flex-col overflow-hidden">
                         <p class="text-[10px] sm:text-xs font-black text-red-800 mb-2 px-1 shrink-0">相手チームが獲得したポイント</p>
                         <div id="opp-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-2 shrink-0"></div>
-                        
                         <p class="text-[10px] sm:text-xs font-black text-red-800 mt-2 mb-2 px-1 border-t border-red-200 pt-2 shrink-0">自チームのミスによるポイント</p>
-                        <div id="opp-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow"></div>
+                        <div id="opp-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow h-0"></div>
                     </div>
                 </div>
             </div>
@@ -178,25 +203,71 @@
             </div>
         </div>
 
+        <!-- 選手選択モーダル (ダブルス時のみ表示) -->
+        <div id="modal-player-select" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100">
+                <p class="text-center text-sm font-black text-slate-600 mb-6">対象の選手（プレーした選手）を選択</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="btn-sel-p1" class="bg-blue-50 text-blue-700 border-2 border-blue-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
+                    <button id="btn-sel-p2" class="bg-blue-50 text-blue-700 border-2 border-blue-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
+                </div>
+                <button id="btn-sel-cancel" class="mt-6 w-full py-3 text-slate-400 font-bold text-sm underline active:text-slate-600">キャンセル</button>
+            </div>
+        </div>
+
         <!-- ===== 2. 個人分析画面 ===== -->
         <div id="view-player" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                <label class="text-[10px] font-black text-slate-400 block mb-2">選手を選択して分析</label>
-                <select id="sel-player" class="w-full p-4 border rounded-xl font-black bg-slate-50">
-                    <option value="">-- 選手を選択 --</option>
-                </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                    <label class="text-[10px] font-black text-slate-400 block mb-1">対象選手</label>
+                    <select id="sel-player" class="w-full p-3 border rounded-xl font-black bg-slate-50 text-sm">
+                        <option value="">-- 選択 --</option>
+                    </select>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                    <label class="text-[10px] font-black text-slate-400 block mb-1">対象試合</label>
+                    <select id="sel-player-match" class="w-full p-3 border rounded-xl font-black bg-slate-50 text-sm" disabled>
+                        <option value="ALL">全ての試合</option>
+                    </select>
+                </div>
             </div>
             <div id="player-stats" class="hidden space-y-6"></div>
         </div>
 
         <!-- ===== 3. チーム画面 ===== -->
         <div id="view-team" class="hidden space-y-4">
-            <div class="flex justify-between items-center px-1 mb-2">
-                <h3 class="text-sm font-black text-slate-400">全試合履歴</h3>
-                <button id="btn-csv" class="flex items-center gap-1 text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 shadow-sm active:scale-95">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    CSVダウンロード
+            <!-- チームダッシュボード -->
+            <div class="bg-white p-4 rounded-2xl border shadow-sm flex items-center justify-between">
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 block mb-1">表示期間</label>
+                    <select id="sel-team-period" class="p-2 border rounded-lg font-black bg-slate-50 text-sm min-w-[120px]">
+                        <option value="ALL">通算（すべて）</option>
+                    </select>
+                </div>
+                <button id="btn-csv" class="flex items-center gap-1 text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100 shadow-sm active:scale-95">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    CSV
                 </button>
+            </div>
+
+            <div id="team-stats" class="grid grid-cols-2 gap-3 hidden">
+                <div class="bg-slate-800 text-white p-4 rounded-2xl shadow-md">
+                    <p class="text-[10px] font-bold text-slate-300 mb-1">チーム勝率</p>
+                    <p id="team-wr" class="text-3xl font-black">-</p>
+                </div>
+                <div class="bg-white border p-4 rounded-2xl shadow-sm">
+                    <p class="text-[10px] font-bold text-slate-500 mb-1">対象期間の総試合数 / 今月</p>
+                    <p class="text-2xl font-black text-slate-800"><span id="team-total-matches">-</span> <span class="text-sm text-slate-400 ml-1">/ <span id="team-month-matches">-</span></span></p>
+                </div>
+            </div>
+
+            <div id="team-pair-rank" class="bg-white p-4 rounded-2xl border shadow-sm hidden">
+                <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ペア別勝率ランキング</h3>
+                <div id="pair-list" class="space-y-2"></div>
+            </div>
+
+            <div class="flex justify-between items-center px-1 mb-2 mt-6">
+                <h3 class="text-sm font-black text-slate-400">試合履歴</h3>
             </div>
             <div id="team-list" class="space-y-4"></div>
         </div>
@@ -218,20 +289,30 @@
         </button>
     </nav>
 
-
-    <!-- ==============================================================
-         最優先で実行するコアシステム
-         ============================================================== -->
     <script>
-        // ----------------------------------------------------
-        // 状態管理 (State)
-        // ----------------------------------------------------
+        // --- Utils ---
+        const Utils = {
+            getNendo: (dateStr) => {
+                if (!dateStr) return null;
+                const d = new Date(dateStr);
+                return d.getMonth() < 3 ? d.getFullYear() - 1 : d.getFullYear(); // 4月始まり
+            },
+            fmLabel: (fm) => {
+                if(fm==='cross_left') return '正クロス';
+                if(fm==='cross_right') return '逆クロス';
+                if(fm==='straight') return 'ストレート';
+                return '不明';
+            }
+        };
+
+        // --- State ---
         const State = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
-            t: '', p1: '', p2: '', opp: '', pts: [],
+            date: '', t: '', p1: '', p1_grade: '', p2: '', p2_grade: '', opp: '', pts: [],
             sc: { p1: 0, p2: 0, g1: 0, g2: 0 },
             st: null, fm: null, his: [], isUsSrv: true,
             user: null, matches: [],
+            pendingPoint: null, 
             
             PT: [ 
                 { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, 
@@ -253,9 +334,7 @@
             MG: ['ネット', 'バック', 'サイド', 'その他']
         };
 
-        // ----------------------------------------------------
-        // スコア計算ロジック (Logic)
-        // ----------------------------------------------------
+        // --- Logic ---
         const Logic = {
             calcNextScore: function(wSide) {
                 let p1 = State.sc.p1, p2 = State.sc.p2, g1 = State.sc.g1, g2 = State.sc.g2;
@@ -287,9 +366,7 @@
             }
         };
 
-        // ----------------------------------------------------
-        // 画面描画ロジック (UI)
-        // ----------------------------------------------------
+        // --- UI ---
         const UI = {
             initPointsButtons: function() {
                 const usPts = document.getElementById('us-pts');
@@ -297,13 +374,11 @@
                 const usMiss = document.getElementById('us-miss');
                 const oppMiss = document.getElementById('opp-miss');
                 
-                // 獲得ポイント用ボタン
                 State.PT.forEach(p => {
                     usPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-2 sm:py-3 bg-blue-700 text-white text-xs sm:text-sm font-black rounded-lg shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="1" data-lbl="US" data-type="point" data-code="${p.id}">${p.label}</button>`);
                     oppPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-2 sm:py-3 bg-red-700 text-white text-xs sm:text-sm font-black rounded-lg shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="OPP" data-type="point" data-code="${p.id}">${p.label}</button>`);
                 });
 
-                // ミス用ボタン (相手のミス = 自チームの得点)
                 State.MG.forEach(g => {
                     let h1 = `<div class="mb-3"><div class="text-[10px] font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-sm inline-block mb-1">${g}</div><div class="grid grid-cols-2 gap-1 sm:gap-2">`;
                     State.MT.filter(m => m.g === g).forEach(m => {
@@ -312,7 +387,6 @@
                     h1 += `</div></div>`;
                     usMiss.insertAdjacentHTML('beforeend', h1);
 
-                    // (自チームのミス = 相手チームの得点)
                     let h2 = `<div class="mb-3"><div class="text-[10px] font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-sm inline-block mb-1">${g}</div><div class="grid grid-cols-2 gap-1 sm:gap-2">`;
                     State.MT.filter(m => m.g === g).forEach(m => {
                         h2 += `<button class="pt-btn py-2 sm:py-3 bg-white border-2 border-slate-200 text-slate-800 text-xs sm:text-sm font-black rounded-lg shadow-sm active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="US" data-type="miss" data-code="${m.id}">${m.label}</button>`;
@@ -336,7 +410,7 @@
             updateType: function() {
                 document.getElementById('btn-type-doubles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
                 document.getElementById('btn-type-singles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'singles' ? 'btn-active' : 'text-slate-400'}`;
-                document.getElementById('in-p2').style.display = State.type === 'doubles' ? 'block' : 'none';
+                document.getElementById('area-p2').style.display = State.type === 'doubles' ? 'block' : 'none';
             },
             updateGC: function() {
                 [5,7,9].forEach(n => {
@@ -356,7 +430,6 @@
                 document.getElementById('disp-g2').textContent = State.sc.g2;
                 document.getElementById('disp-p2').textContent = State.sc.p2;
 
-                // ★修正1: CSSクラスの付け外しでサーブ表示を切り替える
                 document.getElementById('srv-us').classList.toggle('hidden', !State.isUsSrv);
                 document.getElementById('srv-opp').classList.toggle('hidden', State.isUsSrv);
 
@@ -396,15 +469,55 @@
                 document.getElementById('step-sum').classList.add('hidden');
                 document.getElementById('step-meta').classList.remove('hidden');
                 State.sc = {p1:0,p2:0,g1:0,g2:0}; State.pts = []; State.his = [];
-                document.getElementById('in-t').value = ''; document.getElementById('in-p1').value = ''; document.getElementById('in-p2').value = ''; document.getElementById('in-opp').value = '';
+                
+                const selectEl = document.getElementById('in-t');
+                if (selectEl) selectEl.selectedIndex = 0;
+                
+                document.getElementById('in-p1').value = ''; 
+                document.getElementById('in-p1-grade').value = ''; 
+                document.getElementById('in-p2').value = ''; 
+                document.getElementById('in-p2-grade').value = ''; 
+                document.getElementById('in-opp').value = '';
+                
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('in-date');
+                if (dateInput) dateInput.value = today;
+            },
+            updateTeamFilterOptions: function() {
+                const sel = document.getElementById('sel-team-period');
+                const current = sel.value;
+                const nendos = new Set();
+                State.matches.forEach(m => {
+                    const nd = Utils.getNendo(m.date || m.createdAt);
+                    if(nd) nendos.add(nd);
+                });
+                let html = '<option value="ALL">通算（すべて）</option>';
+                Array.from(nendos).sort((a,b)=>b-a).forEach(n => {
+                    html += `<option value="${n}">${n}年度</option>`;
+                });
+                sel.innerHTML = html;
+                if(Array.from(nendos).map(String).includes(current)) sel.value = current;
             },
             renderTeam: function() {
+                UI.updateTeamFilterOptions();
+                const period = document.getElementById('sel-team-period').value;
+                let filteredMatches = State.matches;
+                
+                if(period !== "ALL") {
+                    filteredMatches = State.matches.filter(m => String(Utils.getNendo(m.date || m.createdAt)) === period);
+                }
+
                 const list = document.getElementById('team-list');
-                list.innerHTML = State.matches.map(m => `
+                list.innerHTML = filteredMatches.map(m => {
+                    const p1Text = m.p1 + (m.p1_grade ? `(${m.p1_grade})` : '');
+                    const p2Text = m.p2 ? ' / ' + m.p2 + (m.p2_grade ? `(${m.p2_grade})` : '') : '';
+                    const dateText = m.date ? m.date.replace(/-/g, '/') : (m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '');
+                    
+                    return `
                     <div class="bg-white p-5 rounded-2xl border shadow-sm flex justify-between items-center">
                         <div class="flex-1">
-                            <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mb-1">${m.t || '交流戦'}</p>
-                            <p class="text-sm font-black text-slate-800">${m.p1} ${m.p2 ? '/ '+m.p2 : ''}</p>
+                            <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mb-1">${dateText} ${m.t || '交流戦'}</p>
+                            <p class="text-sm font-black text-slate-800">${p1Text}${p2Text}</p>
                             <p class="text-[10px] font-bold text-red-500 mb-1">vs ${m.opp}</p>
                         </div>
                         <div class="flex flex-col items-end gap-1">
@@ -415,32 +528,118 @@
                             <button onclick="DB.deleteMatch('${m.id}')" class="text-[9px] text-slate-300 underline mt-2">削除</button>
                         </div>
                     </div>
-                `).join('') || '<div class="py-20 text-center text-slate-300 font-black">記録された試合はありません</div>';
+                `}).join('') || '<div class="py-10 text-center text-slate-300 font-black">該当する試合はありません</div>';
+
+                document.getElementById('team-stats').classList.remove('hidden');
+                document.getElementById('team-pair-rank').classList.remove('hidden');
+
+                const totalM = filteredMatches.length;
+                const wins = filteredMatches.filter(m => m.winner===1).length;
+                document.getElementById('team-wr').textContent = totalM ? ((wins/totalM)*100).toFixed(1) + '%' : '-';
+                document.getElementById('team-total-matches').textContent = totalM;
+                
+                const now = new Date();
+                const currentMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+                const mMatches = filteredMatches.filter(m => {
+                    if(!m.date) return false;
+                    return m.date.startsWith(currentMonth);
+                }).length;
+                document.getElementById('team-month-matches').textContent = mMatches;
+
+                const pairs = {};
+                filteredMatches.forEach(m => {
+                    const key = m.type === 'singles' ? m.p1 : [m.p1, m.p2].sort().join('・');
+                    if(!pairs[key]) pairs[key] = { w:0, t:0 };
+                    pairs[key].t++;
+                    if(m.winner===1) pairs[key].w++;
+                });
+                
+                const rankHtml = Object.keys(pairs).map(k => ({k, wr: pairs[k].w/pairs[k].t, t: pairs[k].t}))
+                    .filter(p => p.t > 0)
+                    .sort((a,b) => b.wr - a.wr || b.t - a.t)
+                    .map((p, idx) => `
+                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-slate-400 w-4">${idx+1}.</span>
+                                <span class="text-sm font-black text-slate-700">${p.k}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-black text-blue-600">${(p.wr*100).toFixed(1)}%</span>
+                                <span class="text-[10px] text-slate-400 ml-1">(${p.t}試合)</span>
+                            </div>
+                        </div>
+                    `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
+                document.getElementById('pair-list').innerHTML = rankHtml;
             },
             renderPlayerSelect: function() {
                 const sel = document.getElementById('sel-player');
                 const current = sel.value;
                 const players = Array.from(new Set(State.matches.flatMap(m => [m.p1, m.p2].filter(Boolean)))).sort();
-                sel.innerHTML = '<option value="">-- 選手を選択 --</option>';
+                sel.innerHTML = '<option value="">-- 選択 --</option>';
                 players.forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
                 if (players.includes(current)) sel.value = current;
+                
+                UI.updatePlayerMatchSelect();
+            },
+            updatePlayerMatchSelect: function() {
+                const selP = document.getElementById('sel-player').value;
+                const selM = document.getElementById('sel-player-match');
+                if(!selP) {
+                    selM.innerHTML = '<option value="ALL">全ての試合</option>';
+                    selM.disabled = true;
+                    UI.renderPlayerStats();
+                    return;
+                }
+                selM.disabled = false;
+                const currentM = selM.value;
+                const pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP);
+                
+                let html = '<option value="ALL">全ての試合</option>';
+                pm.forEach(m => {
+                    const dateText = m.date ? m.date.replace(/-/g, '/') : '';
+                    html += `<option value="${m.id}">${dateText} ${m.t||'名称未設定'} (vs ${m.opp})</option>`;
+                });
+                selM.innerHTML = html;
+                if(pm.find(m => m.id === currentM)) selM.value = currentM;
+                else selM.value = 'ALL';
+
                 UI.renderPlayerStats();
             },
             renderPlayerStats: function() {
-                const sel = document.getElementById('sel-player').value;
+                const selP = document.getElementById('sel-player').value;
+                const selM = document.getElementById('sel-player-match').value;
                 const container = document.getElementById('player-stats');
-                if (!sel) { container.classList.add('hidden'); return; }
+                
+                if (!selP) { container.classList.add('hidden'); return; }
 
-                const pm = State.matches.filter(m => m.p1 === sel || m.p2 === sel);
+                let pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP);
+                if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
+
                 let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
                 let pts = {}, ms = {};
+                let ptsFm = { cross_left:0, straight:0, cross_right:0 };
+                let msFm = { cross_left:0, straight:0, cross_right:0 };
 
                 pm.forEach(m => {
                     if(m.winner === 1) w++;
                     if(m.pts) m.pts.forEach(p => {
-                        if(p.isOurServe) { srvTot++; if(p.serveStatus===1) s1in++; if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } }
-                        if(p.winnerSide === 1 && p.sideLabel === 'US' && p.type === 'point') { mp++; pts[p.code] = (pts[p.code] || 0) + 1; }
-                        if(p.winnerSide === 2 && p.sideLabel === 'US' && p.type === 'miss') { mm++; ms[p.code] = (ms[p.code] || 0) + 1; }
+                        if(p.isOurServe && p.hitter === selP) { 
+                            srvTot++; 
+                            if(p.serveStatus===1) s1in++; 
+                            if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } 
+                        }
+                        if(p.winnerSide === 1 && p.hitter === selP) { 
+                            mp++; 
+                            const k = `${p.formation}_${p.code}`;
+                            pts[k] = (pts[k] || 0) + 1; 
+                            if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
+                        }
+                        if(p.winnerSide === 2 && p.hitter === selP) { 
+                            mm++; 
+                            const k = `${p.formation}_${p.code}`;
+                            ms[k] = (ms[k] || 0) + 1; 
+                            if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
+                        }
                     });
                 });
 
@@ -450,35 +649,91 @@
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
                 
-                const prHtml = Object.keys(pts).map(c => ({ l: State.PT.find(t=>t.id===c)?.label||c, count: pts[c], r: ((pts[c]/mp)*100).toFixed(1) })).sort((a,b)=>b.count-a.count).map(p => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
+                const genFmBar = (dataObj, total) => {
+                    if(total===0) return '<div class="text-xs text-slate-400">データなし</div>';
+                    const cl = ((dataObj.cross_left/total)*100).toFixed(1);
+                    const st = ((dataObj.straight/total)*100).toFixed(1);
+                    const cr = ((dataObj.cross_right/total)*100).toFixed(1);
+                    return `
+                        <div class="flex h-4 rounded-full overflow-hidden mb-1">
+                            <div class="bg-blue-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cl}%">${cl>10?'正':''}</div>
+                            <div class="bg-emerald-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${st}%">${st>10?'ス':''}</div>
+                            <div class="bg-purple-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cr}%">${cr>10?'逆':''}</div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-500">
+                            <span class="text-blue-500">正クロス ${cl}%</span>
+                            <span class="text-emerald-500">ストレート ${st}%</span>
+                            <span class="text-purple-500">逆クロス ${cr}%</span>
+                        </div>
+                    `;
+                };
+
+                const prHtml = Object.keys(pts).map(k => {
+                    const [fm, c] = k.split('_');
+                    return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label||c, count: pts[k], r: ((pts[k]/mp)*100).toFixed(1) };
+                }).sort((a,b)=>b.count-a.count).map(p => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
                     <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-blue-500 h-full rounded-full" style="width: ${p.r}%"></div></div></div>
                 `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
 
-                const mrHtml = Object.keys(ms).map(c => ({ l: State.MT.find(t=>t.id===c)?.label||c, count: ms[c], r: ((ms[c]/mm)*100).toFixed(1) })).sort((a,b)=>b.count-a.count).map(m => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
+                const mrHtml = Object.keys(ms).map(k => {
+                    const [fm, c] = k.split('_');
+                    return { fm, code: c, l: State.MT.find(t=>t.id===c)?.label||c, count: ms[k], r: ((ms[k]/mm)*100).toFixed(1) };
+                }).sort((a,b)=>b.count-a.count).map(m => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(m.fm)}] ${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
                     <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${m.r}%"></div></div></div>
                 `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
 
                 container.innerHTML = `
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">勝率</span>🏆</div><p class="text-3xl font-black">${wr}%</p></div>
+                        <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">試合勝率</span>🏆</div><p class="text-3xl font-black">${wr}%</p></div>
                         <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">サーブ成功率</span>🎯</div><p class="text-3xl font-black">${sT}%</p></div>
                         <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">1stサーブ</span>⚡</div><p class="text-3xl font-black">${s1}%</p></div>
                         <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
                     </div>
+
                     <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-8">
-                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 ポイント奪取の比率</h3>${prHtml}</div>
-                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ ミス発生の比率</h3>${mrHtml}</div>
+                        <div>
+                            <h3 class="text-xs font-black text-slate-800 mb-2">📊 展開の比率 (全体)</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
+                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, mp)}</div>
+                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, mm)}</div>
+                            </div>
+                        </div>
+                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 展開別 ポイント奪取の比率</h3><div class="space-y-3">${prHtml}</div></div>
+                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ 展開別 ミス発生の比率</h3><div class="space-y-3">${mrHtml}</div></div>
                     </div>
                 `;
                 container.classList.remove('hidden');
+            },
+            
+            showPlayerSelect: function(ptData) {
+                if (State.type === 'singles') {
+                    ptData.hitter = State.p1;
+                    UI.executePointRecord(ptData);
+                    return;
+                }
+                
+                State.pendingPoint = ptData;
+                document.getElementById('btn-sel-p1').textContent = State.p1;
+                document.getElementById('btn-sel-p2').textContent = State.p2;
+                document.getElementById('modal-player-select').classList.remove('hidden');
+            },
+            hidePlayerSelect: function() {
+                document.getElementById('modal-player-select').classList.add('hidden');
+                State.pendingPoint = null;
+            },
+            executePointRecord: function(ptData) {
+                State.his.push({ sc: Object.assign({}, State.sc), pts: [...State.pts], isUsSrv: State.isUsSrv });
+                State.pts.push(ptData);
+                const isEnded = Logic.calcNextScore(ptData.winnerSide);
+                
+                if (isEnded) UI.showSummary();
+                else UI.updateScoreBoard();
             }
         };
 
-        // ----------------------------------------------------
-        // 📁 Events (イベント紐付け)
-        // ----------------------------------------------------
+        // --- Events ---
         const Events = {
             init: function() {
                 document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => { UI.switchNav(b.dataset.val); });
@@ -486,11 +741,17 @@
                 document.querySelectorAll('.btn-gc').forEach(b => b.onclick = () => { State.gc = parseInt(b.dataset.val); UI.updateGC(); });
                 
                 document.getElementById('btn-start').onclick = () => {
+                    State.date = document.getElementById('in-date').value;
                     State.t = document.getElementById('in-t').value;
                     State.p1 = document.getElementById('in-p1').value;
+                    State.p1_grade = document.getElementById('in-p1-grade').value;
                     State.p2 = document.getElementById('in-p2').value;
+                    State.p2_grade = document.getElementById('in-p2-grade').value;
                     State.opp = document.getElementById('in-opp').value;
+                    
                     if (!State.p1 || !State.opp) return alert('選手名と相手チームを入力してください');
+                    if (State.type === 'doubles' && !State.p2) return alert('選手2を入力してください');
+                    
                     State.step = 'rec';
                     document.getElementById('step-meta').classList.add('hidden');
                     document.getElementById('step-rec').classList.remove('hidden');
@@ -511,20 +772,27 @@
                 document.querySelectorAll('.btn-fm').forEach(b => b.onclick = () => { State.fm = b.dataset.val; UI.updateScoreBoard(); });
 
                 document.getElementById('btn-save').onclick = () => { DB.saveMatch(); };
-                document.getElementById('sel-player').onchange = () => { UI.renderPlayerStats(); };
+                document.getElementById('sel-player').onchange = () => { UI.updatePlayerMatchSelect(); };
+                document.getElementById('sel-player-match').onchange = () => { UI.renderPlayerStats(); };
+                document.getElementById('sel-team-period').onchange = () => { UI.renderTeam(); };
 
                 document.getElementById('btn-csv').onclick = () => {
-                    let csv = "日時,大会名,種目,自チーム選手1,自チーム選手2,相手チーム,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード\n";
-                    State.matches.forEach(m => {
+                    let csv = "記録日時,試合日,大会名,種目,自チーム選手1,学年1,自チーム選手2,学年2,相手チーム,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード,打者\n";
+                    const period = document.getElementById('sel-team-period').value;
+                    let targetMatches = State.matches;
+                    if(period !== "ALL") targetMatches = State.matches.filter(m => String(Utils.getNendo(m.date || m.createdAt)) === period);
+
+                    targetMatches.forEach(m => {
                         const d = m.createdAt ? new Date(m.createdAt).toLocaleString('ja-JP').replace(/,/g, '') : '';
                         if (!m.pts) return;
                         m.pts.forEach((p, idx) => {
                             let row = [
-                                d, m.t || '', m.type, m.p1 || '', m.p2 || '', m.opp || '',
-                                m.winner === 1 ? 'WIN' : 'LOSE', m.finalScore.g1, m.finalScore.g2,
+                                d, m.date || '', m.t || '', m.type, 
+                                m.p1 || '', m.p1_grade || '', m.p2 || '', m.p2_grade || '', 
+                                m.opp || '', m.winner === 1 ? 'WIN' : 'LOSE', m.finalScore.g1, m.finalScore.g2,
                                 idx + 1, (p.gameIndex || 0) + 1, p.isOurServe ? '自' : '相手',
                                 p.serveStatus || '', p.formation || '', p.winnerSide === 1 ? '自' : '相手',
-                                p.type, p.code
+                                p.type, p.code, p.hitter || ''
                             ];
                             csv += '"' + row.join('","') + '"\n';
                         });
@@ -538,27 +806,44 @@
                     const btn = e.target.closest('.pt-btn');
                     if (!btn || btn.disabled) return;
                     
-                    State.his.push({ sc: Object.assign({}, State.sc), pts: [...State.pts], isUsSrv: State.isUsSrv });
-                    
                     const wSide = parseInt(btn.dataset.side);
-                    State.pts.push({ winnerSide: wSide, sideLabel: btn.dataset.lbl, type: btn.dataset.type, code: btn.dataset.code, serveStatus: State.st, formation: State.fm, gameIndex: State.sc.g1+State.sc.g2, isOurServe: State.isUsSrv });
-
-                    const isEnded = Logic.calcNextScore(wSide);
+                    const ptData = { 
+                        winnerSide: wSide, sideLabel: btn.dataset.lbl, type: btn.dataset.type, 
+                        code: btn.dataset.code, serveStatus: State.st, formation: State.fm, 
+                        gameIndex: State.sc.g1+State.sc.g2, isOurServe: State.isUsSrv 
+                    };
                     
-                    if (isEnded) UI.showSummary();
-                    else UI.updateScoreBoard();
+                    UI.showPlayerSelect(ptData);
                 });
+
+                document.getElementById('btn-sel-p1').onclick = () => {
+                    if(!State.pendingPoint) return;
+                    State.pendingPoint.hitter = State.p1;
+                    UI.hidePlayerSelect();
+                    UI.executePointRecord(State.pendingPoint);
+                };
+                document.getElementById('btn-sel-p2').onclick = () => {
+                    if(!State.pendingPoint) return;
+                    State.pendingPoint.hitter = State.p2;
+                    UI.hidePlayerSelect();
+                    UI.executePointRecord(State.pendingPoint);
+                };
+                document.getElementById('btn-sel-cancel').onclick = () => {
+                    UI.hidePlayerSelect();
+                };
             }
         };
 
-        // ----------------------------------------------------
-        // 最速でUIを起動するエントリーポイント
-        // ----------------------------------------------------
+        // --- Entry Point ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('in-date');
+                if (dateInput) dateInput.value = today;
+
                 UI.initPointsButtons();
                 Events.init();
-                // 通信環境に依存せず、この時点でアプリは操作可能になる
+                
                 const loader = document.getElementById('loading-screen');
                 if (loader) {
                     loader.style.opacity = '0';
@@ -571,9 +856,7 @@
         });
     </script>
 
-    <!-- ==============================================================
-         裏側で遅れて読み込むFirebaseシステム
-         ============================================================== -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -613,7 +896,12 @@
                 }
             },
             saveMatch: function() {
-                const finalData = { type: State.type, gc: State.gc, t: State.t, p1: State.p1, p2: State.p2, opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' };
+                const finalData = { 
+                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
+                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
+                    opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
+                    createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' 
+                };
                 if (DB.ref) {
                     DB.ref.add(finalData).then(() => {
                         UI.resetToMeta();
@@ -628,11 +916,7 @@
             }
         };
 
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                DB.init();
-            }, 1000);
-        });
+        window.addEventListener('load', function() { setTimeout(function() { DB.init(); }, 1000); });
     </script>
 </body>
 </html>
