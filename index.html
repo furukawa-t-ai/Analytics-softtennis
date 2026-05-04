@@ -215,7 +215,14 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <!-- ==============================================================
+         システムロジック
+         ============================================================== -->
     <script>
+        // ----------------------------------------------------
+        // 📁 State (状態管理)
+        // ----------------------------------------------------
         const State = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
             t: '', p1: '', p2: '', opp: '', pts: [],
@@ -223,7 +230,7 @@
             st: null, fm: null, his: [], isUsSrv: true,
             user: null, matches: [],
             
-            // 基礎データ（GitHubで色が消えないように改行して定義）
+            // 基礎データ
             PT: [ 
                 { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, 
                 { id: 'FV', label: 'FV' }, { id: 'BV', label: 'BV' }, 
@@ -245,7 +252,7 @@
         };
 
         // ----------------------------------------------------
-        // 📁 /js/logic.js (スコア計算ロジック)
+        // 📁 Logic (スコア計算ロジック)
         // ----------------------------------------------------
         const Logic = {
             calcNextScore: function(wSide) {
@@ -274,12 +281,12 @@
                 State.st = null; 
                 State.fm = null;
                 
-                return (g1 >= Math.ceil(State.gc/2) || g2 >= Math.ceil(State.gc/2)); // 試合終了か
+                return (g1 >= Math.ceil(State.gc/2) || g2 >= Math.ceil(State.gc/2));
             }
         };
 
         // ----------------------------------------------------
-        // 📁 /js/db.js (Firebase連携)
+        // 📁 DB (Firebase連携)
         // ----------------------------------------------------
         const DB = {
             ref: null,
@@ -294,4 +301,326 @@
                     }
                     const auth = firebase.auth();
                     const db = firebase.firestore();
-                    DB.ref = db.collection('artifacts').doc(
+                    DB.ref = db.collection('artifacts').doc("soft-tennis-v1").collection('public').doc('data').collection('matches');
+
+                    auth.onAuthStateChanged(u => {
+                        if (u) {
+                            State.user = u;
+                            document.getElementById('uid-display').textContent = u.uid.substring(0,8);
+                            DB.ref.onSnapshot(snap => {
+                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                                if(State.view === 'team') UI.renderTeam();
+                                if(State.view === 'player') UI.renderPlayerSelect();
+                            });
+                        } else {
+                            auth.signInAnonymously().catch(e => console.warn(e));
+                        }
+                    });
+                } catch (e) {
+                    console.error("DB Init Error:", e);
+                }
+            },
+            saveMatch: function() {
+                const finalData = { type: State.type, gc: State.gc, t: State.t, p1: State.p1, p2: State.p2, opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' };
+                if (DB.ref) {
+                    DB.ref.add(finalData).then(() => {
+                        UI.resetToMeta();
+                    }).catch(e => alert("保存失敗: " + e.message));
+                } else {
+                    alert("通信環境によりクラウド保存できませんでした。初期画面に戻ります。");
+                    UI.resetToMeta();
+                }
+            },
+            deleteMatch: function(id) {
+                if (confirm('削除しますか？') && DB.ref) DB.ref.doc(id).delete();
+            }
+        };
+----------------------------------------------------
+        // 📁 UI (画面の描画・DOM操作)
+        // ----------------------------------------------------
+        const UI = {
+            initPointsButtons: function() {
+                const usPts = document.getElementById('us-pts');
+                const oppPts = document.getElementById('opp-pts');
+                State.PT.forEach(p => {
+                    usPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-4 bg-blue-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="1" data-lbl="US" data-type="point" data-code="${p.id}">${p.label}</button>`);
+                    oppPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-4 bg-red-700 text-white font-black rounded-xl shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="OPP" data-type="point" data-code="${p.id}">${p.label}</button>`);
+                });
+
+                const usMiss = document.getElementById('us-miss');
+                const oppMiss = document.getElementById('opp-miss');
+                State.MG.forEach(g => {
+                    let h1 = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div><div class="grid grid-cols-2 gap-2">`;
+                    State.MT.filter(m => m.g === g).forEach(m => { h1 += `<button class="pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="1" data-lbl="OPP" data-type="miss" data-code="${m.id}">${m.label}</button>`; });
+                    h1 += `</div>`;
+                    usMiss.insertAdjacentHTML('beforeend', h1);
+
+                    let h2 = `<div class="text-[10px] font-black text-slate-400 uppercase mt-1 mb-2 px-1">${g}</div><div class="grid grid-cols-2 gap-2">`;
+                    State.MT.filter(m => m.g === g).forEach(m => { h2 += `<button class="pt-btn py-3.5 bg-white border-2 text-slate-800 text-sm font-black rounded-xl shadow-sm active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="US" data-type="miss" data-code="${m.id}">${m.label}</button>`; });
+                    h2 += `</div>`;
+                    oppMiss.insertAdjacentHTML('beforeend', h2);
+                });
+            },
+            switchNav: function(v) {
+                ['input', 'player', 'team'].forEach(id => {
+                    document.getElementById('view-' + id).classList.add('hidden');
+                    const nav = document.getElementById('nav-' + id);
+                    nav.classList.remove('text-blue-600', 'bg-blue-50', 'scale-105');
+                    nav.classList.add('text-slate-400');
+                });
+                document.getElementById('view-' + v).classList.remove('hidden');
+                const activeNav = document.getElementById('nav-' + v);
+                activeNav.classList.remove('text-slate-400');
+                activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+            },
+            updateType: function() {
+                document.getElementById('btn-type-doubles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
+                document.getElementById('btn-type-singles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'singles' ? 'btn-active' : 'text-slate-400'}`;
+                document.getElementById('in-p2').style.display = State.type === 'doubles' ? 'block' : 'none';
+            },
+            updateGC: function() {
+                [5,7,9].forEach(n => {
+                    document.getElementById('btn-gc-' + n).className = `btn-gc flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.gc == n ? 'btn-active' : 'text-slate-400'}`;
+                });
+            },
+            updateScoreBoard: function() {
+                const isFinal = (State.sc.g1 + State.sc.g2 === State.gc - 1);
+                document.getElementById('sc-board').className = `bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch transition-all ${isFinal ? 'border-4 border-yellow-500 shadow-yellow-500/30' : ''}`;
+                document.getElementById('badge-final').style.display = isFinal ? 'block' : 'none';
+                document.getElementById('badge-normal').style.display = isFinal ? 'none' : 'block';
+
+                document.getElementById('disp-us-names').textContent = State.p1 + (State.type === 'doubles' && State.p2 ? ' / ' + State.p2 : '');
+                document.getElementById('disp-opp-name').textContent = State.opp;
+                document.getElementById('disp-g1').textContent = State.sc.g1;
+                document.getElementById('disp-p1').textContent = State.sc.p1;
+                document.getElementById('disp-g2').textContent = State.sc.g2;
+                document.getElementById('disp-p2').textContent = State.sc.p2;
+
+                document.getElementById('srv-us').style.display = State.isUsSrv ? 'block' : 'none';
+                document.getElementById('srv-opp').style.display = !State.isUsSrv ? 'block' : 'none';
+
+                const canRecord = (State.st !== null && State.fm !== null);
+                document.querySelectorAll('.pt-btn').forEach(b => b.disabled = !canRecord);
+                
+                [1,2].forEach(i => {
+                    document.getElementById('btn-st-'+i).className = `btn-st flex-1 rounded-xl border-2 font-black text-2xl transition-colors ${State.st == i ? 'btn-active' : 'text-slate-300'}`;
+                });
+                ['cross_left','straight','cross_right'].forEach(i => {
+                    const btn = document.getElementById('btn-fm-'+i);
+                    if(State.fm === i) {
+                        btn.className = "btn-fm flex-1 rounded-xl border-2 flex flex-col items-center justify-center btn-active";
+                        btn.querySelector('svg').classList.add('text-blue-600'); btn.querySelector('svg').classList.remove('text-slate-400');
+                    } else {
+                        btn.className = "btn-fm flex-1 rounded-xl border-2 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50";
+                        btn.querySelector('svg').classList.remove('text-blue-600'); btn.querySelector('svg').classList.add('text-slate-400');
+                    }
+                });
+                
+                document.getElementById('btn-undo').disabled = (State.his.length === 0);
+            },
+            showSummary: function() {
+                document.getElementById('step-rec').classList.add('hidden');
+                document.getElementById('step-sum').classList.remove('hidden');
+                document.getElementById('sum-t').textContent = State.t;
+                document.getElementById('sum-us-n').textContent = State.p1;
+                document.getElementById('sum-us-g').textContent = State.sc.g1;
+                document.getElementById('sum-opp-n').textContent = State.opp;
+                document.getElementById('sum-opp-g').textContent = State.sc.g2;
+            },
+            resetToMeta: function() {
+                document.getElementById('step-sum').classList.add('hidden');
+                document.getElementById('step-meta').classList.remove('hidden');
+                State.sc = {p1:0,p2:0,g1:0,g2:0}; State.pts = []; State.his = [];
+                document.getElementById('in-t').value = ''; document.getElementById('in-p1').value = ''; document.getElementById('in-p2').value = ''; document.getElementById('in-opp').value = '';
+            },
+            renderTeam: function() {
+                const list = document.getElementById('team-list');
+                list.innerHTML = State.matches.map(m => `
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm flex justify-between items-center">
+                        <div class="flex-1">
+                            <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mb-1">${m.t || '交流戦'}</p>
+                            <p class="text-sm font-black text-slate-800">${m.p1} ${m.p2 ? '/ '+m.p2 : ''}</p>
+                            <p class="text-[10px] font-bold text-red-500 mb-1">vs ${m.opp}</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] px-2 py-0.5 rounded-md font-black text-white ${m.winner===1?'bg-emerald-500':'bg-red-500'}">${m.winner===1?'WIN':'LOSE'}</span>
+                                <span class="font-black text-2xl font-mono text-slate-900">${m.finalScore.g1}-${m.finalScore.g2}</span>
+                            </div>
+                            <button onclick="DB.deleteMatch('${m.id}')" class="text-[9px] text-slate-300 underline mt-2">削除</button>
+                        </div>
+                    </div>
+                `).join('') || '<div class="py-20 text-center text-slate-300 font-black">記録された試合はありません</div>';
+            },
+            renderPlayerSelect: function() {
+                const sel = document.getElementById('sel-player');
+                const current = sel.value;
+                const players = Array.from(new Set(State.matches.flatMap(m => [m.p1, m.p2].filter(Boolean)))).sort();
+                sel.innerHTML = '<option value="">-- 選手を選択 --</option>';
+                players.forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
+                if (players.includes(current)) sel.value = current;
+                UI.renderPlayerStats();
+            },
+            renderPlayerStats: function() {
+                const sel = document.getElementById('sel-player').value;
+                const container = document.getElementById('player-stats');
+                if (!sel) { container.classList.add('hidden'); return; }
+
+                const pm = State.matches.filter(m => m.p1 === sel || m.p2 === sel);
+                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
+                let pts = {}, ms = {};
+
+                pm.forEach(m => {
+                    if(m.winner === 1) w++;
+                    if(m.pts) m.pts.forEach(p => {
+                        if(p.isOurServe) { srvTot++; if(p.serveStatus===1) s1in++; if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } }
+                        if(p.winnerSide === 1 && p.sideLabel === 'US' && p.type === 'point') { mp++; pts[p.code] = (pts[p.code] || 0) + 1; }
+                        if(p.winnerSide === 2 && p.sideLabel === 'US' && p.type === 'miss') { mm++; ms[p.code] = (ms[p.code] || 0) + 1; }
+                    });
+                });
+
+                const sHit = srvTot + s2in; const sIn = s1in + (s2in - df);
+                const wr = pm.length ? (w/pm.length*100).toFixed(1) : 0;
+                const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
+                const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
+                const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
+                
+                const prHtml = Object.keys(pts).map(c => ({ l: State.PT.find(t=>t.id===c)?.label||c, count: pts[c], r: ((pts[c]/mp)*100).toFixed(1) })).sort((a,b)=>b.count-a.count).map(p => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-blue-500 h-full rounded-full" style="width: ${p.r}%"></div></div></div>
+                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
+
+                const mrHtml = Object.keys(ms).map(c => ({ l: State.MT.find(t=>t.id===c)?.label||c, count: ms[c], r: ((ms[c]/mm)*100).toFixed(1) })).sort((a,b)=>b.count-a.count).map(m => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${m.r}%"></div></div></div>
+                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">勝率</span>🏆</div><p class="text-3xl font-black">${wr}%</p></div>
+                        <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">サーブ成功率</span>🎯</div><p class="text-3xl font-black">${sT}%</p></div>
+                        <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">1stサーブ</span>⚡</div><p class="text-3xl font-black">${s1}%</p></div>
+                        <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-8">
+                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 ポイント奪取の比率</h3>${prHtml}</div>
+                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ ミス発生の比率</h3>${mrHtml}</div>
+                    </div>
+                `;
+                container.classList.remove('hidden');
+            }
+        };
+
+        //
+----------------------------------------------------
+        // 📁 Events (イベント紐付け)
+        // ----------------------------------------------------
+        const Events = {
+            init: function() {
+                // ナビゲーション
+                document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => { UI.switchNav(b.dataset.val); });
+                
+                // 試合設定
+                document.querySelectorAll('.btn-type').forEach(b => b.onclick = () => { State.type = b.dataset.val; UI.updateType(); });
+                document.querySelectorAll('.btn-gc').forEach(b => b.onclick = () => { State.gc = parseInt(b.dataset.val); UI.updateGC(); });
+                
+                document.getElementById('btn-start').onclick = () => {
+                    State.t = document.getElementById('in-t').value;
+                    State.p1 = document.getElementById('in-p1').value;
+                    State.p2 = document.getElementById('in-p2').value;
+                    State.opp = document.getElementById('in-opp').value;
+                    if (!State.p1 || !State.opp) return alert('選手名と相手チームを入力してください');
+                    State.step = 'rec';
+                    document.getElementById('step-meta').classList.add('hidden');
+                    document.getElementById('step-rec').classList.remove('hidden');
+                    UI.updateScoreBoard();
+                };
+
+                // サーブ権
+                document.getElementById('area-us-srv').onclick = () => { State.isUsSrv = true; UI.updateScoreBoard(); };
+                document.getElementById('area-opp-srv').onclick = () => { State.isUsSrv = false; UI.updateScoreBoard(); };
+
+                // Undo
+                document.getElementById('btn-undo').onclick = () => {
+                    if (State.his.length === 0) return;
+                    const l = State.his.pop();
+                    State.sc = l.sc; State.pts = l.pts; State.isUsSrv = l.isUsSrv;
+                    UI.updateScoreBoard();
+                };
+
+                // オプション
+                document.querySelectorAll('.btn-st').forEach(b => b.onclick = () => { State.st = parseInt(b.dataset.val); UI.updateScoreBoard(); });
+                document.querySelectorAll('.btn-fm').forEach(b => b.onclick = () => { State.fm = b.dataset.val; UI.updateScoreBoard(); });
+
+                // サマリー画面
+                document.getElementById('btn-save').onclick = () => { DB.saveMatch(); };
+
+                // 個人分析画面
+                document.getElementById('sel-player').onchange = () => { UI.renderPlayerStats(); };
+
+                // チーム画面 CSV
+                document.getElementById('btn-csv').onclick = () => {
+                    let csv = "日時,大会名,種目,自チーム選手1,自チーム選手2,相手チーム,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード\n";
+                    State.matches.forEach(m => {
+                        const d = m.createdAt ? new Date(m.createdAt).toLocaleString('ja-JP').replace(/,/g, '') : '';
+                        if (!m.pts) return;
+                        m.pts.forEach((p, idx) => {
+                            csv += `"${d}","${m.t||''}","${m.type}","${m.p1||''}","${m.p2||''}","${m.opp||''}","${m.winner===1?'WIN':'LOSE'}",${m.finalScore.g1},${m.finalScore.g2},${idx+1},${(p.gameIndex||0)+1},"${p.isOurServe?'自':'相手'}","${p.serveStatus||''}","${p.formation||''}","${p.winnerSide===1?'自':'相手'}","${p.type}","${p.code}"\n`;
+                        });
+                    });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv' }));
+                    link.download = `ST_Data.csv`; link.click();
+                };
+
+                // ポイント記録
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.pt-btn');
+                    if (!btn) return;
+                    if (btn.disabled) return;
+                    
+                    State.his.push({ sc: Object.assign({}, State.sc), pts: [...State.pts], isUsSrv: State.isUsSrv });
+                    
+                    const wSide = parseInt(btn.dataset.side);
+                    State.pts.push({ winnerSide: wSide, sideLabel: btn.dataset.lbl, type: btn.dataset.type, code: btn.dataset.code, serveStatus: State.st, formation: State.fm, gameIndex: State.sc.g1+State.sc.g2, isOurServe: State.isUsSrv });
+
+                    const isEnded = Logic.calcNextScore(wSide);
+                    
+                    if (isEnded) UI.showSummary();
+                    else UI.updateScoreBoard();
+                });
+            }
+        };
+
+        //
+----------------------------------------------------
+        // 📁 App (エントリ・起動処理)
+        // ----------------------------------------------------
+        function initApp() {
+            try {
+                UI.initPointsButtons();
+                Events.init();
+                DB.init();
+                
+                // ロード画面を消す
+                const loader = document.getElementById('loading-screen');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 300);
+                }
+            } catch (err) {
+                const errBox = document.getElementById('error-box');
+                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【起動エラー】' + err.message + '<br>'; }
+            }
+        }
+
+        // 確実なタイミングで起動
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
+         
