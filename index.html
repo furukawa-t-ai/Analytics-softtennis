@@ -41,7 +41,9 @@
 
     <main class="max-w-4xl mx-auto p-4">
         
+        <!-- ===== 1. 入力画面 ===== -->
         <div id="view-input">
+            <!-- 1-1. 試合設定 -->
             <div id="step-meta" class="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
                 <h2 class="text-xl font-bold border-b pb-2">試合設定</h2>
                 <div class="space-y-4">
@@ -69,9 +71,8 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
                         <select id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                            <option value="">大会名・試合種別を選択</option>
-                            <option value="関西学生シングルス">シングルス</option>
-                            <option value="関西学生シングルス">関西学生シングルス</option>
+                            <option value="">大会名を選択</option>
+                           <option value="関西学生シングルス">関西学生シングルス</option>
                             <option value="令和8年度関西学生ソフトテニス春季リーグ">令和8年度関西学生ソフトテニス春季リーグ</option>
                             <option value="令和8年度関西学生ソフトテニス春季リーグ 入替戦">令和8年度関西学生ソフトテニス春季リーグ 入替戦</option>
                             <option value="関西学生ダブルス">関西学生ダブルス</option>
@@ -120,7 +121,7 @@
                                 <option value="松本 穂里">松本 穂里</option>
                                 <option value="加藤 颯">加藤 颯</option>
                                 <option value="眞田 心晴">眞田 心晴</option>
-                                <option value="森田 優夢">森田 優夢</option>                
+                                <option value="森田 優夢">森田 優夢</option>
                             </select>
                             <select id="in-p1-grade" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-sm text-slate-600">
                                 <option value="">学年</option>
@@ -134,7 +135,7 @@
                             <label class="text-[10px] font-bold text-slate-400 block mb-1">自チーム選手2</label>
                             <select id="in-p2" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
                                 <option value="">選手を選択</option>
-                                <option value="小田原 耕生">小田原 耕生</option>
+                                 <option value="小田原 耕生">小田原 耕生</option>
                                 <option value="女夫池 来希">女夫池 来希</option>
                                 <option value="曽我 祥帆">曽我 祥帆</option>
                                 <option value="岩本 夕槻">岩本 夕槻</option>
@@ -179,13 +180,14 @@
                     </div>
                     
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 block mb-1">相手選手名：所属チーム</label>
-                        <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手選手名：所属チーム">
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1">相手チーム</label>
+                        <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名">
                     </div>
                 </div>
                 <button id="btn-start" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
             </div>
 
+            <!-- 1-2. スコア記録 -->
             <div id="step-rec" class="hidden space-y-4">
                 <div id="sc-board" class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between relative items-stretch transition-all">
                     <div id="badge-final" class="hidden absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black shadow-lg z-10 whitespace-nowrap tracking-widest border border-white">🔥 FINAL GAME 🔥</div>
@@ -214,10 +216,14 @@
                     </div>
                 </div>
 
-                <div class="flex justify-center">
+                <div class="flex justify-center gap-4">
                     <button id="btn-undo" disabled class="flex items-center gap-2 bg-slate-200 text-slate-600 px-5 py-2 rounded-full text-xs font-black disabled:opacity-30 active:scale-95 transition-transform">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
                         訂正（1手戻る）
+                    </button>
+                    <button id="btn-cancel" class="flex items-center gap-2 bg-red-100 text-red-600 px-5 py-2 rounded-full text-xs font-black active:scale-95 transition-transform">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        入力中止
                     </button>
                 </div>
 
@@ -227,6 +233,11 @@
                         <div class="flex gap-2 h-24">
                             <button id="btn-st-1" class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300 transition-colors" data-val="1">1st</button>
                             <button id="btn-st-2" class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300 transition-colors" data-val="2">2nd</button>
+                            <!-- ★ DFボタンの追加 -->
+                            <button id="btn-df" class="flex-1 rounded-xl border-2 border-red-100 font-black text-red-500 hover:bg-red-50 active:scale-95 transition-all flex flex-col items-center justify-center bg-white shadow-sm">
+                                <span class="text-xl">DF</span>
+                                <span class="text-[9px] mt-1 whitespace-nowrap">ダブルフォルト</span>
+                            </button>
                         </div>
                     </div>
                     <div class="bg-white p-3 rounded-2xl border shadow-sm">
@@ -245,22 +256,28 @@
                     </div>
                 </div>
 
+                <!-- ★ここを変更：ポイントとミスをまとめてスクロールさせるように修正 -->
                 <div class="grid grid-cols-2 gap-2 sm:gap-4 h-[55vh] min-h-[500px]">
                     <div class="bg-blue-50 p-2 sm:p-4 rounded-2xl border border-blue-100 shadow-inner flex flex-col overflow-hidden">
-                        <p class="text-[10px] sm:text-xs font-black text-blue-800 mb-2 px-1 shrink-0">自チームが獲得したポイント</p>
-                        <div id="us-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-2 shrink-0"></div>
-                        <p class="text-[10px] sm:text-xs font-black text-blue-800 mt-2 mb-2 px-1 border-t border-blue-200 pt-2 shrink-0">相手のミスによるポイント</p>
-                        <div id="us-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow h-0"></div>
+                        <div class="overflow-y-auto custom-scrollbar pr-1 h-full pb-4">
+                            <p class="text-[10px] sm:text-xs font-black text-blue-800 mb-2 px-1">自チームが獲得したポイント</p>
+                            <div id="us-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-4"></div>
+                            <p class="text-[10px] sm:text-xs font-black text-blue-800 mt-2 mb-2 px-1 border-t border-blue-200 pt-2">相手のミスによるポイント</p>
+                            <div id="us-miss"></div>
+                        </div>
                     </div>
                     <div class="bg-red-50 p-2 sm:p-4 rounded-2xl border border-red-100 shadow-inner flex flex-col overflow-hidden">
-                        <p class="text-[10px] sm:text-xs font-black text-red-800 mb-2 px-1 shrink-0">相手チームが獲得したポイント</p>
-                        <div id="opp-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-2 shrink-0"></div>
-                        <p class="text-[10px] sm:text-xs font-black text-red-800 mt-2 mb-2 px-1 border-t border-red-200 pt-2 shrink-0">自チームのミスによるポイント</p>
-                        <div id="opp-miss" class="overflow-y-auto custom-scrollbar pr-1 pb-4 grow h-0"></div>
+                        <div class="overflow-y-auto custom-scrollbar pr-1 h-full pb-4">
+                            <p class="text-[10px] sm:text-xs font-black text-red-800 mb-2 px-1">相手チームが獲得したポイント</p>
+                            <div id="opp-pts" class="grid grid-cols-2 gap-1 sm:gap-2 mb-4"></div>
+                            <p class="text-[10px] sm:text-xs font-black text-red-800 mt-2 mb-2 px-1 border-t border-red-200 pt-2">自チームのミスによるポイント</p>
+                            <div id="opp-miss"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- 1-3. 結果サマリー -->
             <div id="step-sum" class="hidden bg-white p-10 rounded-3xl shadow-2xl text-center">
                 <div class="flex justify-center mb-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-16 h-16 text-yellow-400"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></div>
                 <h2 class="text-2xl font-black mb-2 italic mt-4">MATCH COMPLETE</h2>
@@ -280,6 +297,7 @@
             </div>
         </div>
 
+        <!-- 選手選択モーダル (ダブルス時のみ表示) -->
         <div id="modal-player-select" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100">
                 <p class="text-center text-sm font-black text-slate-600 mb-6">対象の選手（プレーした選手）を選択</p>
@@ -291,6 +309,21 @@
             </div>
         </div>
 
+        <!-- 入力中止確認モーダル -->
+        <div id="modal-cancel-confirm" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100 text-center">
+                <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <p class="text-sm font-black text-slate-800 mb-6">本当に入力を中止しますか？<br><span class="text-xs text-slate-400 font-bold mt-2 block">ここまでの記録はすべて破棄されます。</span></p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btn-cancel-yes" class="bg-red-500 text-white p-4 rounded-xl font-black text-sm active:scale-95 transition-transform">はい</button>
+                    <button id="btn-cancel-no" class="bg-slate-100 text-slate-600 p-4 rounded-xl font-black text-sm active:scale-95 transition-transform">いいえ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 2. 個人分析画面 ===== -->
         <div id="view-player" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="bg-white p-4 rounded-2xl border shadow-sm">
@@ -309,6 +342,7 @@
             <div id="player-stats" class="hidden space-y-6"></div>
         </div>
 
+        <!-- ===== 3. チーム画面 ===== -->
         <div id="view-team" class="hidden space-y-4">
             <div class="bg-white p-4 rounded-2xl border shadow-sm flex items-center justify-between">
                 <div>
@@ -346,6 +380,7 @@
         </div>
     </main>
 
+    <!-- ナビゲーションバー -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
         <button id="nav-input" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-blue-600 bg-blue-50 scale-105" data-val="input">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
@@ -367,12 +402,13 @@
             getNendo: (dateStr) => {
                 if (!dateStr) return null;
                 const d = new Date(dateStr);
-                return d.getMonth() < 3 ? d.getFullYear() - 1 : d.getFullYear(); // 4月始まり
+                return d.getMonth() < 3 ? d.getFullYear() - 1 : d.getFullYear(); 
             },
             fmLabel: (fm) => {
                 if(fm==='cross_left') return '正クロス';
                 if(fm==='cross_right') return '逆クロス';
                 if(fm==='straight') return 'ストレート';
+                if(fm==='none') return '展開なし'; // ★ DF用に「展開なし」を追加
                 return '不明';
             }
         };
@@ -401,9 +437,9 @@
                 { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' }, 
                 { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, 
                 { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' }, 
-                { id: 'SMS', label: 'SMS', g: 'サイド' }, { id: 'W', label: 'W', g: 'その他' } 
+                { id: 'SMS', label: 'SMS', g: 'サイド' } 
             ],
-            MG: ['ネット', 'バック', 'サイド', 'その他']
+            MG: ['ネット', 'バック', 'サイド']
         };
 
         // --- Logic ---
@@ -478,6 +514,10 @@
                 const activeNav = document.getElementById('nav-' + v);
                 activeNav.classList.remove('text-slate-400');
                 activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+
+                State.view = v;
+                if (v === 'team') UI.renderTeam();
+                if (v === 'player') UI.renderPlayerSelect();
             },
             updateType: function() {
                 document.getElementById('btn-type-doubles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
@@ -539,6 +579,7 @@
             },
             resetToMeta: function() {
                 document.getElementById('step-sum').classList.add('hidden');
+                document.getElementById('step-rec').classList.add('hidden');
                 document.getElementById('step-meta').classList.remove('hidden');
                 State.sc = {p1:0,p2:0,g1:0,g2:0}; State.pts = []; State.his = [];
                 
@@ -687,8 +728,8 @@
 
                 let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
                 let pts = {}, ms = {};
-                let ptsFm = { cross_left:0, straight:0, cross_right:0 };
-                let msFm = { cross_left:0, straight:0, cross_right:0 };
+                let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let msFm = { cross_left:0, straight:0, cross_right:0, none:0 };
 
                 pm.forEach(m => {
                     if(m.winner === 1) w++;
@@ -700,13 +741,15 @@
                         }
                         if(p.winnerSide === 1 && p.hitter === selP) { 
                             mp++; 
-                            const k = `${p.formation}_${p.code}`;
+                            // ★ バグ修正: _ を | に変更
+                            const k = `${p.formation}|${p.code}`;
                             pts[k] = (pts[k] || 0) + 1; 
                             if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
                         }
                         if(p.winnerSide === 2 && p.hitter === selP) { 
                             mm++; 
-                            const k = `${p.formation}_${p.code}`;
+                            // ★ バグ修正: _ を | に変更
+                            const k = `${p.formation}|${p.code}`;
                             ms[k] = (ms[k] || 0) + 1; 
                             if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
                         }
@@ -719,6 +762,9 @@
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
                 
+                const ptsFmTotal = ptsFm.cross_left + ptsFm.straight + ptsFm.cross_right;
+                const msFmTotal = msFm.cross_left + msFm.straight + msFm.cross_right;
+
                 const genFmBar = (dataObj, total) => {
                     if(total===0) return '<div class="text-xs text-slate-400">データなし</div>';
                     const cl = ((dataObj.cross_left/total)*100).toFixed(1);
@@ -739,7 +785,7 @@
                 };
 
                 const prHtml = Object.keys(pts).map(k => {
-                    const [fm, c] = k.split('_');
+                    const [fm, c] = k.split('|');
                     return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label||c, count: pts[k], r: ((pts[k]/mp)*100).toFixed(1) };
                 }).sort((a,b)=>b.count-a.count).map(p => `
                     <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
@@ -747,7 +793,7 @@
                 `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
 
                 const mrHtml = Object.keys(ms).map(k => {
-                    const [fm, c] = k.split('_');
+                    const [fm, c] = k.split('|');
                     return { fm, code: c, l: State.MT.find(t=>t.id===c)?.label||c, count: ms[k], r: ((ms[k]/mm)*100).toFixed(1) };
                 }).sort((a,b)=>b.count-a.count).map(m => `
                     <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(m.fm)}] ${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
@@ -766,8 +812,8 @@
                         <div>
                             <h3 class="text-xs font-black text-slate-800 mb-2">📊 展開の比率 (全体)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
-                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, mp)}</div>
-                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, mm)}</div>
+                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, ptsFmTotal)}</div>
+                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, msFmTotal)}</div>
                             </div>
                         </div>
                         <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 展開別 ポイント奪取の比率</h3><div class="space-y-3">${prHtml}</div></div>
@@ -778,22 +824,29 @@
             },
             
             showPlayerSelect: function(ptData) {
-                if (State.type === 'singles') {
-                    ptData.hitter = State.p1;
-                    UI.executePointRecord(ptData);
+                if (!ptData) return; 
+                
+                const needsPlayerSelect = State.type === 'doubles' && 
+                    ((ptData.winnerSide === 1 && ptData.type === 'point') || 
+                     (ptData.winnerSide === 2 && ptData.type === 'miss'));
+
+                if (!needsPlayerSelect) {
+                    const newPtData = { ...ptData, hitter: State.type === 'singles' ? State.p1 : '' };
+                    UI.executePointRecord(newPtData);
                     return;
                 }
                 
-                State.pendingPoint = ptData;
-                document.getElementById('btn-sel-p1').textContent = State.p1;
-                document.getElementById('btn-sel-p2').textContent = State.p2;
+                State.pendingPoint = { ...ptData };
+                document.getElementById('btn-sel-p1').textContent = State.p1 || '選手1';
+                document.getElementById('btn-sel-p2').textContent = State.p2 || '選手2';
                 document.getElementById('modal-player-select').classList.remove('hidden');
             },
             hidePlayerSelect: function() {
                 document.getElementById('modal-player-select').classList.add('hidden');
-                State.pendingPoint = null;
             },
             executePointRecord: function(ptData) {
+                if (!ptData) return;
+                
                 State.his.push({ sc: Object.assign({}, State.sc), pts: [...State.pts], isUsSrv: State.isUsSrv });
                 State.pts.push(ptData);
                 const isEnded = Logic.calcNextScore(ptData.winnerSide);
@@ -838,8 +891,44 @@
                     UI.updateScoreBoard();
                 };
 
+                document.getElementById('btn-cancel').onclick = () => {
+                    document.getElementById('modal-cancel-confirm').classList.remove('hidden');
+                };
+
+                document.getElementById('btn-cancel-yes').onclick = () => {
+                    document.getElementById('modal-cancel-confirm').classList.add('hidden');
+                    UI.resetToMeta();
+                };
+
+                document.getElementById('btn-cancel-no').onclick = () => {
+                    document.getElementById('modal-cancel-confirm').classList.add('hidden');
+                };
+
                 document.querySelectorAll('.btn-st').forEach(b => b.onclick = () => { State.st = parseInt(b.dataset.val); UI.updateScoreBoard(); });
                 document.querySelectorAll('.btn-fm').forEach(b => b.onclick = () => { State.fm = b.dataset.val; UI.updateScoreBoard(); });
+
+                // ★ 追加：ダブルフォルトのワンタップ記録処理
+                document.getElementById('btn-df').onclick = () => {
+                    State.st = 2; // ダブルフォルトは2ndサーブ時のミスとして扱う
+                    State.fm = 'none'; // 展開は無し
+
+                    // 自チームのサーブか相手のサーブかで、得点者を切り替える
+                    const wSide = State.isUsSrv ? 2 : 1; 
+                    const sideLbl = State.isUsSrv ? 'US' : 'OPP';
+
+                    const ptData = { 
+                        winnerSide: wSide, 
+                        sideLabel: sideLbl, 
+                        type: 'miss', 
+                        code: 'W', 
+                        serveStatus: 2, 
+                        formation: 'none', 
+                        gameIndex: State.sc.g1+State.sc.g2, 
+                        isOurServe: State.isUsSrv 
+                    };
+                    
+                    UI.showPlayerSelect(ptData);
+                };
 
                 document.getElementById('btn-save').onclick = () => { DB.saveMatch(); };
                 document.getElementById('sel-player').onchange = () => { UI.updatePlayerMatchSelect(); };
@@ -888,17 +977,22 @@
 
                 document.getElementById('btn-sel-p1').onclick = () => {
                     if(!State.pendingPoint) return;
-                    State.pendingPoint.hitter = State.p1;
+                    const newPtData = { ...State.pendingPoint, hitter: State.p1 };
+                    State.pendingPoint = null; 
                     UI.hidePlayerSelect();
-                    UI.executePointRecord(State.pendingPoint);
+                    UI.executePointRecord(newPtData);
                 };
+                
                 document.getElementById('btn-sel-p2').onclick = () => {
                     if(!State.pendingPoint) return;
-                    State.pendingPoint.hitter = State.p2;
+                    const newPtData = { ...State.pendingPoint, hitter: State.p2 };
+                    State.pendingPoint = null;
                     UI.hidePlayerSelect();
-                    UI.executePointRecord(State.pendingPoint);
+                    UI.executePointRecord(newPtData);
                 };
+                
                 document.getElementById('btn-sel-cancel').onclick = () => {
+                    State.pendingPoint = null;
                     UI.hidePlayerSelect();
                 };
             }
@@ -926,6 +1020,7 @@
         });
     </script>
 
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
