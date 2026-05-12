@@ -71,7 +71,7 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
                         <select id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                            <option value="">大会名を選択</option>
+                           <option value="">大会名を選択</option>
                            <option value="関西学生シングルス">関西学生シングルス</option>
                             <option value="令和8年度関西学生ソフトテニス春季リーグ">令和8年度関西学生ソフトテニス春季リーグ</option>
                             <option value="令和8年度関西学生ソフトテニス春季リーグ 入替戦">令和8年度関西学生ソフトテニス春季リーグ 入替戦</option>
@@ -89,7 +89,7 @@
                             <label class="text-[10px] font-bold text-slate-400 block mb-1">自チーム選手1</label>
                             <select id="in-p1" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
                                 <option value="">選手を選択</option>
-                                <option value="小田原 耕生">小田原 耕生</option>
+                                 <option value="小田原 耕生">小田原 耕生</option>
                                 <option value="女夫池 来希">女夫池 来希</option>
                                 <option value="曽我 祥帆">曽我 祥帆</option>
                                 <option value="岩本 夕槻">岩本 夕槻</option>
@@ -432,14 +432,17 @@
             MT: [ 
                 { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, 
                 { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, 
-                { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FPB', label: 'FPB', g: 'バック' }, 
-                { id: 'BPB', label: 'BPB', g: 'バック' }, { id: 'FVB', label: 'FVB', g: 'バック' }, 
-                { id: 'BVB', label: 'BVB', g: 'バック' }, { id: 'SMB', label: 'SMB', g: 'バック' },
-                { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' },
-                { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' },
-                { id: 'SMS', label: 'SMS', g: 'サイド' },
+                { id: 'SMN', label: 'SMN', g: 'ネット' }, 
+                { id: 'FPB', label: 'FPB', g: 'バックアウト' }, { id: 'BPB', label: 'BPB', g: 'バックアウト' }, 
+                { id: 'FLB', label: 'FLB', g: 'バックアウト' }, { id: 'BLB', label: 'BLB', g: 'バックアウト' }, 
+                { id: 'FVB', label: 'FVB', g: 'バックアウト' }, { id: 'BVB', label: 'BVB', g: 'バックアウト' }, 
+                { id: 'SMB', label: 'SMB', g: 'バックアウト' }, 
+                { id: 'FPS', label: 'FPS', g: 'サイドアウト' }, { id: 'BPS', label: 'BPS', g: 'サイドアウト' }, 
+                { id: 'FLS', label: 'FLS', g: 'サイドアウト' }, { id: 'BLS', label: 'BLS', g: 'サイドアウト' }, 
+                { id: 'FVS', label: 'FVS', g: 'サイドアウト' }, { id: 'BVS', label: 'BVS', g: 'サイドアウト' }, 
+                { id: 'SMS', label: 'SMS', g: 'サイドアウト' } 
             ],
-            MG: ['ネット', 'バック', 'サイド']
+            MG: ['ネット', 'バックアウト', 'サイドアウト']
         };
 
         // --- Logic ---
