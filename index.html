@@ -57,9 +57,9 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5ゲーム</button>
-                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7ゲーム</button>
-                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9ゲーム</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
                         </div>
                     </div>
                     
@@ -71,118 +71,78 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
                         <select id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                           <option value="">大会名を選択</option>
-                           <option value="関西学生シングルス">関西学生シングルス</option>
-                            <option value="令和8年度関西学生ソフトテニス春季リーグ">令和8年度関西学生ソフトテニス春季リーグ</option>
-                            <option value="令和8年度関西学生ソフトテニス春季リーグ 入替戦">令和8年度関西学生ソフトテニス春季リーグ 入替戦</option>
-                            <option value="関西学生ダブルス">関西学生ダブルス</option>
-                            <option value="大阪学生選手権大会">大阪学生選手権大会</option>
-                            <option value="西日本学生ソフトテニス 選手権大会">西日本学生ソフトテニス 選手権大会</option>
-                            <option value="大阪学生チーム対抗大会">大阪学生チーム対抗大会</option>                            
+                            <option value="〇〇大会">〇〇大会</option>
                             <option value="練習試合（練習含む）">練習試合（練習含む）</option>
                             <option value="その他">その他</option>
                         </select>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 block mb-1">自チーム選手1</label>
-                            <select id="in-p1" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                                <option value="">選手を選択</option>
-                                 <option value="小田原 耕生">小田原 耕生</option>
-                                <option value="女夫池 来希">女夫池 来希</option>
-                                <option value="曽我 祥帆">曽我 祥帆</option>
-                                <option value="岩本 夕槻">岩本 夕槻</option>
-                                <option value="竹原 歩夢">竹原 歩夢</option>
-                                <option value="牧 大夢">牧 大夢</option>
-                                <option value="髙木 晧喜">髙木 晧喜</option>
-                                <option value="安田 龍吾">安田 龍吾</option>
-                                <option value="麻生 康二">麻生 康二</option>
-                                <option value="長田 幸大">長田 幸大</option>
-                                <option value="西川 結">西川 結</option>
-                                <option value="佐藤 実">佐藤 実</option>
-                                <option value="福島 有彩">福島 有彩</option>
-                                <option value="森松 瑠菜">森松 瑠菜</option>
-                                <option value="谷川 柚季">谷川 柚季</option>
-                                <option value="野田 結愛">野田 結愛</option>
-                                <option value="岩田 悠聖">岩田 悠聖</option>
-                                <option value="清見 悠仁">清見 悠仁</option>
-                                <option value="小保 怜太">小保 怜太</option>
-                                <option value="河村 蛍音">河村 蛍音</option>
-                                <option value="松尾 俐音">松尾 俐音</option>
-                                <option value="新谷 彩夏">新谷 彩夏</option>
-                                <option value="原田 柊">原田 柊</option>
-                                <option value="島袋 礼惟真">島袋 礼惟真</option>
-                                <option value="中塚 善晴">中塚 善晴</option>
-                                <option value="濱川 豪">濱川 豪</option>
-                                <option value="堀 百々華">堀 百々華</option>
-                                <option value="松林 由和">松林 由和</option>
-                                <option value="市川 夏麻">市川 夏麻</option>
-                                <option value="松本 穂里">松本 穂里</option>
-                                <option value="加藤 颯">加藤 颯</option>
-                                <option value="眞田 心晴">眞田 心晴</option>
-                                <option value="森田 優夢">森田 優夢</option>
-                            </select>
-                            <select id="in-p1-grade" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-sm text-slate-600">
-                                <option value="">学年</option>
-                                <option value="1年">1年</option>
-                                <option value="2年">2年</option>
-                                <option value="3年">3年</option>
-                                <option value="4年">4年</option>
-                            </select>
-                        </div>
-                        <div id="area-p2" class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 block mb-1">自チーム選手2</label>
-                            <select id="in-p2" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                                <option value="">選手を選択</option>
-                                 <option value="小田原 耕生">小田原 耕生</option>
-                                <option value="女夫池 来希">女夫池 来希</option>
-                                <option value="曽我 祥帆">曽我 祥帆</option>
-                                <option value="岩本 夕槻">岩本 夕槻</option>
-                                <option value="竹原 歩夢">竹原 歩夢</option>
-                                <option value="牧 大夢">牧 大夢</option>
-                                <option value="髙木 晧喜">髙木 晧喜</option>
-                                <option value="安田 龍吾">安田 龍吾</option>
-                                <option value="麻生 康二">麻生 康二</option>
-                                <option value="長田 幸大">長田 幸大</option>
-                                <option value="西川 結">西川 結</option>
-                                <option value="佐藤 実">佐藤 実</option>
-                                <option value="福島 有彩">福島 有彩</option>
-                                <option value="森松 瑠菜">森松 瑠菜</option>
-                                <option value="谷川 柚季">谷川 柚季</option>
-                                <option value="野田 結愛">野田 結愛</option>
-                                <option value="岩田 悠聖">岩田 悠聖</option>
-                                <option value="清見 悠仁">清見 悠仁</option>
-                                <option value="小保 怜太">小保 怜太</option>
-                                <option value="河村 蛍音">河村 蛍音</option>
-                                <option value="松尾 俐音">松尾 俐音</option>
-                                <option value="新谷 彩夏">新谷 彩夏</option>
-                                <option value="原田 柊">原田 柊</option>
-                                <option value="島袋 礼惟真">島袋 礼惟真</option>
-                                <option value="中塚 善晴">中塚 善晴</option>
-                                <option value="濱川 豪">濱川 豪</option>
-                                <option value="堀 百々華">堀 百々華</option>
-                                <option value="松林 由和">松林 由和</option>
-                                <option value="市川 夏麻">市川 夏麻</option>
-                                <option value="松本 穂里">松本 穂里</option>
-                                <option value="加藤 颯">加藤 颯</option>
-                                <option value="眞田 心晴">眞田 心晴</option>
-                                <option value="森田 優夢">森田 優夢</option>
-                            </select>
-                            <select id="in-p2-grade" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-sm text-slate-600">
-                                <option value="">学年</option>
-                                <option value="1年">1年</option>
-                                <option value="2年">2年</option>
-                                <option value="3年">3年</option>
-                                <option value="4年">4年</option>
-                            </select>
+                    <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                        <label class="text-[10px] font-black text-blue-800 block mb-2">自チーム情報</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-2">
+                                <select id="in-p1" class="w-full bg-white border p-4 rounded-xl font-bold text-slate-600">
+                                    <option value="">選手を選択</option>
+                                    <option value="選手A">選手A</option>
+                                    <option value="選手B">選手B</option>
+                                    <option value="選手C">選手C</option>
+                                    <option value="選手D">選手D</option>
+                                </select>
+                                <select id="in-p1-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600">
+                                    <option value="">学年</option>
+                                    <option value="1年">1年</option>
+                                    <option value="2年">2年</option>
+                                    <option value="3年">3年</option>
+                                    <option value="4年">4年</option>
+                                </select>
+                            </div>
+                            <div id="area-p2" class="space-y-2">
+                                <select id="in-p2" class="w-full bg-white border p-4 rounded-xl font-bold text-slate-600">
+                                    <option value="">選手を選択</option>
+                                    <option value="選手A">選手A</option>
+                                    <option value="選手B">選手B</option>
+                                    <option value="選手C">選手C</option>
+                                    <option value="選手D">選手D</option>
+                                </select>
+                                <select id="in-p2-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600">
+                                    <option value="">学年</option>
+                                    <option value="1年">1年</option>
+                                    <option value="2年">2年</option>
+                                    <option value="3年">3年</option>
+                                    <option value="4年">4年</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 block mb-1">相手チーム</label>
-                        <input type="text" id="in-opp" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-red-600" placeholder="相手チーム名">
+                    <div class="p-3 bg-red-50 rounded-xl border border-red-100">
+                        <label class="text-[10px] font-black text-red-800 block mb-2">相手チーム・選手情報</label>
+                        <input type="text" id="in-opp" class="w-full bg-white border p-4 rounded-xl font-bold text-red-600 mb-2 shadow-sm" placeholder="相手チーム名（大学名等）">
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-2">
+                                <input type="text" id="in-opp-p1" class="w-full bg-white border p-4 rounded-xl font-bold shadow-sm text-slate-600" placeholder="相手選手1（入力）">
+                                <select id="in-opp-p1-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600 shadow-sm">
+                                    <option value="">学年</option>
+                                    <option value="1年">1年</option>
+                                    <option value="2年">2年</option>
+                                    <option value="3年">3年</option>
+                                    <option value="4年">4年</option>
+                                </select>
+                            </div>
+                            <div id="area-opp-p2" class="space-y-2">
+                                <input type="text" id="in-opp-p2" class="w-full bg-white border p-4 rounded-xl font-bold shadow-sm text-slate-600" placeholder="相手選手2（入力）">
+                                <select id="in-opp-p2-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600 shadow-sm">
+                                    <option value="">学年</option>
+                                    <option value="1年">1年</option>
+                                    <option value="2年">2年</option>
+                                    <option value="3年">3年</option>
+                                    <option value="4年">4年</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
                 <button id="btn-start" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
             </div>
@@ -233,7 +193,6 @@
                         <div class="flex gap-2 h-24">
                             <button id="btn-st-1" class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300 transition-colors" data-val="1">1st</button>
                             <button id="btn-st-2" class="btn-st flex-1 rounded-xl border-2 font-black text-2xl text-slate-300 transition-colors" data-val="2">2nd</button>
-                            <!-- ★ DFボタンの追加 -->
                             <button id="btn-df" class="flex-1 rounded-xl border-2 border-red-100 font-black text-red-500 hover:bg-red-50 active:scale-95 transition-all flex flex-col items-center justify-center bg-white shadow-sm">
                                 <span class="text-xl">DF</span>
                                 <span class="text-[9px] mt-1 whitespace-nowrap">ダブルフォルト</span>
@@ -256,7 +215,6 @@
                     </div>
                 </div>
 
-                <!-- ★ここを変更：ポイントとミスをまとめてスクロールさせるように修正 -->
                 <div class="grid grid-cols-2 gap-2 sm:gap-4 h-[55vh] min-h-[500px]">
                     <div class="bg-blue-50 p-2 sm:p-4 rounded-2xl border border-blue-100 shadow-inner flex flex-col overflow-hidden">
                         <div class="overflow-y-auto custom-scrollbar pr-1 h-full pb-4">
@@ -297,13 +255,13 @@
             </div>
         </div>
 
-        <!-- 選手選択モーダル (ダブルス時のみ表示) -->
+        <!-- 選手選択モーダル (自チーム・相手チーム共通) -->
         <div id="modal-player-select" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100">
-                <p class="text-center text-sm font-black text-slate-600 mb-6">対象の選手（プレーした選手）を選択</p>
+                <p id="modal-player-select-title" class="text-center text-sm font-black text-blue-600 mb-6">対象の選手を選択</p>
                 <div class="grid grid-cols-2 gap-4">
-                    <button id="btn-sel-p1" class="bg-blue-50 text-blue-700 border-2 border-blue-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
-                    <button id="btn-sel-p2" class="bg-blue-50 text-blue-700 border-2 border-blue-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
+                    <button id="btn-sel-p1" class="bg-slate-50 text-slate-700 border-2 border-slate-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
+                    <button id="btn-sel-p2" class="bg-slate-50 text-slate-700 border-2 border-slate-200 p-6 rounded-2xl font-black text-lg active:scale-95"></button>
                 </div>
                 <button id="btn-sel-cancel" class="mt-6 w-full py-3 text-slate-400 font-bold text-sm underline active:text-slate-600">キャンセル</button>
             </div>
@@ -327,7 +285,7 @@
         <div id="view-player" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                    <label class="text-[10px] font-black text-slate-400 block mb-1">対象選手</label>
+                    <label class="text-[10px] font-black text-slate-400 block mb-1">対象の自チーム選手</label>
                     <select id="sel-player" class="w-full p-3 border rounded-xl font-black bg-slate-50 text-sm">
                         <option value="">-- 選択 --</option>
                     </select>
@@ -340,6 +298,25 @@
                 </div>
             </div>
             <div id="player-stats" class="hidden space-y-6"></div>
+        </div>
+
+        <!-- ===== 2.5 対戦相手分析画面 ===== -->
+        <div id="view-opponent" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-white p-4 rounded-2xl border shadow-sm border-red-100">
+                    <label class="text-[10px] font-black text-red-500 block mb-1">対象の相手選手</label>
+                    <select id="sel-opponent" class="w-full p-3 border rounded-xl font-black bg-red-50 text-red-900 text-sm">
+                        <option value="">-- 選択 --</option>
+                    </select>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border shadow-sm border-red-100">
+                    <label class="text-[10px] font-black text-red-500 block mb-1">対象試合</label>
+                    <select id="sel-opponent-match" class="w-full p-3 border rounded-xl font-black bg-red-50 text-red-900 text-sm" disabled>
+                        <option value="ALL">全ての試合</option>
+                    </select>
+                </div>
+            </div>
+            <div id="opponent-stats" class="hidden space-y-6"></div>
         </div>
 
         <!-- ===== 3. チーム画面 ===== -->
@@ -390,6 +367,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span class="text-[10px] mt-1 font-bold">個人</span>
         </button>
+        <button id="nav-opponent" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-slate-400" data-val="opponent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span class="text-[10px] mt-1 font-bold">スカウティング</span>
+        </button>
         <button id="nav-team" class="nav-btn flex flex-col items-center p-2 rounded-xl transition-all text-slate-400" data-val="team">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <span class="text-[10px] mt-1 font-bold">チーム</span>
@@ -408,7 +389,7 @@
                 if(fm==='cross_left') return '正クロス';
                 if(fm==='cross_right') return '逆クロス';
                 if(fm==='straight') return 'ストレート';
-                if(fm==='none') return '展開なし'; // ★ DF用に「展開なし」を追加
+                if(fm==='none') return '展開なし';
                 return '不明';
             }
         };
@@ -416,11 +397,12 @@
         // --- State ---
         const State = {
             view: 'input', step: 'meta', type: 'doubles', gc: 7, 
-            date: '', t: '', p1: '', p1_grade: '', p2: '', p2_grade: '', opp: '', pts: [],
+            date: '', t: '', p1: '', p1_grade: '', p2: '', p2_grade: '', opp: '', opp_p1: '', opp_p1_grade: '', opp_p2: '', opp_p2_grade: '', pts: [],
             sc: { p1: 0, p2: 0, g1: 0, g2: 0 },
             st: null, fm: null, his: [], isUsSrv: true,
             user: null, matches: [],
             pendingPoint: null, 
+            pendingTargetTeam: '', // 'us' or 'opp'
             
             PT: [ 
                 { id: 'FP', label: 'FP' }, { id: 'BP', label: 'BP' }, 
@@ -507,25 +489,31 @@
                 });
             },
             switchNav: function(v) {
-                ['input', 'player', 'team'].forEach(id => {
+                ['input', 'player', 'opponent', 'team'].forEach(id => {
                     document.getElementById('view-' + id).classList.add('hidden');
                     const nav = document.getElementById('nav-' + id);
-                    nav.classList.remove('text-blue-600', 'bg-blue-50', 'scale-105');
-                    nav.classList.add('text-slate-400');
+                    if (nav) {
+                        nav.classList.remove('text-blue-600', 'bg-blue-50', 'scale-105');
+                        nav.classList.add('text-slate-400');
+                    }
                 });
                 document.getElementById('view-' + v).classList.remove('hidden');
                 const activeNav = document.getElementById('nav-' + v);
-                activeNav.classList.remove('text-slate-400');
-                activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+                if (activeNav) {
+                    activeNav.classList.remove('text-slate-400');
+                    activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+                }
 
                 State.view = v;
                 if (v === 'team') UI.renderTeam();
                 if (v === 'player') UI.renderPlayerSelect();
+                if (v === 'opponent') UI.renderOpponentSelect();
             },
             updateType: function() {
                 document.getElementById('btn-type-doubles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'doubles' ? 'btn-active' : 'text-slate-400'}`;
                 document.getElementById('btn-type-singles').className = `btn-type flex-1 py-3 rounded-xl border-2 font-bold transition-colors ${State.type === 'singles' ? 'btn-active' : 'text-slate-400'}`;
                 document.getElementById('area-p2').style.display = State.type === 'doubles' ? 'block' : 'none';
+                document.getElementById('area-opp-p2').style.display = State.type === 'doubles' ? 'block' : 'none';
             },
             updateGC: function() {
                 [5,7,9].forEach(n => {
@@ -539,7 +527,16 @@
                 document.getElementById('badge-normal').style.display = isFinal ? 'none' : 'block';
 
                 document.getElementById('disp-us-names').textContent = State.p1 + (State.type === 'doubles' && State.p2 ? ' / ' + State.p2 : '');
-                document.getElementById('disp-opp-name').textContent = State.opp;
+                
+                let oppDisp = State.opp;
+                if (State.opp_p1) {
+                    oppDisp += '：' + State.opp_p1;
+                    if (State.type === 'doubles' && State.opp_p2) {
+                        oppDisp += ' / ' + State.opp_p2;
+                    }
+                }
+                document.getElementById('disp-opp-name').textContent = oppDisp;
+
                 document.getElementById('disp-g1').textContent = State.sc.g1;
                 document.getElementById('disp-p1').textContent = State.sc.p1;
                 document.getElementById('disp-g2').textContent = State.sc.g2;
@@ -575,9 +572,18 @@
                 document.getElementById('step-rec').classList.add('hidden');
                 document.getElementById('step-sum').classList.remove('hidden');
                 document.getElementById('sum-t').textContent = State.t;
-                document.getElementById('sum-us-n').textContent = State.p1;
+                
+                document.getElementById('sum-us-n').textContent = State.p1 + (State.type === 'doubles' && State.p2 ? ' / ' + State.p2 : '');
                 document.getElementById('sum-us-g').textContent = State.sc.g1;
-                document.getElementById('sum-opp-n').textContent = State.opp;
+
+                let oppDisp = State.opp;
+                if (State.opp_p1) {
+                    oppDisp += '：' + State.opp_p1;
+                    if (State.type === 'doubles' && State.opp_p2) {
+                        oppDisp += ' / ' + State.opp_p2;
+                    }
+                }
+                document.getElementById('sum-opp-n').textContent = oppDisp;
                 document.getElementById('sum-opp-g').textContent = State.sc.g2;
             },
             resetToMeta: function() {
@@ -592,6 +598,10 @@
                 document.getElementById('in-p2').selectedIndex = 0; 
                 document.getElementById('in-p2-grade').selectedIndex = 0; 
                 document.getElementById('in-opp').value = '';
+                document.getElementById('in-opp-p1').value = '';
+                document.getElementById('in-opp-p1-grade').selectedIndex = 0;
+                document.getElementById('in-opp-p2').value = '';
+                document.getElementById('in-opp-p2-grade').selectedIndex = 0;
                 
                 const today = new Date().toISOString().split('T')[0];
                 const dateInput = document.getElementById('in-date');
@@ -685,9 +695,12 @@
                     `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 document.getElementById('pair-list').innerHTML = rankHtml;
             },
+
+            // --- 個人（自チーム）分析 ---
             renderPlayerSelect: function() {
                 const sel = document.getElementById('sel-player');
                 const current = sel.value;
+                // 自チームの選手のみをリストアップ
                 const players = Array.from(new Set(State.matches.flatMap(m => [m.p1, m.p2].filter(Boolean)))).sort();
                 sel.innerHTML = '<option value="">-- 選択 --</option>';
                 players.forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
@@ -706,6 +719,7 @@
                 }
                 selM.disabled = false;
                 const currentM = selM.value;
+                // 自チームとして出場している試合のみ
                 const pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP);
                 
                 let html = '<option value="ALL">全ての試合</option>';
@@ -735,23 +749,29 @@
                 let msFm = { cross_left:0, straight:0, cross_right:0, none:0 };
 
                 pm.forEach(m => {
+                    const isUs = true; // 自チーム選手としての分析なので常にtrue
+                    
                     if(m.winner === 1) w++;
+
                     if(m.pts) m.pts.forEach(p => {
-                        if(p.isOurServe && p.hitter === selP) { 
+                        const isServing = p.isOurServe;
+                        if(isServing && p.hitter === selP) { 
                             srvTot++; 
                             if(p.serveStatus===1) s1in++; 
                             if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } 
                         }
-                        if(p.winnerSide === 1 && p.hitter === selP) { 
+
+                        const scoredPoint = p.winnerSide === 1;
+                        if(scoredPoint && p.hitter === selP) { 
                             mp++; 
-                            // ★ バグ修正: _ を | に変更
                             const k = `${p.formation}|${p.code}`;
                             pts[k] = (pts[k] || 0) + 1; 
                             if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
                         }
-                        if(p.winnerSide === 2 && p.hitter === selP) { 
+
+                        const lostPoint = p.winnerSide === 2;
+                        if(lostPoint && p.hitter === selP) { 
                             mm++; 
-                            // ★ バグ修正: _ を | に変更
                             const k = `${p.formation}|${p.code}`;
                             ms[k] = (ms[k] || 0) + 1; 
                             if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
@@ -825,23 +845,189 @@
                 `;
                 container.classList.remove('hidden');
             },
+
+            // --- 対戦相手（スカウティング）分析 ---
+            renderOpponentSelect: function() {
+                const sel = document.getElementById('sel-opponent');
+                const current = sel.value;
+                // 相手チームの選手のみをリストアップ
+                const players = Array.from(new Set(State.matches.flatMap(m => [m.opp_p1, m.opp_p2].filter(Boolean)))).sort();
+                sel.innerHTML = '<option value="">-- 選択 --</option>';
+                players.forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
+                if (players.includes(current)) sel.value = current;
+                
+                UI.updateOpponentMatchSelect();
+            },
+            updateOpponentMatchSelect: function() {
+                const selP = document.getElementById('sel-opponent').value;
+                const selM = document.getElementById('sel-opponent-match');
+                if(!selP) {
+                    selM.innerHTML = '<option value="ALL">全ての試合</option>';
+                    selM.disabled = true;
+                    UI.renderOpponentStats();
+                    return;
+                }
+                selM.disabled = false;
+                const currentM = selM.value;
+                // 相手チームとして出場している試合のみ
+                const pm = State.matches.filter(m => m.opp_p1 === selP || m.opp_p2 === selP);
+                
+                let html = '<option value="ALL">全ての試合</option>';
+                pm.forEach(m => {
+                    const dateText = m.date ? m.date.replace(/-/g, '/') : '';
+                    // 相手チーム視点なので、対戦相手は自チーム（m.p1, m.p2）になる
+                    html += `<option value="${m.id}">${dateText} ${m.t||'名称未設定'} (vs ${m.p1}${m.p2 ? '/'+m.p2 : ''})</option>`;
+                });
+                selM.innerHTML = html;
+                if(pm.find(m => m.id === currentM)) selM.value = currentM;
+                else selM.value = 'ALL';
+
+                UI.renderOpponentStats();
+            },
+            renderOpponentStats: function() {
+                const selP = document.getElementById('sel-opponent').value;
+                const selM = document.getElementById('sel-opponent-match').value;
+                const container = document.getElementById('opponent-stats');
+                
+                if (!selP) { container.classList.add('hidden'); return; }
+
+                let pm = State.matches.filter(m => m.opp_p1 === selP || m.opp_p2 === selP);
+                if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
+
+                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
+                let pts = {}, ms = {};
+                let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let msFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+
+                pm.forEach(m => {
+                    const isUs = false; // 相手チーム選手としての分析なのでfalse
+                    
+                    if(m.winner === 2) w++; // 相手チーム(winner=2)なら勝利
+
+                    if(m.pts) m.pts.forEach(p => {
+                        const isServing = !p.isOurServe; // 相手チームのサーブ
+                        if(isServing && p.hitter === selP) { 
+                            srvTot++; 
+                            if(p.serveStatus===1) s1in++; 
+                            if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } 
+                        }
+
+                        // 相手チームの得点（自力で獲得）
+                        const scoredPoint = p.winnerSide === 2;
+                        if(scoredPoint && p.hitter === selP) { 
+                            mp++; 
+                            const k = `${p.formation}|${p.code}`;
+                            pts[k] = (pts[k] || 0) + 1; 
+                            if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
+                        }
+
+                        // 相手チームのミス（自チームの得点）
+                        const lostPoint = p.winnerSide === 1;
+                        if(lostPoint && p.hitter === selP) { 
+                            mm++; 
+                            const k = `${p.formation}|${p.code}`;
+                            ms[k] = (ms[k] || 0) + 1; 
+                            if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
+                        }
+                    });
+                });
+
+                const sHit = srvTot + s2in; const sIn = s1in + (s2in - df);
+                const wr = pm.length ? (w/pm.length*100).toFixed(1) : 0;
+                const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
+                const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
+                const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
+                
+                const ptsFmTotal = ptsFm.cross_left + ptsFm.straight + ptsFm.cross_right;
+                const msFmTotal = msFm.cross_left + msFm.straight + msFm.cross_right;
+
+                const genFmBar = (dataObj, total) => {
+                    if(total===0) return '<div class="text-xs text-slate-400">データなし</div>';
+                    const cl = ((dataObj.cross_left/total)*100).toFixed(1);
+                    const st = ((dataObj.straight/total)*100).toFixed(1);
+                    const cr = ((dataObj.cross_right/total)*100).toFixed(1);
+                    return `
+                        <div class="flex h-4 rounded-full overflow-hidden mb-1">
+                            <div class="bg-blue-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cl}%">${cl>10?'正':''}</div>
+                            <div class="bg-emerald-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${st}%">${st>10?'ス':''}</div>
+                            <div class="bg-purple-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cr}%">${cr>10?'逆':''}</div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-500">
+                            <span class="text-blue-500">正クロス ${cl}%</span>
+                            <span class="text-emerald-500">ストレート ${st}%</span>
+                            <span class="text-purple-500">逆クロス ${cr}%</span>
+                        </div>
+                    `;
+                };
+
+                const prHtml = Object.keys(pts).map(k => {
+                    const [fm, c] = k.split('|');
+                    return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label||c, count: pts[k], r: ((pts[k]/mp)*100).toFixed(1) };
+                }).sort((a,b)=>b.count-a.count).map(p => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-blue-500 h-full rounded-full" style="width: ${p.r}%"></div></div></div>
+                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
+
+                const mrHtml = Object.keys(ms).map(k => {
+                    const [fm, c] = k.split('|');
+                    return { fm, code: c, l: State.MT.find(t=>t.id===c)?.label||c, count: ms[k], r: ((ms[k]/mm)*100).toFixed(1) };
+                }).sort((a,b)=>b.count-a.count).map(m => `
+                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(m.fm)}] ${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${m.r}%"></div></div></div>
+                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-red-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">試合勝率</span>🏆</div><p class="text-3xl font-black">${wr}%</p></div>
+                        <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">サーブ成功率</span>🎯</div><p class="text-3xl font-black">${sT}%</p></div>
+                        <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">1stサーブ</span>⚡</div><p class="text-3xl font-black">${s1}%</p></div>
+                        <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-8 border-red-100">
+                        <div>
+                            <h3 class="text-xs font-black text-slate-800 mb-2">📊 展開の比率 (全体)</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
+                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, ptsFmTotal)}</div>
+                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, msFmTotal)}</div>
+                            </div>
+                        </div>
+                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 展開別 ポイント奪取の比率</h3><div class="space-y-3">${prHtml}</div></div>
+                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ 展開別 ミス発生の比率</h3><div class="space-y-3">${mrHtml}</div></div>
+                    </div>
+                `;
+                container.classList.remove('hidden');
+            },
             
             showPlayerSelect: function(ptData) {
                 if (!ptData) return; 
-                
-                const needsPlayerSelect = State.type === 'doubles' && 
-                    ((ptData.winnerSide === 1 && ptData.type === 'point') || 
-                     (ptData.winnerSide === 2 && ptData.type === 'miss'));
 
-                if (!needsPlayerSelect) {
-                    const newPtData = { ...ptData, hitter: State.type === 'singles' ? State.p1 : '' };
+                // どっちのチームの選手を選択するか判定
+                let targetTeam = '';
+                if (ptData.winnerSide === 1 && ptData.type === 'point') targetTeam = 'us';
+                else if (ptData.winnerSide === 1 && ptData.type === 'miss') targetTeam = 'opp';
+                else if (ptData.winnerSide === 2 && ptData.type === 'point') targetTeam = 'opp';
+                else if (ptData.winnerSide === 2 && ptData.type === 'miss') targetTeam = 'us';
+
+                if (State.type === 'singles') {
+                    const newPtData = { ...ptData, hitter: targetTeam === 'us' ? State.p1 : State.opp_p1 };
                     UI.executePointRecord(newPtData);
                     return;
                 }
                 
                 State.pendingPoint = { ...ptData };
-                document.getElementById('btn-sel-p1').textContent = State.p1 || '選手1';
-                document.getElementById('btn-sel-p2').textContent = State.p2 || '選手2';
+                State.pendingTargetTeam = targetTeam;
+
+                // モーダルのUIをチームに合わせて変更
+                const titleEl = document.getElementById('modal-player-select-title');
+                if (titleEl) {
+                    titleEl.textContent = targetTeam === 'us' ? '対象の自チーム選手を選択' : '対象の相手選手を選択';
+                    titleEl.className = targetTeam === 'us' ? 'text-center text-sm font-black text-blue-600 mb-6' : 'text-center text-sm font-black text-red-600 mb-6';
+                }
+
+                document.getElementById('btn-sel-p1').textContent = targetTeam === 'us' ? (State.p1 || '自選手1') : (State.opp_p1 || '相手選手1');
+                document.getElementById('btn-sel-p2').textContent = targetTeam === 'us' ? (State.p2 || '自選手2') : (State.opp_p2 || '相手選手2');
+                
                 document.getElementById('modal-player-select').classList.remove('hidden');
             },
             hidePlayerSelect: function() {
@@ -873,10 +1059,18 @@
                     State.p1_grade = document.getElementById('in-p1-grade').value;
                     State.p2 = document.getElementById('in-p2').value;
                     State.p2_grade = document.getElementById('in-p2-grade').value;
-                    State.opp = document.getElementById('in-opp').value;
                     
-                    if (!State.p1 || !State.opp) return alert('選手1と相手チームを入力してください');
-                    if (State.type === 'doubles' && !State.p2) return alert('選手2を選択してください');
+                    State.opp = document.getElementById('in-opp').value;
+                    State.opp_p1 = document.getElementById('in-opp-p1').value;
+                    State.opp_p1_grade = document.getElementById('in-opp-p1-grade').value;
+                    State.opp_p2 = document.getElementById('in-opp-p2').value;
+                    State.opp_p2_grade = document.getElementById('in-opp-p2-grade').value;
+                    
+                    if (!State.p1) return alert('自チーム選手1を入力してください');
+                    if (!State.opp) return alert('相手チーム名を入力してください');
+                    if (!State.opp_p1) return alert('相手選手1を入力してください');
+                    if (State.type === 'doubles' && !State.p2) return alert('自チーム選手2を選択してください');
+                    if (State.type === 'doubles' && !State.opp_p2) return alert('相手選手2を入力してください');
                     
                     State.step = 'rec';
                     document.getElementById('step-meta').classList.add('hidden');
@@ -910,12 +1104,10 @@
                 document.querySelectorAll('.btn-st').forEach(b => b.onclick = () => { State.st = parseInt(b.dataset.val); UI.updateScoreBoard(); });
                 document.querySelectorAll('.btn-fm').forEach(b => b.onclick = () => { State.fm = b.dataset.val; UI.updateScoreBoard(); });
 
-                // ★ 追加：ダブルフォルトのワンタップ記録処理
                 document.getElementById('btn-df').onclick = () => {
-                    State.st = 2; // ダブルフォルトは2ndサーブ時のミスとして扱う
-                    State.fm = 'none'; // 展開は無し
+                    State.st = 2; 
+                    State.fm = 'none'; 
 
-                    // 自チームのサーブか相手のサーブかで、得点者を切り替える
                     const wSide = State.isUsSrv ? 2 : 1; 
                     const sideLbl = State.isUsSrv ? 'US' : 'OPP';
 
@@ -934,12 +1126,18 @@
                 };
 
                 document.getElementById('btn-save').onclick = () => { DB.saveMatch(); };
+                
+                // イベントリスナー登録（自チーム）
                 document.getElementById('sel-player').onchange = () => { UI.updatePlayerMatchSelect(); };
                 document.getElementById('sel-player-match').onchange = () => { UI.renderPlayerStats(); };
+                // イベントリスナー登録（相手チーム）
+                document.getElementById('sel-opponent').onchange = () => { UI.updateOpponentMatchSelect(); };
+                document.getElementById('sel-opponent-match').onchange = () => { UI.renderOpponentStats(); };
+                
                 document.getElementById('sel-team-period').onchange = () => { UI.renderTeam(); };
 
                 document.getElementById('btn-csv').onclick = () => {
-                    let csv = "記録日時,試合日,大会名,種目,自チーム選手1,学年1,自チーム選手2,学年2,相手チーム,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード,打者\n";
+                    let csv = "記録日時,試合日,大会名,種目,自チーム選手1,学年1,自チーム選手2,学年2,相手チーム,相手選手1,相手学年1,相手選手2,相手学年2,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード,打者\n";
                     const period = document.getElementById('sel-team-period').value;
                     let targetMatches = State.matches;
                     if(period !== "ALL") targetMatches = State.matches.filter(m => String(Utils.getNendo(m.date || m.createdAt)) === period);
@@ -951,7 +1149,8 @@
                             let row = [
                                 d, m.date || '', m.t || '', m.type, 
                                 m.p1 || '', m.p1_grade || '', m.p2 || '', m.p2_grade || '', 
-                                m.opp || '', m.winner === 1 ? 'WIN' : 'LOSE', m.finalScore.g1, m.finalScore.g2,
+                                m.opp || '', m.opp_p1 || '', m.opp_p1_grade || '', m.opp_p2 || '', m.opp_p2_grade || '', 
+                                m.winner === 1 ? 'WIN' : 'LOSE', m.finalScore.g1, m.finalScore.g2,
                                 idx + 1, (p.gameIndex || 0) + 1, p.isOurServe ? '自' : '相手',
                                 p.serveStatus || '', p.formation || '', p.winnerSide === 1 ? '自' : '相手',
                                 p.type, p.code, p.hitter || ''
@@ -980,7 +1179,8 @@
 
                 document.getElementById('btn-sel-p1').onclick = () => {
                     if(!State.pendingPoint) return;
-                    const newPtData = { ...State.pendingPoint, hitter: State.p1 };
+                    const hitterName = State.pendingTargetTeam === 'us' ? State.p1 : State.opp_p1;
+                    const newPtData = { ...State.pendingPoint, hitter: hitterName };
                     State.pendingPoint = null; 
                     UI.hidePlayerSelect();
                     UI.executePointRecord(newPtData);
@@ -988,7 +1188,8 @@
                 
                 document.getElementById('btn-sel-p2').onclick = () => {
                     if(!State.pendingPoint) return;
-                    const newPtData = { ...State.pendingPoint, hitter: State.p2 };
+                    const hitterName = State.pendingTargetTeam === 'us' ? State.p2 : State.opp_p2;
+                    const newPtData = { ...State.pendingPoint, hitter: hitterName };
                     State.pendingPoint = null;
                     UI.hidePlayerSelect();
                     UI.executePointRecord(newPtData);
@@ -1053,6 +1254,7 @@
                                 State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                                 if(State.view === 'team') UI.renderTeam();
                                 if(State.view === 'player') UI.renderPlayerSelect();
+                                if(State.view === 'opponent') UI.renderOpponentSelect();
                             });
                         } else {
                             auth.signInAnonymously().catch(e => console.warn(e));
@@ -1066,7 +1268,8 @@
                 const finalData = { 
                     type: State.type, gc: State.gc, date: State.date, t: State.t, 
                     p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
-                    opp: State.opp, pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
+                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
+                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
                     createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' 
                 };
                 if (DB.ref) {
