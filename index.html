@@ -57,9 +57,9 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
-                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
-                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5ゲーム</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7ゲーム</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9ゲーム</button>
                         </div>
                     </div>
                     
@@ -71,7 +71,14 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
                         <select id="in-t" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
-                            <option value="〇〇大会">〇〇大会</option>
+                            <option value="">大会名を選択</option>
+                           <option value="関西学生シングルス">関西学生シングルス</option>
+                            <option value="令和8年度関西学生ソフトテニス春季リーグ">令和8年度関西学生ソフトテニス春季リーグ</option>
+                            <option value="令和8年度関西学生ソフトテニス春季リーグ 入替戦">令和8年度関西学生ソフトテニス春季リーグ 入替戦</option>
+                            <option value="関西学生ダブルス">関西学生ダブルス</option>
+                            <option value="大阪学生選手権大会">大阪学生選手権大会</option>
+                            <option value="西日本学生ソフトテニス 選手権大会">西日本学生ソフトテニス 選手権大会</option>
+                            <option value="大阪学生チーム対抗大会">大阪学生チーム対抗大会</option>                            
                             <option value="練習試合（練習含む）">練習試合（練習含む）</option>
                             <option value="その他">その他</option>
                         </select>
@@ -83,10 +90,39 @@
                             <div class="space-y-2">
                                 <select id="in-p1" class="w-full bg-white border p-4 rounded-xl font-bold text-slate-600">
                                     <option value="">選手を選択</option>
-                                    <option value="選手A">選手A</option>
-                                    <option value="選手B">選手B</option>
-                                    <option value="選手C">選手C</option>
-                                    <option value="選手D">選手D</option>
+                                　<option value="小田原 耕生">小田原 耕生</option>
+                                　<option value="女夫池 来希">女夫池 来希</option>
+                                　<option value="曽我 祥帆">曽我 祥帆</option>
+                                　<option value="岩本 夕槻">岩本 夕槻</option>
+                                　<option value="竹原 歩夢">竹原 歩夢</option>
+                                　<option value="牧 大夢">牧 大夢</option>
+                                　<option value="髙木 晧喜">髙木 晧喜</option>
+                                　<option value="安田 龍吾">安田 龍吾</option>
+                                　<option value="麻生 康二">麻生 康二</option>
+                                　<option value="長田 幸大">長田 幸大</option>
+                                　<option value="西川 結">西川 結</option>
+                                　<option value="佐藤 実">佐藤 実</option>
+                                　<option value="福島 有彩">福島 有彩</option>
+                                　<option value="森松 瑠菜">森松 瑠菜</option>
+                                　<option value="谷川 柚季">谷川 柚季</option>
+                                　<option value="野田 結愛">野田 結愛</option>
+                                　<option value="岩田 悠聖">岩田 悠聖</option>
+                                　<option value="清見 悠仁">清見 悠仁</option>
+                                　<option value="小保 怜太">小保 怜太</option>
+                                　<option value="河村 蛍音">河村 蛍音</option>
+                                　<option value="松尾 俐音">松尾 俐音</option>
+                                　<option value="新谷 彩夏">新谷 彩夏</option>
+                                　<option value="原田 柊">原田 柊</option>
+                                　<option value="島袋 礼惟真">島袋 礼惟真</option>
+                                　<option value="中塚 善晴">中塚 善晴</option>
+                                　<option value="濱川 豪">濱川 豪</option>
+                                　<option value="堀 百々華">堀 百々華</option>
+                                　<option value="松林 由和">松林 由和</option>
+                                　<option value="市川 夏麻">市川 夏麻</option>
+                                　<option value="松本 穂里">松本 穂里</option>
+                                　<option value="加藤 颯">加藤 颯</option>
+                                　<option value="眞田 心晴">眞田 心晴</option>
+                                　<option value="森田 優夢">森田 優夢</option>
                                 </select>
                                 <select id="in-p1-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600">
                                     <option value="">学年</option>
@@ -99,10 +135,39 @@
                             <div id="area-p2" class="space-y-2">
                                 <select id="in-p2" class="w-full bg-white border p-4 rounded-xl font-bold text-slate-600">
                                     <option value="">選手を選択</option>
-                                    <option value="選手A">選手A</option>
-                                    <option value="選手B">選手B</option>
-                                    <option value="選手C">選手C</option>
-                                    <option value="選手D">選手D</option>
+                                　<option value="小田原 耕生">小田原 耕生</option>
+                                　<option value="女夫池 来希">女夫池 来希</option>
+                                　<option value="曽我 祥帆">曽我 祥帆</option>
+                                　<option value="岩本 夕槻">岩本 夕槻</option>
+                                　<option value="竹原 歩夢">竹原 歩夢</option>
+                                　<option value="牧 大夢">牧 大夢</option>
+                                　<option value="髙木 晧喜">髙木 晧喜</option>
+                                　<option value="安田 龍吾">安田 龍吾</option>
+                                　<option value="麻生 康二">麻生 康二</option>
+                                　<option value="長田 幸大">長田 幸大</option>
+                                　<option value="西川 結">西川 結</option>
+                                　<option value="佐藤 実">佐藤 実</option>
+                                　<option value="福島 有彩">福島 有彩</option>
+                                　<option value="森松 瑠菜">森松 瑠菜</option>
+                                　<option value="谷川 柚季">谷川 柚季</option>
+                                　<option value="野田 結愛">野田 結愛</option>
+                                　<option value="岩田 悠聖">岩田 悠聖</option>
+                                　<option value="清見 悠仁">清見 悠仁</option>
+                                　<option value="小保 怜太">小保 怜太</option>
+                                　<option value="河村 蛍音">河村 蛍音</option>
+                                　<option value="松尾 俐音">松尾 俐音</option>
+                                　<option value="新谷 彩夏">新谷 彩夏</option>
+                                　<option value="原田 柊">原田 柊</option>
+                                　<option value="島袋 礼惟真">島袋 礼惟真</option>
+                                　<option value="中塚 善晴">中塚 善晴</option>
+                                　<option value="濱川 豪">濱川 豪</option>
+                                　<option value="堀 百々華">堀 百々華</option>
+                                　<option value="松林 由和">松林 由和</option>
+                                　<option value="市川 夏麻">市川 夏麻</option>
+                                　<option value="松本 穂里">松本 穂里</option>
+                                　<option value="加藤 颯">加藤 颯</option>
+                                　<option value="眞田 心晴">眞田 心晴</option>
+                                　<option value="森田 優夢">森田 優夢</option>
                                 </select>
                                 <select id="in-p2-grade" class="w-full bg-white border p-3 rounded-xl font-bold text-sm text-slate-600">
                                     <option value="">学年</option>
