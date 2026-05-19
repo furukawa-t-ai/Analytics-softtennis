@@ -57,9 +57,9 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5ゲーム</button>
-                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7ゲーム</button>
-                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9ゲーム</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
                         </div>
                     </div>
                     
@@ -302,7 +302,7 @@
                     </select>
                 </div>
             </div>
-            <div id="player-stats" class="hidden space-y-6"></div>
+            <div id="player-stats" class="hidden"></div>
         </div>
 
         <!-- ===== 2.5 対戦相手分析画面 ===== -->
@@ -321,7 +321,7 @@
                     </select>
                 </div>
             </div>
-            <div id="opponent-stats" class="hidden space-y-6"></div>
+            <div id="opponent-stats" class="hidden"></div>
         </div>
 
         <!-- ===== 3. チーム画面 ===== -->
@@ -341,18 +341,65 @@
 
             <div id="team-stats" class="grid grid-cols-2 gap-3 hidden">
                 <div class="bg-slate-800 text-white p-4 rounded-2xl shadow-md">
-                    <p class="text-[10px] font-bold text-slate-300 mb-1">チーム勝率</p>
+                    <p class="text-[10px] font-bold text-slate-300 mb-1">チーム勝率（対外戦）</p>
                     <p id="team-wr" class="text-3xl font-black">-</p>
                 </div>
                 <div class="bg-white border p-4 rounded-2xl shadow-sm">
-                    <p class="text-[10px] font-bold text-slate-500 mb-1">対象期間の総試合数 / 今月</p>
+                    <p class="text-[10px] font-bold text-slate-500 mb-1">公式総試合数 / 今月</p>
                     <p class="text-2xl font-black text-slate-800"><span id="team-total-matches">-</span> <span class="text-sm text-slate-400 ml-1">/ <span id="team-month-matches">-</span></span></p>
                 </div>
             </div>
 
-            <div id="team-pair-rank" class="bg-white p-4 rounded-2xl border shadow-sm hidden">
-                <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ペア別勝率ランキング</h3>
-                <div id="pair-list" class="space-y-2"></div>
+            <div id="team-common-stats" class="bg-white p-5 rounded-2xl border shadow-sm hidden space-y-5">
+                <h3 class="text-xs font-black text-slate-700 flex items-center gap-1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-blue-600"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    部内全体の戦術傾向（対内外すべてのデータ）
+                </h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                    <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                        <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">📈 展開別 得点シェア</h4>
+                        <div id="team-pts-share"></div>
+                    </div>
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                        <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">⚠️ 展開別 ミスシェア</h4>
+                        <div id="team-miss-share"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                    <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                        <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
+                        <div id="team-pts-code-share"></div>
+                    </div>
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                        <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">🚨 種類別 ミスシェア</h4>
+                        <div id="team-miss-code-share"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                    <div>
+                        <h4 class="text-[10px] font-black text-blue-600 mb-2 uppercase tracking-wider flex items-center gap-1">⚔️ 展開 × 種類別 得点ランキング</h4>
+                        <div id="team-pts-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-black text-red-600 mb-2 uppercase tracking-wider flex items-center gap-1">💥 展開 × 種類別 ミスランキング</h4>
+                        <div id="team-miss-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ★ ペア別勝率＆対戦校勝率のコンテナ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden" id="team-rank-container">
+                <div id="team-pair-rank" class="bg-white p-4 rounded-2xl border shadow-sm">
+                    <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ペア別勝率ランキング</h3>
+                    <div id="pair-list" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2"></div>
+                </div>
+                <div id="team-school-rank" class="bg-white p-4 rounded-2xl border shadow-sm">
+                    <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-blue-600"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> 対戦校 勝率ランキング</h3>
+                    <div id="school-list" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2"></div>
+                </div>
             </div>
 
             <div class="flex justify-between items-center px-1 mb-2 mt-6">
@@ -389,6 +436,11 @@
         // ★学年のリストもここで一括管理します
         const GRADES = ['1年', '2年', '3年', '4年', '社会人'];
 
+        const COLORS = {
+            fm: { 'cross_left': '#3b82f6', 'straight': '#10b981', 'cross_right': '#a855f7', 'none': '#94a3b8' },
+            palette: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#64748b']
+        };
+
         // --- Utils ---
         const Utils = {
             getNendo: (dateStr) => {
@@ -400,8 +452,60 @@
                 if(fm==='cross_left') return '正クロス';
                 if(fm==='cross_right') return '逆クロス';
                 if(fm==='straight') return 'ストレート';
-                if(fm==='none') return '展開なし';
+                if(fm==='none') return 'ダブルフォルト';
                 return '不明';
+            },
+            // ★ 円グラフ（ドーナツチャート）を生成する共通関数
+            genPieChart: (dataArr, total) => {
+                if(total === 0 || dataArr.length === 0) return '<p class="text-xs text-slate-400 font-bold mt-2">データがありません</p>';
+                
+                let conicStr = '';
+                let currentPct = 0;
+                let legendHtml = '';
+
+                dataArr.forEach((d) => {
+                    const pct = ((d.count / total) * 100);
+                    if (pct === 0) return;
+                    const nextPct = currentPct + pct;
+                    conicStr += `${d.color} ${currentPct}% ${nextPct}%, `;
+                    currentPct = nextPct;
+                    
+                    legendHtml += `
+                        <div class="flex items-center justify-between text-[9px] mb-1.5 border-b border-slate-100 pb-1">
+                            <div class="flex items-center gap-1.5 truncate">
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${d.color}"></span>
+                                <span class="font-bold text-slate-700 truncate">${d.label}</span>
+                            </div>
+                            <span class="text-slate-600 font-mono shrink-0 ml-2">${pct.toFixed(1)}% <span class="text-[8px] text-slate-400">(${d.count})</span></span>
+                        </div>
+                    `;
+                });
+                
+                conicStr = conicStr.slice(0, -2);
+                
+                return `
+                    <div class="flex items-center gap-4 mt-2">
+                        <div class="relative w-20 h-20 rounded-full shrink-0 shadow-md border border-white" style="background: conic-gradient(${conicStr});">
+                            <div class="absolute inset-0 m-auto w-[44px] h-[44px] bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
+                                <span class="text-[7px] font-black text-slate-400 leading-none mb-0.5">TOTAL</span>
+                                <span class="text-xs font-black text-slate-700 leading-none">${total}</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto max-h-20 custom-scrollbar pr-1 min-w-0">
+                            ${legendHtml}
+                        </div>
+                    </div>
+                `;
+            },
+            // ★ 展開×種類のクロス集計バーを生成する共通関数
+            genCrossRankHtml: (crossDataObj, total, colorClass, textClass) => {
+                return Object.keys(crossDataObj).map(k => {
+                    const [fm, c] = k.split('|');
+                    return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label || State.MT.find(t=>t.id===c)?.label || c, count: crossDataObj[k], r: ((crossDataObj[k]/total)*100).toFixed(1) };
+                }).sort((a,b)=>b.count-a.count).map(p => `
+                    <div><div class="flex justify-between text-[9px] font-bold text-slate-700 mb-1"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="${textClass}">${p.r}% (${p.count})</span></div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="${colorClass} h-full rounded-full" style="width: ${p.r}%"></div></div></div>
+                `).join('') || '<p class="text-[10px] text-slate-400 font-bold">データがありません</p>';
             }
         };
 
@@ -425,18 +529,15 @@
             MT: [ 
                 { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, 
                 { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, 
-                { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FRN', label: 'FRN', g: 'ネット' },
-                { id: 'BRN', label: 'BRN', g: 'ネット' },
+                { id: 'SMN', label: 'SMN', g: 'ネット' }, 
                 { id: 'FPB', label: 'FPB', g: 'バックアウト' }, { id: 'BPB', label: 'BPB', g: 'バックアウト' }, 
                 { id: 'FLB', label: 'FLB', g: 'バックアウト' }, { id: 'BLB', label: 'BLB', g: 'バックアウト' }, 
                 { id: 'FVB', label: 'FVB', g: 'バックアウト' }, { id: 'BVB', label: 'BVB', g: 'バックアウト' }, 
-                { id: 'SMB', label: 'SMB', g: 'バックアウト' }, { id: 'FRB', label: 'FRB', g: 'バックアウト' },
-                { id: 'BRB', label: 'BRB', g: 'バックアウト' },                
+                { id: 'SMB', label: 'SMB', g: 'バックアウト' }, 
                 { id: 'FPS', label: 'FPS', g: 'サイドアウト' }, { id: 'BPS', label: 'BPS', g: 'サイドアウト' }, 
                 { id: 'FLS', label: 'FLS', g: 'サイドアウト' }, { id: 'BLS', label: 'BLS', g: 'サイドアウト' }, 
                 { id: 'FVS', label: 'FVS', g: 'サイドアウト' }, { id: 'BVS', label: 'BVS', g: 'サイドアウト' }, 
-                { id: 'SMS', label: 'SMS', g: 'サイドアウト' }, { id: 'FRS', label: 'FRS', g: 'サイドアウト' },
-                { id: 'BRS', label: 'BRS', g: 'サイドアウト' }
+                { id: 'SMS', label: 'SMS', g: 'サイドアウト' } 
             ],
             MG: ['ネット', 'バックアウト', 'サイドアウト']
         };
@@ -721,9 +822,10 @@
                 `}).join('') || '<div class="py-10 text-center text-slate-300 font-black">該当する試合はありません</div>';
 
                 document.getElementById('team-stats').classList.remove('hidden');
-                document.getElementById('team-pair-rank').classList.remove('hidden');
+                document.getElementById('team-rank-container').classList.remove('hidden');
+                document.getElementById('team-common-stats').classList.remove('hidden');
 
-                // ★ 統計データ（勝率・試合数・ペアランキング）からは対内戦を除外する
+                // 統計データ（勝率・試合数・ペアランキング）からは対内戦を除外する
                 const statsMatches = filteredMatches.filter(m => m.t !== '練習試合（対内戦）');
 
                 const totalM = statsMatches.length;
@@ -739,6 +841,85 @@
                 }).length;
                 document.getElementById('team-month-matches').textContent = mMatches;
 
+                // ★ 部内全体のポイント得点とミスを分類集計（対内外すべてのデータを使用）
+                let totalPts = 0, totalMisses = 0;
+                let ptsFm = { cross_left: 0, straight: 0, cross_right: 0, none: 0 };
+                let missFm = { cross_left: 0, straight: 0, cross_right: 0, none: 0 };
+                let ptsCode = {};
+                let missCode = {};
+                let ptsCross = {};
+                let missCross = {};
+
+                filteredMatches.forEach(m => {
+                    if (m.pts) {
+                        m.pts.forEach(p => {
+                            const isInternal = (m.t === '練習試合（対内戦）');
+                            
+                            // 1. 自チーム（OURS）が得点したすべてのプレーを集計
+                            const isUsPoint = p.winnerSide === 1;
+                            if (p.type === 'point') {
+                                if (isUsPoint || isInternal) {
+                                    ptsFm[p.formation] = (ptsFm[p.formation] || 0) + 1;
+                                    ptsCode[p.code] = (ptsCode[p.code] || 0) + 1;
+                                    
+                                    const crossKey = `${p.formation}|${p.code}`;
+                                    ptsCross[crossKey] = (ptsCross[crossKey] || 0) + 1;
+                                    
+                                    totalPts++;
+                                }
+                            }
+
+                            // 2. 自チーム（OURS）がミスしたすべてのプレーを集計
+                            if (p.type === 'miss') {
+                                if (!isUsPoint || isInternal) {
+                                    missFm[p.formation] = (missFm[p.formation] || 0) + 1;
+                                    missCode[p.code] = (missCode[p.code] || 0) + 1;
+                                    
+                                    const crossKey = `${p.formation}|${p.code}`;
+                                    missCross[crossKey] = (missCross[crossKey] || 0) + 1;
+                                    
+                                    totalMisses++;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // --- 展開別（円グラフ） ---
+                const ptsFmArr = [
+                    { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' },
+                    { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' }
+                ].map(fm => ({ label: fm.label, count: ptsFm[fm.id] || 0, color: COLORS.fm[fm.id] }))
+                 .filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+
+                const missFmArr = [
+                    { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' },
+                    { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' }
+                ].map(fm => ({ label: fm.label, count: missFm[fm.id] || 0, color: COLORS.fm[fm.id] }))
+                 .filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+
+                document.getElementById('team-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
+                document.getElementById('team-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
+
+                // --- 種類別（円グラフ） ---
+                const ptsCodeArr = Object.keys(ptsCode)
+                    .map(c => ({ label: State.PT.find(t=>t.id===c)?.label||c, count: ptsCode[c] }))
+                    .sort((a,b)=>b.count-a.count)
+                    .map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+                
+                const missCodeArr = Object.keys(missCode)
+                    .map(c => ({ label: State.MT.find(t=>t.id===c)?.label||c, count: missCode[c] }))
+                    .sort((a,b)=>b.count-a.count)
+                    .map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+
+                document.getElementById('team-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
+                document.getElementById('team-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
+
+                // --- クロス集計（展開×種類別）得点・ミス表示 ---
+                document.getElementById('team-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
+                document.getElementById('team-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
+
+                // ペアランキング
                 const pairs = {};
                 statsMatches.forEach(m => {
                     const key = m.type === 'singles' ? m.p1 : [m.p1, m.p2].sort().join('・');
@@ -747,7 +928,7 @@
                     if(m.winner===1) pairs[key].w++;
                 });
                 
-                const rankHtml = Object.keys(pairs).map(k => ({k, wr: pairs[k].w/pairs[k].t, t: pairs[k].t}))
+                const rankHtml = Object.keys(pairs).map(k => ({k, wr: pairs[k].w/pairs[k].t, t: pairs[k].t, w: pairs[k].w}))
                     .filter(p => p.t > 0)
                     .sort((a,b) => b.wr - a.wr || b.t - a.t)
                     .map((p, idx) => `
@@ -757,19 +938,43 @@
                                 <span class="text-sm font-black text-slate-700">${p.k}</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-xs font-black text-blue-600">${(p.wr*100).toFixed(1)}%</span>
-                                <span class="text-[10px] text-slate-400 ml-1">(${p.t}試合)</span>
+                                <span class="text-xs font-black ${p.wr >= 0.5 ? 'text-blue-600' : 'text-red-500'}">${(p.wr*100).toFixed(1)}%</span>
+                                <span class="text-[10px] text-slate-400 ml-1">(${p.w}勝${p.t-p.w}敗/${p.t}試合)</span>
                             </div>
                         </div>
                     `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 document.getElementById('pair-list').innerHTML = rankHtml;
+
+                // 対戦校ランキング
+                const schools = {};
+                statsMatches.forEach(m => {
+                    if(!m.opp) return;
+                    if(!schools[m.opp]) schools[m.opp] = { w:0, t:0 };
+                    schools[m.opp].t++;
+                    if(m.winner===1) schools[m.opp].w++;
+                });
+
+                const schoolRankHtml = Object.keys(schools).map(k => ({k, wr: schools[k].w/schools[k].t, t: schools[k].t, w: schools[k].w}))
+                    .sort((a,b) => b.wr - a.wr || b.t - a.t)
+                    .map((p, idx) => `
+                        <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-slate-400 w-4">${idx+1}.</span>
+                                <span class="text-sm font-black text-slate-700">${p.k}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-black ${p.wr >= 0.5 ? 'text-blue-600' : 'text-red-500'}">${(p.wr*100).toFixed(1)}%</span>
+                                <span class="text-[10px] text-slate-400 ml-1">(${p.w}勝${p.t-p.w}敗/${p.t}試合)</span>
+                            </div>
+                        </div>
+                    `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
+                document.getElementById('school-list').innerHTML = schoolRankHtml;
             },
 
             // --- 個人（自チーム）分析 ---
             renderPlayerSelect: function() {
                 const sel = document.getElementById('sel-player');
                 const current = sel.value;
-                // 自チームの選手のみをリストアップ（部内戦の場合は相手側にいる自選手も考慮）
                 const players = Array.from(new Set(State.matches.flatMap(m => {
                     if (m.t === '練習試合（対内戦）') {
                         return [m.p1, m.p2, m.opp_p1, m.opp_p2].filter(Boolean);
@@ -816,16 +1021,45 @@
                 let pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP || m.opp_p1 === selP || m.opp_p2 === selP);
                 if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
 
-                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
-                let pts = {}, ms = {};
+                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, totalPts = 0, totalMisses = 0;
                 let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
-                let msFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let missFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let ptsCode = {};
+                let missCode = {};
+                let ptsCross = {};
+                let missCross = {};
+                
+                let extOpp = {};
+                let intOpp = {};
 
                 pm.forEach(m => {
                     const isUs = (m.p1 === selP || m.p2 === selP);
+                    const isWin = (isUs && m.winner === 1) || (!isUs && m.winner === 2);
                     
-                    if(isUs && m.winner === 1) w++;
-                    else if(!isUs && m.winner === 2) w++;
+                    if(isWin) w++;
+
+                    let opponents = [];
+                    if (isUs) {
+                        if (m.opp_p1) opponents.push(m.opp_p1);
+                        if (m.opp_p2) opponents.push(m.opp_p2);
+                    } else {
+                        if (m.p1) opponents.push(m.p1);
+                        if (m.p2) opponents.push(m.p2);
+                    }
+                    
+                    if (m.t !== '練習試合（対内戦）') {
+                        opponents.forEach(o => {
+                            if (!extOpp[o]) extOpp[o] = { w: 0, t: 0 };
+                            extOpp[o].t++;
+                            if (isWin) extOpp[o].w++;
+                        });
+                    } else {
+                        opponents.forEach(o => {
+                            if (!intOpp[o]) intOpp[o] = { w: 0, t: 0 };
+                            intOpp[o].t++;
+                            if (isWin) intOpp[o].w++;
+                        });
+                    }
 
                     if(m.pts) m.pts.forEach(p => {
                         const isServing = isUs ? p.isOurServe : !p.isOurServe;
@@ -837,18 +1071,20 @@
 
                         const scoredPoint = isUs ? (p.winnerSide === 1) : (p.winnerSide === 2);
                         if(scoredPoint && p.hitter === selP) { 
-                            mp++; 
-                            const k = `${p.formation}|${p.code}`;
-                            pts[k] = (pts[k] || 0) + 1; 
-                            if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
+                            totalPts++; 
+                            ptsFm[p.formation] = (ptsFm[p.formation] || 0) + 1;
+                            ptsCode[p.code] = (ptsCode[p.code] || 0) + 1;
+                            const crossKey = `${p.formation}|${p.code}`;
+                            ptsCross[crossKey] = (ptsCross[crossKey] || 0) + 1;
                         }
 
                         const lostPoint = isUs ? (p.winnerSide === 2) : (p.winnerSide === 1);
                         if(lostPoint && p.hitter === selP) { 
-                            mm++; 
-                            const k = `${p.formation}|${p.code}`;
-                            ms[k] = (ms[k] || 0) + 1; 
-                            if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
+                            totalMisses++; 
+                            missFm[p.formation] = (missFm[p.formation] || 0) + 1;
+                            missCode[p.code] = (missCode[p.code] || 0) + 1;
+                            const crossKey = `${p.formation}|${p.code}`;
+                            missCross[crossKey] = (missCross[crossKey] || 0) + 1;
                         }
                     });
                 });
@@ -858,44 +1094,23 @@
                 const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
-                
-                const ptsFmTotal = ptsFm.cross_left + ptsFm.straight + ptsFm.cross_right;
-                const msFmTotal = msFm.cross_left + msFm.straight + msFm.cross_right;
 
-                const genFmBar = (dataObj, total) => {
-                    if(total===0) return '<div class="text-xs text-slate-400">データなし</div>';
-                    const cl = ((dataObj.cross_left/total)*100).toFixed(1);
-                    const st = ((dataObj.straight/total)*100).toFixed(1);
-                    const cr = ((dataObj.cross_right/total)*100).toFixed(1);
-                    return `
-                        <div class="flex h-4 rounded-full overflow-hidden mb-1">
-                            <div class="bg-blue-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cl}%">${cl>10?'正':''}</div>
-                            <div class="bg-emerald-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${st}%">${st>10?'ス':''}</div>
-                            <div class="bg-purple-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cr}%">${cr>10?'逆':''}</div>
-                        </div>
-                        <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                            <span class="text-blue-500">正クロス ${cl}%</span>
-                            <span class="text-emerald-500">ストレート ${st}%</span>
-                            <span class="text-purple-500">逆クロス ${cr}%</span>
-                        </div>
-                    `;
+                const genRankHtml = (oppObj) => {
+                    return Object.keys(oppObj).map(k => ({ k, wr: oppObj[k].w / oppObj[k].t, t: oppObj[k].t, w: oppObj[k].w }))
+                        .sort((a,b) => b.wr - a.wr || b.t - a.t)
+                        .map((p, idx) => `
+                            <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black text-slate-400 w-4">${idx+1}.</span>
+                                    <span class="text-sm font-black text-slate-700">${p.k}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-black ${p.wr >= 0.5 ? 'text-blue-600' : 'text-red-500'}">${(p.wr*100).toFixed(1)}%</span>
+                                    <span class="text-[10px] text-slate-400 ml-1">(${p.w}勝${p.t-p.w}敗/${p.t}試合)</span>
+                                </div>
+                            </div>
+                        `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 };
-
-                const prHtml = Object.keys(pts).map(k => {
-                    const [fm, c] = k.split('|');
-                    return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label||c, count: pts[k], r: ((pts[k]/mp)*100).toFixed(1) };
-                }).sort((a,b)=>b.count-a.count).map(p => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-blue-500 h-full rounded-full" style="width: ${p.r}%"></div></div></div>
-                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
-
-                const mrHtml = Object.keys(ms).map(k => {
-                    const [fm, c] = k.split('|');
-                    return { fm, code: c, l: State.MT.find(t=>t.id===c)?.label||c, count: ms[k], r: ((ms[k]/mm)*100).toFixed(1) };
-                }).sort((a,b)=>b.count-a.count).map(m => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(m.fm)}] ${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${m.r}%"></div></div></div>
-                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
 
                 container.innerHTML = `
                     <div class="grid grid-cols-2 gap-3">
@@ -905,26 +1120,80 @@
                         <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-8">
-                        <div>
-                            <h3 class="text-xs font-black text-slate-800 mb-2">📊 展開の比率 (全体)</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
-                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, ptsFmTotal)}</div>
-                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, msFmTotal)}</div>
+                    <div class="bg-white p-5 rounded-3xl border shadow-sm space-y-5">
+                        <h3 class="text-xs font-black text-slate-700 flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-blue-600"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            個人の戦術傾向
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">📈 展開別 得点シェア</h4>
+                                <div id="player-pts-share"></div>
+                            </div>
+                            <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                                <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">⚠️ 展開別 ミスシェア</h4>
+                                <div id="player-miss-share"></div>
                             </div>
                         </div>
-                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 展開別 ポイント奪取の比率</h3><div class="space-y-3">${prHtml}</div></div>
-                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ 展開別 ミス発生の比率</h3><div class="space-y-3">${mrHtml}</div></div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
+                                <div id="player-pts-code-share"></div>
+                            </div>
+                            <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                                <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">🚨 種類別 ミスシェア</h4>
+                                <div id="player-miss-code-share"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div>
+                                <h4 class="text-[10px] font-black text-blue-600 mb-2 uppercase tracking-wider flex items-center gap-1">⚔️ 展開 × 種類別 得点ランキング</h4>
+                                <div id="player-pts-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-red-600 mb-2 uppercase tracking-wider flex items-center gap-1">💥 展開 × 種類別 ミスランキング</h4>
+                                <div id="player-miss-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="bg-white p-5 rounded-3xl border shadow-sm">
+                            <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1">⚔️ 相手選手 相性ランキング（対外戦）</h3>
+                            <div class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">${genRankHtml(extOpp)}</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-3xl border shadow-sm">
+                            <h3 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1">🤝 相手選手 相性ランキング（部内戦）</h3>
+                            <div class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">${genRankHtml(intOpp)}</div>
+                        </div>
                     </div>
                 `;
                 container.classList.remove('hidden');
+
+                // 円グラフ生成
+                const ptsFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' } ].map(fm => ({ label: fm.label, count: ptsFm[fm.id] || 0, color: COLORS.fm[fm.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+                const missFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' } ].map(fm => ({ label: fm.label, count: missFm[fm.id] || 0, color: COLORS.fm[fm.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+
+                document.getElementById('player-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
+                document.getElementById('player-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
+
+                const ptsCodeArr = Object.keys(ptsCode).map(c => ({ label: State.PT.find(t=>t.id===c)?.label||c, count: ptsCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+                const missCodeArr = Object.keys(missCode).map(c => ({ label: State.MT.find(t=>t.id===c)?.label||c, count: missCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+
+                document.getElementById('player-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
+                document.getElementById('player-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
+
+                document.getElementById('player-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
+                document.getElementById('player-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
             },
 
             // --- 対戦相手（スカウティング）分析 ---
             renderOpponentSelect: function() {
                 const sel = document.getElementById('sel-opponent');
                 const current = sel.value;
-                // 対外戦のみを対象とする
                 const externalMatches = State.matches.filter(m => m.t !== '練習試合（対内戦）');
                 const players = Array.from(new Set(externalMatches.flatMap(m => [m.opp_p1, m.opp_p2].filter(Boolean)))).sort();
                 sel.innerHTML = '<option value="">-- 選択 --</option>';
@@ -969,14 +1238,15 @@
                 let pm = externalMatches.filter(m => m.opp_p1 === selP || m.opp_p2 === selP);
                 if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
 
-                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, mp = 0, mm = 0;
-                let pts = {}, ms = {};
+                let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, totalPts = 0, totalMisses = 0;
                 let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
-                let msFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let missFm = { cross_left:0, straight:0, cross_right:0, none:0 };
+                let ptsCode = {};
+                let missCode = {};
+                let ptsCross = {};
+                let missCross = {};
 
                 pm.forEach(m => {
-                    const isUs = false; // 相手チーム選手としての分析なのでfalse
-                    
                     if(m.winner === 2) w++; 
 
                     if(m.pts) m.pts.forEach(p => {
@@ -989,18 +1259,20 @@
 
                         const scoredPoint = p.winnerSide === 2;
                         if(scoredPoint && p.hitter === selP) { 
-                            mp++; 
-                            const k = `${p.formation}|${p.code}`;
-                            pts[k] = (pts[k] || 0) + 1; 
-                            if(p.formation && ptsFm[p.formation] !== undefined) ptsFm[p.formation]++;
+                            totalPts++; 
+                            ptsFm[p.formation] = (ptsFm[p.formation] || 0) + 1;
+                            ptsCode[p.code] = (ptsCode[p.code] || 0) + 1;
+                            const crossKey = `${p.formation}|${p.code}`;
+                            ptsCross[crossKey] = (ptsCross[crossKey] || 0) + 1;
                         }
 
                         const lostPoint = p.winnerSide === 1;
                         if(lostPoint && p.hitter === selP) { 
-                            mm++; 
-                            const k = `${p.formation}|${p.code}`;
-                            ms[k] = (ms[k] || 0) + 1; 
-                            if(p.formation && msFm[p.formation] !== undefined) msFm[p.formation]++;
+                            totalMisses++; 
+                            missFm[p.formation] = (missFm[p.formation] || 0) + 1;
+                            missCode[p.code] = (missCode[p.code] || 0) + 1;
+                            const crossKey = `${p.formation}|${p.code}`;
+                            missCross[crossKey] = (missCross[crossKey] || 0) + 1;
                         }
                     });
                 });
@@ -1010,44 +1282,6 @@
                 const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
-                
-                const ptsFmTotal = ptsFm.cross_left + ptsFm.straight + ptsFm.cross_right;
-                const msFmTotal = msFm.cross_left + msFm.straight + msFm.cross_right;
-
-                const genFmBar = (dataObj, total) => {
-                    if(total===0) return '<div class="text-xs text-slate-400">データなし</div>';
-                    const cl = ((dataObj.cross_left/total)*100).toFixed(1);
-                    const st = ((dataObj.straight/total)*100).toFixed(1);
-                    const cr = ((dataObj.cross_right/total)*100).toFixed(1);
-                    return `
-                        <div class="flex h-4 rounded-full overflow-hidden mb-1">
-                            <div class="bg-blue-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cl}%">${cl>10?'正':''}</div>
-                            <div class="bg-emerald-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${st}%">${st>10?'ス':''}</div>
-                            <div class="bg-purple-400 flex items-center justify-center text-[8px] text-white font-bold" style="width:${cr}%">${cr>10?'逆':''}</div>
-                        </div>
-                        <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                            <span class="text-blue-500">正クロス ${cl}%</span>
-                            <span class="text-emerald-500">ストレート ${st}%</span>
-                            <span class="text-purple-500">逆クロス ${cr}%</span>
-                        </div>
-                    `;
-                };
-
-                const prHtml = Object.keys(pts).map(k => {
-                    const [fm, c] = k.split('|');
-                    return { fm, code: c, l: State.PT.find(t=>t.id===c)?.label||c, count: pts[k], r: ((pts[k]/mp)*100).toFixed(1) };
-                }).sort((a,b)=>b.count-a.count).map(p => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(p.fm)}] ${p.l}</span><span class="text-blue-600">${p.r}% (${p.count}回)</span></div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-blue-500 h-full rounded-full" style="width: ${p.r}%"></div></div></div>
-                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
-
-                const mrHtml = Object.keys(ms).map(k => {
-                    const [fm, c] = k.split('|');
-                    return { fm, code: c, l: State.MT.find(t=>t.id===c)?.label||c, count: ms[k], r: ((ms[k]/mm)*100).toFixed(1) };
-                }).sort((a,b)=>b.count-a.count).map(m => `
-                    <div><div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5"><span>[${Utils.fmLabel(m.fm)}] ${m.l}</span><span class="text-red-600">${m.r}% (${m.count}回)</span></div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${m.r}%"></div></div></div>
-                `).join('') || '<p class="text-xs text-slate-400 font-bold">データがありません</p>';
 
                 container.innerHTML = `
                     <div class="grid grid-cols-2 gap-3">
@@ -1057,19 +1291,63 @@
                         <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-8 border-red-100">
-                        <div>
-                            <h3 class="text-xs font-black text-slate-800 mb-2">📊 展開の比率 (全体)</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
-                                <div><p class="text-[10px] font-black text-blue-800 mb-2">得点時の展開</p>${genFmBar(ptsFm, ptsFmTotal)}</div>
-                                <div><p class="text-[10px] font-black text-red-800 mb-2">失点時の展開</p>${genFmBar(msFm, msFmTotal)}</div>
+                    <div class="bg-white p-5 rounded-3xl border shadow-sm space-y-5 border-red-100">
+                        <h3 class="text-xs font-black text-slate-700 flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-red-600"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            相手選手の戦術傾向
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">📈 展開別 得点シェア</h4>
+                                <div id="opp-pts-share"></div>
+                            </div>
+                            <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                                <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">⚠️ 展開別 ミスシェア</h4>
+                                <div id="opp-miss-share"></div>
                             </div>
                         </div>
-                        <div><h3 class="text-xs font-black text-blue-800 border-b pb-2 mb-4">🎯 展開別 ポイント奪取の比率</h3><div class="space-y-3">${prHtml}</div></div>
-                        <div><h3 class="text-xs font-black text-red-800 border-b pb-2 mb-4">⚠️ 展開別 ミス発生の比率</h3><div class="space-y-3">${mrHtml}</div></div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
+                                <div id="opp-pts-code-share"></div>
+                            </div>
+                            <div class="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                                <h4 class="text-[10px] font-black text-red-800 uppercase tracking-wider flex items-center gap-1">🚨 種類別 ミスシェア</h4>
+                                <div id="opp-miss-code-share"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
+                            <div>
+                                <h4 class="text-[10px] font-black text-blue-600 mb-2 uppercase tracking-wider flex items-center gap-1">⚔️ 展開 × 種類別 得点ランキング</h4>
+                                <div id="opp-pts-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-red-600 mb-2 uppercase tracking-wider flex items-center gap-1">💥 展開 × 種類別 ミスランキング</h4>
+                                <div id="opp-miss-cross-share" class="space-y-2.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar"></div>
+                            </div>
+                        </div>
                     </div>
                 `;
                 container.classList.remove('hidden');
+
+                // 円グラフ生成
+                const ptsFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' } ].map(fm => ({ label: fm.label, count: ptsFm[fm.id] || 0, color: COLORS.fm[fm.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+                const missFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: 'ダブルフォルト' } ].map(fm => ({ label: fm.label, count: missFm[fm.id] || 0, color: COLORS.fm[fm.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
+
+                document.getElementById('opp-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
+                document.getElementById('opp-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
+
+                const ptsCodeArr = Object.keys(ptsCode).map(c => ({ label: State.PT.find(t=>t.id===c)?.label||c, count: ptsCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+                const missCodeArr = Object.keys(missCode).map(c => ({ label: State.MT.find(t=>t.id===c)?.label||c, count: missCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
+
+                document.getElementById('opp-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
+                document.getElementById('opp-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
+
+                document.getElementById('opp-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
+                document.getElementById('opp-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
             },
             
             showPlayerSelect: function(ptData) {
@@ -1288,7 +1566,7 @@
                 const dateInput = document.getElementById('in-date');
                 if (dateInput) dateInput.value = today;
 
-                UI.initDropdowns(); // ★変更：画面読み込み時に選手名・学年のプルダウンを一括生成
+                UI.initDropdowns(); // 画面読み込み時に選手名・学年のプルダウンを一括生成
                 UI.initPointsButtons();
                 Events.init();
                 
@@ -1341,7 +1619,7 @@
                         }
                     });
                 } catch (e) {
-                    console.error("DB Init Error:", e);
+                    console.error("DB Error:", e);
                 }
             },
             saveMatch: function() {
