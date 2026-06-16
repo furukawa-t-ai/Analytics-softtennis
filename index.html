@@ -1885,7 +1885,6 @@
         window.DB = {
             init: async function() {
                 try {
-                    // ★ RULE 3: 認証処理を最優先し、完了を待つ (v11モジュール方式)
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(auth, __initial_auth_token);
                     } else {
@@ -1893,14 +1892,12 @@
                     }
 
 
-                    // 認証完了後、状態監視を設定
                     onAuthStateChanged(auth, user => {
                         if (user) {
                             State.user = user;
                             const uidDisp = document.getElementById('uid-display');
                             if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
                             
-                            // ★ 認証に成功したユーザーのみが監視を開始する
                             const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
                             onSnapshot(matchesRef, snap => {
                                 State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -1957,9 +1954,7 @@
 
 
         // 初期化の起動
-        window.addEventListener('load', function() { 
-            setTimeout(function() { window.DB.init(); }, 500); 
-        });
+        window.DB.init(); 
     </script>
 </body>
 </html>
