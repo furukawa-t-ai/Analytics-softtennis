@@ -1867,91 +1867,105 @@
         });
 
 
-        // --- Firebase Init ---
-        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : "soft-tennis-v1";
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config)
-            : {
-                apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-                authDomain: "softtennis-data.firebaseapp.com",
-                projectId: "softtennis-data"
-            };
-            
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+       // --- Firebase Init (改良版) ---
+const APP_ID = typeof __app_id !== 'undefined' ? __app_id : "soft-tennis-v1";
+const firebaseConfig = typeof __firebase_config !== 'undefined' 
+    ? JSON.parse(__firebase_config)
+    : {
+        apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+        authDomain: "softtennis-data.firebaseapp.com",
+        projectId: "softtennis-data"
+    };
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        window.DB = {
-            init: async function() {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+// 保持しておく（複数登録防止のため）
+window.DB = window.DB || {};
+window.DB.__unsubMatches = null;
 
+window.DB.init = async function() {
+  try {
+    console.log('[DB] init start');
 
-                    onAuthStateChanged(auth, user => {
-                        if (user) {
-                            State.user = user;
-                            const uidDisp = document.getElementById('uid-display');
-                            if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
-                            
-                            const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
-                            onSnapshot(matchesRef, snap => {
-                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                                if(State.view === 'team') UI.renderTeam();
-                                if(State.view === 'player') UI.renderPlayerSelect();
-                                if(State.view === 'opponent') UI.renderOpponentSelect();
-                            }, err => {
-                                console.error("Firestore Listen Error:", err);
-                                const errBox = document.getElementById('error-box');
-                                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
-                            });
+    // 1) まずトークンがあればそれで、なければ匿名でログインを試みる（失敗はキャッチ）
+    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+      console.log('[DB] signing in with custom token');
+      await signInWithCustomToken(auth, __initial_auth_token);
+    } else {
+      console.log('[DB] signing in anonymously');
+      await signInAnonymously(auth);
+    }
 
+    // 2) 認証状態の変化を監視し、認証ユーザーが存在すれば Firestore の購読を開始
+    onAuthStateChanged(auth, user => {
+      console.log('[Auth] state changed', user ? user.uid : null);
+      if (user) {
+        State.user = user;
+        const uidDisp = document.getElementById('uid-display');
+        if (uidDisp) uidDisp.textContent = user.uid.substring(0,8);
 
-                            const loader = document.getElementById('loading-screen');
-                            if (loader) {
-                                loader.style.opacity = '0';
-                                setTimeout(() => loader.style.display = 'none', 300);
-                            }
-                        }
-                    });
-                } catch (e) {
-                    console.error("DB Initialization Error:", e);
-                    const errBox = document.getElementById('error-box');
-                    if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】<br>' + e.message; }
-                }
-            },
-            saveMatch: async function() {
-                const finalData = { 
-                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
-                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
-                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
-                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
-                    createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' 
-                };
-                try {
-                    const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
-                    await addDoc(matchesRef, finalData);
-                    UI.resetToMeta();
-                } catch (e) {
-                    alert("保存失敗: " + e.message);
-                }
-            },
-            deleteMatch: async function(id) {
-                if (confirm('削除しますか？')) {
-                    try {
-                        const docRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'matches', id);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        alert("削除失敗: " + e.message);
-                    }
-                }
-            }
-        };
+        // デバッグ出力：現在の user と auth.currentUser を確実に確認
+        console.log('[Auth] currentUser', auth.currentUser);
 
+        // 既にリスナーがあれば解除（ページリロードやホットリロード対策）
+        if (window.DB.__unsubMatches) {
+          try { window.DB.__unsubMatches(); } catch(e){ console.warn('[DB] unsub error', e); }
+          window.DB.__unsubMatches = null;
+        }
+
+        // collection パス（あなたの構造に合わせたもの）
+        const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
+
+        // onSnapshot の第2引数（成功コールバック）と第3（エラーハンドラ）を明確に扱う
+        window.DB.__unsubMatches = onSnapshot(matchesRef, snap => {
+          try {
+            const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                         .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+            State.matches = arr;
+            console.log('[DB] matches loaded', arr.length);
+            if (State.view === 'team') UI.renderTeam();
+            if (State.view === 'player') UI.renderPlayerSelect();
+            if (State.view === 'opponent') UI.renderOpponentSelect();
+          } catch (e) {
+            console.error('[DB] snapshot processing error', e);
+            const errBox = document.getElementById('error-box');
+            if (errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【DB処理エラー】' + e.message + '<br>'; }
+          }
+        }, err => {
+          // 詳細ログ：err.code と err.message を出す
+          console.error('[Firestore Listen Error]', err.code, err.message);
+          const errBox = document.getElementById('error-box');
+          if (errBox) { 
+            errBox.classList.remove('hidden'); 
+            errBox.innerHTML = '【データベース接続エラー】権限または接続を確認してください。<br>error.code: ' + (err.code || '-') + '<br>' + err.message;
+          }
+        });
+
+        // ローディングを消す
+        const loader = document.getElementById('loading-screen');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.style.display = 'none', 300);
+        }
+
+      } else {
+        // user が null の場合：認証に失敗している or サインアウト
+        console.warn('[Auth] no user (not signed in)');
+        const errBox = document.getElementById('error-box');
+        if (errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】未認証です。Anonymous を有効化するかトークンを確認してください。<br>'; }
+      }
+    });
+
+  } catch (e) {
+    console.error('[DB Initialization Error]', e);
+    const errBox = document.getElementById('error-box');
+    if (errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】' + e.message; }
+  }
+};
+
+// saveMatch / deleteMatch は元コードのまま使えます（ただし権限ルールが必要）
 
         // 初期化の起動
         window.DB.init(); 
