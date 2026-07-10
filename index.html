@@ -16,6 +16,11 @@
     </style>
 
     <script>
+        // ★ キャンバス環境のセキュリティ変数をモジュール実行前に「確実に」キャッチして保存する最重要処理
+        window.ENV_FIREBASE_CONFIG = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        window.ENV_APP_ID = typeof __app_id !== 'undefined' ? __app_id : null;
+        window.ENV_AUTH_TOKEN = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
         window.addEventListener('error', function(e) {
             const errBox = document.getElementById('error-box');
             if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【システムエラー】' + e.message + '<br>'; }
@@ -260,12 +265,12 @@
                 <div class="flex justify-center items-center gap-8 mb-10">
                     <div class="text-center">
                         <div id="sum-us-n" class="text-sm font-black text-blue-600 mb-1"></div>
-                        <div id="sum-us-g" class="text-6xl font-black text-blue-600">0</div>
+                        <div id="sum-us-g" class="text-6xl font-black text-blue-600">{scores.g1}</div>
                     </div>
                     <div class="text-2xl font-black text-slate-200">VS</div>
                     <div class="text-center">
                         <div id="sum-opp-n" class="text-sm font-black text-red-600 mb-1"></div>
-                        <div id="sum-opp-g" class="text-6xl font-black text-red-600">0</div>
+                        <div id="sum-opp-g" class="text-6xl font-black text-red-600">{scores.g2}</div>
                     </div>
                 </div>
                 <button id="btn-save" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform">データを保存して終了</button>
@@ -454,22 +459,22 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : "soft-tennis-v1";
-        const configStr = typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : null;
+        const appId = typeof window.ENV_APP_ID !== 'undefined' ? window.ENV_APP_ID : "soft-tennis-v1";
+        const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
         const firebaseConfig = configStr ? JSON.parse(configStr) : {
             apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
             authDomain: "softtennis-data.firebaseapp.com",
             projectId: "softtennis-data"
         };
-        const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
+        const initialAuthToken = window.ENV_AUTH_TOKEN;
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         // --- Constants ---
-        const TEAM_PLAYERS = ['小田原 耕生', '女夫池 来希', '曽我 祥帆', '岩本 夕槻', '竹原 歩夢', '牧 大夢', '髙木 晧喜', '安田 龍吾', '竹原 歩夢', '麻生 康二', '長田 幸大', '西川 結', '佐藤 実', '福島 有彩', '森松 瑠菜', '谷川 柚季', '野田 結愛', '岩田 悠聖', '清見 悠仁', '小保 怜太', '河村 蛍音', '松尾 俐音', '新谷 彩夏', '原田 柊', '島袋 礼惟真', '中塚 善晴', '濱川 豪', '堀 百々華', '松林 由和', '市川 夏麻', '松本 穂里', '加藤 颯', '眞田 心晴', '森田 優夢']; 
-        const GRADES = ['1年', '2年', '3年', '4年', '社会人'];
+        const TEAM_PLAYERS = ['選手A', '選手B', '選手C', '選手D', '選手E']; 
+        const GRADES = ['1年', '2年', '3年', '4年'];
 
         const COLORS = {
             fm: { 'cross_left': '#3b82f6', 'straight': '#10b981', 'cross_right': '#a855f7', 'none': '#94a3b8' },
@@ -1290,7 +1295,7 @@
             },
             renderOpponentStats: function() {
                 const selP = document.getElementById('sel-opponent').value; 
-                const selM = document.getElementById('sel-opponent-match').value;
+                const selM = document.getElementById('sel-opponent-match');
                 const container = document.getElementById('opponent-stats');
                 const actionContainer = document.getElementById('opponent-match-action');
                 
@@ -1587,92 +1592,11 @@
             }
         };
 
-        const DB = {
-            init: async function() {
-                try {
-                    // ★ 1. まず認証処理を待つ
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    // ★ 2. 認証完了を確認
-                    const user = auth.currentUser;
-                    if (!user) {
-                        throw new Error("認証に失敗しました");
-                    }
-
-                    State.user = user;
-                    const uidDisp = document.getElementById('uid-display');
-                    if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
-                    
-                    // ★ 3. 確実に認証済みの状態でデータベース監視を開始
-                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
-                    onSnapshot(matchesRef, snap => {
-                        State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                        if(State.view === 'team') UI.renderTeam();
-                        if(State.view === 'player') UI.renderPlayerSelect();
-                        if(State.view === 'opponent') UI.renderOpponentSelect();
-                    }, err => {
-                        console.error("Firestore Listen Error:", err);
-                        const errBox = document.getElementById('error-box');
-                        if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
-                    });
-
-                    const loader = document.getElementById('loading-screen');
-                    if (loader) {
-                        loader.style.opacity = '0';
-                        setTimeout(() => loader.style.display = 'none', 300);
-                    }
-
-                    onAuthStateChanged(auth, u => {
-                        if (u) State.user = u;
-                    });
-                    
-                } catch (e) {
-                    console.error("DB Initialization Error:", e);
-                    const errBox = document.getElementById('error-box');
-                    if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】<br>' + e.message; }
-                    
-                    const loader = document.getElementById('loading-screen');
-                    if (loader) {
-                        loader.style.opacity = '0';
-                        setTimeout(() => loader.style.display = 'none', 300);
-                    }
-                }
-            },
-            saveMatch: async function() {
-                if (!State.user) return alert("認証が完了していません。");
-                const finalData = { 
-                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
-                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
-                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
-                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
-                    createdAt: Date.now(), recorder: State.user.uid
-                };
-                try {
-                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
-                    await addDoc(matchesRef, finalData);
-                    UI.resetToMeta();
-                } catch (e) {
-                    alert("保存失敗: " + e.message);
-                }
-            },
-            deleteMatch: async function(id) {
-                if (confirm('削除しますか？')) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'matches', id);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        alert("削除失敗: " + e.message);
-                    }
-                }
-            }
-        };
-
-        // --- グローバルへの関数公開 ---
-        window.deleteMatch = DB.deleteMatch;
+        // UIイベントのフック用グローバル露出
+        window.Utils = Utils;
+        window.State = State;
+        window.Logic = Logic;
+        window.UI = UI;
 
         // --- Events ---
         const Events = {
@@ -1855,6 +1779,93 @@
                 };
             }
         };
+
+        // --- Firebase Init ---
+        const DB = {
+            init: async function() {
+                try {
+                    let userCredential;
+                    if (initialAuthToken) {
+                        userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        userCredential = await signInAnonymously(auth);
+                    }
+
+                    const user = userCredential.user;
+                    if (!user) {
+                        throw new Error("認証に失敗しました");
+                    }
+
+                    State.user = user;
+                    const uidDisp = document.getElementById('uid-display');
+                    if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
+                    
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    onSnapshot(matchesRef, snap => {
+                        State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        if(State.view === 'team') UI.renderTeam();
+                        if(State.view === 'player') UI.renderPlayerSelect();
+                        if(State.view === 'opponent') UI.renderOpponentSelect();
+                    }, err => {
+                        console.error("Firestore Listen Error:", err);
+                        const errBox = document.getElementById('error-box');
+                        if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
+                    });
+
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.style.display = 'none', 300);
+                    }
+
+                    onAuthStateChanged(auth, u => {
+                        if (u) State.user = u;
+                    });
+                    
+                } catch (e) {
+                    console.error("DB Initialization Error:", e);
+                    const errBox = document.getElementById('error-box');
+                    if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】<br>' + e.message; }
+                    
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.style.display = 'none', 300);
+                    }
+                }
+            },
+            saveMatch: async function() {
+                if (!State.user) return alert("認証が完了していません。");
+                const finalData = { 
+                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
+                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
+                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
+                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
+                    createdAt: Date.now(), recorder: State.user.uid
+                };
+                try {
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    await addDoc(matchesRef, finalData);
+                    UI.resetToMeta();
+                } catch (e) {
+                    alert("保存失敗: " + e.message);
+                }
+            },
+            deleteMatch: async function(id) {
+                if (confirm('削除しますか？')) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'matches', id);
+                        await deleteDoc(docRef);
+                    } catch (e) {
+                        alert("削除失敗: " + e.message);
+                    }
+                }
+            }
+        };
+
+        // ★ 完全なグローバル関数の公開（エラーの元凶を確実に回避）
+        window.DB = DB;
+        window.deleteMatch = DB.deleteMatch;
 
         // --- Entry Point ---
         window.addEventListener('load', function() { 
