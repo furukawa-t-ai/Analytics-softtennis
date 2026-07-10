@@ -15,7 +15,6 @@
         .btn-active { border-color: #2563eb !important; background-color: #eff6ff !important; color: #1d4ed8 !important; }
     </style>
 
-
     <script>
         window.addEventListener('error', function(e) {
             const errBox = document.getElementById('error-box');
@@ -30,9 +29,7 @@
         <div class="text-slate-500 font-bold text-sm tracking-widest">SYSTEM LOADING...</div>
     </div>
 
-
     <div id="error-box" class="hidden bg-red-100 text-red-700 p-4 font-bold text-xs z-[9999] relative"></div>
-
 
     <header class="bg-blue-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2">
@@ -41,7 +38,6 @@
         </div>
         <span id="uid-display" class="text-[8px] opacity-40 font-mono">Loading...</span>
     </header>
-
 
     <main class="max-w-4xl mx-auto p-4">
         
@@ -61,9 +57,9 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">ゲーム数</label>
                         <div class="flex gap-2">
-                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5ゲーム</button>
-                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7ゲーム</button>
-                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9ゲーム</button>
+                            <button id="btn-gc-5" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="5">5回戦</button>
+                            <button id="btn-gc-7" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold btn-active" data-val="7">7回戦</button>
+                            <button id="btn-gc-9" class="btn-gc flex-1 py-3 rounded-xl border-2 font-bold text-slate-400" data-val="9">9回戦</button>
                         </div>
                     </div>
                     
@@ -71,7 +67,6 @@
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">試合日</label>
                         <input type="date" id="in-date" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-600">
                     </div>
-
 
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 block mb-1">大会名・試合種別</label>
@@ -132,7 +127,6 @@
                             </div>
                         </div>
 
-
                         <!-- 対内戦用（プルダウン） -->
                         <div id="opp-internal" class="hidden grid grid-cols-2 gap-2">
                             <div class="space-y-2">
@@ -154,11 +148,9 @@
                         </div>
                     </div>
 
-
                 </div>
                 <button id="btn-start" class="w-full bg-blue-700 text-white p-5 rounded-2xl font-black text-lg active:scale-95 transition-transform mt-6">試合開始</button>
             </div>
-
 
             <!-- 1-2. スコア記録 -->
             <div id="step-rec" class="hidden space-y-4">
@@ -189,7 +181,6 @@
                     </div>
                 </div>
 
-
                 <div class="flex justify-between gap-3">
                     <button id="btn-undo" disabled class="flex-1 flex justify-center items-center gap-2 bg-slate-200 text-slate-700 px-4 py-4 rounded-xl text-sm font-black disabled:opacity-30 active:scale-95 transition-transform shadow-md hover:bg-slate-300">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
@@ -200,7 +191,6 @@
                         中止
                     </button>
                 </div>
-
 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-white p-3 rounded-2xl border shadow-sm">
@@ -230,7 +220,6 @@
                     </div>
                 </div>
 
-
                 <div class="grid grid-cols-2 gap-2 sm:gap-4 h-[55vh] min-h-[500px]">
                     <div class="bg-blue-50 p-2 sm:p-4 rounded-2xl border border-blue-100 shadow-inner flex flex-col overflow-hidden">
                         <div class="overflow-y-auto custom-scrollbar pr-1 h-full pb-4">
@@ -250,7 +239,6 @@
                     </div>
                 </div>
 
-
                 <!-- ★ リアルタイム分析セクション -->
                 <div class="bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl mt-6 border border-slate-700">
                     <h3 class="text-[11px] font-black text-white flex items-center gap-1 mb-3">
@@ -262,9 +250,7 @@
                     </div>
                 </div>
 
-
             </div>
-
 
             <!-- 1-3. 結果サマリー -->
             <div id="step-sum" class="hidden bg-white p-10 rounded-3xl shadow-2xl text-center">
@@ -286,7 +272,6 @@
             </div>
         </div>
 
-
         <!-- 選手選択モーダル (自チーム・相手チーム共通) -->
         <div id="modal-player-select" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform transition-all scale-100">
@@ -298,7 +283,6 @@
                 <button id="btn-sel-cancel" class="mt-6 w-full py-3 text-slate-400 font-bold text-sm underline active:text-slate-600">キャンセル</button>
             </div>
         </div>
-
 
         <!-- 入力中止確認モーダル -->
         <div id="modal-cancel-confirm" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -313,7 +297,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- ===== 2. 個人分析画面 ===== -->
         <div id="view-player" class="hidden space-y-6">
@@ -334,7 +317,6 @@
             <div id="player-stats" class="hidden"></div>
         </div>
 
-
         <!-- ===== 2.5 対戦相手分析画面 ===== -->
         <div id="view-opponent" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -354,7 +336,6 @@
             <div id="opponent-stats" class="hidden"></div>
         </div>
 
-
         <!-- ===== 3. チーム画面 ===== -->
         <div id="view-team" class="hidden space-y-4">
             <div class="bg-white p-4 rounded-2xl border shadow-sm flex items-center justify-between">
@@ -370,7 +351,6 @@
                 </button>
             </div>
 
-
             <div id="team-stats" class="grid grid-cols-2 gap-3 hidden">
                 <div class="bg-slate-800 text-white p-4 rounded-2xl shadow-md">
                     <p class="text-[10px] font-bold text-slate-300 mb-1">チーム勝率（対外戦）</p>
@@ -381,7 +361,6 @@
                     <p class="text-2xl font-black text-slate-800"><span id="team-total-matches">-</span> <span class="text-sm text-slate-400 ml-1">/ <span id="team-month-matches">-</span></span></p>
                 </div>
             </div>
-
 
             <!-- チーム全体の強み・課題のグラフセクション -->
             <div id="team-common-stats" class="bg-white p-5 rounded-2xl border shadow-sm hidden space-y-5">
@@ -401,7 +380,6 @@
                     </div>
                 </div>
 
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                     <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
                         <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
@@ -412,7 +390,6 @@
                         <div id="team-miss-code-share"></div>
                     </div>
                 </div>
-
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                     <div>
@@ -426,7 +403,6 @@
                 </div>
             </div>
 
-
             <!-- ペア別勝率＆対戦校勝率のコンテナ -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden" id="team-rank-container">
                 <div id="team-pair-rank" class="bg-white p-4 rounded-2xl border shadow-sm">
@@ -439,14 +415,12 @@
                 </div>
             </div>
 
-
             <div class="flex justify-between items-center px-1 mb-2 mt-6">
                 <h3 class="text-sm font-black text-slate-400">試合履歴</h3>
             </div>
             <div id="team-list" class="space-y-4"></div>
         </div>
     </main>
-
 
     <!-- ナビゲーションバー -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t p-2 pb-6 flex justify-around shadow-2xl z-50">
@@ -468,24 +442,33 @@
         </button>
     </nav>
 
-
     <!-- アプリケーション・ロジック -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : "soft-tennis-v1";
+        const configStr = typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : null;
+        const firebaseConfig = configStr ? JSON.parse(configStr) : {
+            apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+            authDomain: "softtennis-data.firebaseapp.com",
+            projectId: "softtennis-data"
+        };
+        const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // --- Constants ---
         const TEAM_PLAYERS = ['小田原 耕生', '女夫池 来希', '曽我 祥帆', '岩本 夕槻', '竹原 歩夢', '牧 大夢', '髙木 晧喜', '安田 龍吾', '竹原 歩夢', '麻生 康二', '長田 幸大', '西川 結', '佐藤 実', '福島 有彩', '森松 瑠菜', '谷川 柚季', '野田 結愛', '岩田 悠聖', '清見 悠仁', '小保 怜太', '河村 蛍音', '松尾 俐音', '新谷 彩夏', '原田 柊', '島袋 礼惟真', '中塚 善晴', '濱川 豪', '堀 百々華', '松林 由和', '市川 夏麻', '松本 穂里', '加藤 颯', '眞田 心晴', '森田 優夢']; 
         const GRADES = ['1年', '2年', '3年', '4年', '社会人'];
 
-
         const COLORS = {
             fm: { 'cross_left': '#3b82f6', 'straight': '#10b981', 'cross_right': '#a855f7', 'none': '#94a3b8' },
             palette: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#64748b']
         };
-
 
         // --- State ---
         const State = {
@@ -508,20 +491,19 @@
                 { id: 'FPN', label: 'FPN', g: 'ネット' }, { id: 'BPN', label: 'BPN', g: 'ネット' }, 
                 { id: 'FVN', label: 'FVN', g: 'ネット' }, { id: 'BVN', label: 'BVN', g: 'ネット' }, 
                 { id: 'SMN', label: 'SMN', g: 'ネット' }, { id: 'FRN', label: 'FRN', g: 'ネット' },
-                { id: 'FPB', label: 'FPB', g: 'バックアウト' }, { id: 'BPB', label: 'BPB', g: 'バックアウト' }, 
-                { id: 'FLB', label: 'FLB', g: 'バックアウト' }, { id: 'BLB', label: 'BLB', g: 'バックアウト' }, 
-                { id: 'FVB', label: 'FVB', g: 'バックアウト' }, { id: 'BVB', label: 'BVB', g: 'バックアウト' }, 
-                { id: 'SMB', label: 'SMB', g: 'バックアウト' }, { id: 'FRB', label: 'FRB', g: 'バックアウト' },
-                { id: 'BRB', label: 'BRB', g: 'バックアウト' },
-                { id: 'FPS', label: 'FPS', g: 'サイドアウト' }, { id: 'BPS', label: 'BPS', g: 'サイドアウト' }, 
-                { id: 'FLS', label: 'FLS', g: 'サイドアウト' }, { id: 'BLS', label: 'BLS', g: 'サイドアウト' }, 
-                { id: 'FVS', label: 'FVS', g: 'サイドアウト' }, { id: 'BVS', label: 'BVS', g: 'サイドアウト' },
-                { id: 'FRS', label: 'FRS', g: 'サイドアウト' }, { id: 'BRS', label: 'BRS', g: 'サイドアウト' },
-                { id: 'SMS', label: 'SMS', g: 'サイドアウト' } 
+                { id: 'FPB', label: 'FPB', g: 'バック' }, { id: 'BPB', label: 'BPB', g: 'バック' }, 
+                { id: 'FLB', label: 'FLB', g: 'バック' }, { id: 'BLB', label: 'BLB', g: 'バック' }, 
+                { id: 'FVB', label: 'FVB', g: 'バック' }, { id: 'BVB', label: 'BVB', g: 'バック' }, 
+                { id: 'SMB', label: 'SMB', g: 'バック' }, { id: 'FRB', label: 'FRB', g: 'バック' },
+                { id: 'BRB', label: 'BRB', g: 'バック' },
+                { id: 'FPS', label: 'FPS', g: 'サイド' }, { id: 'BPS', label: 'BPS', g: 'サイド' }, 
+                { id: 'FLS', label: 'FLS', g: 'サイド' }, { id: 'BLS', label: 'BLS', g: 'サイド' }, 
+                { id: 'FVS', label: 'FVS', g: 'サイド' }, { id: 'BVS', label: 'BVS', g: 'サイド' },
+                { id: 'FRS', label: 'FRS', g: 'サイド' }, { id: 'BRS', label: 'BRS', g: 'サイド' },
+                { id: 'SMS', label: 'SMS', g: 'サイド' } 
             ],
-            MG: ['ネット', 'バックアウト', 'サイドアウト']
+            MG: ['ネット', 'バック', 'サイド']
         };
-
 
         // --- Utils ---
         const Utils = {
@@ -551,7 +533,6 @@
                 let conicStr = '';
                 let currentPct = 0;
                 let legendHtml = '';
-
 
                 dataArr.forEach((d) => {
                     const pct = ((d.count / total) * 100);
@@ -598,17 +579,14 @@
             }
         };
 
-
         // --- Logic ---
         const Logic = {
             calcNextScore: function(wSide) {
                 let p1 = State.sc.p1, p2 = State.sc.p2, g1 = State.sc.g1, g2 = State.sc.g2;
                 if (wSide === 1) p1++; else p2++;
 
-
                 let gameWonBy = 0;
                 const isFinalGame = (g1 + g2 === State.gc - 1);
-
 
                 if (isFinalGame) {
                     if (p1 >= 7 && p1 - p2 >= 2) gameWonBy = 1;
@@ -619,13 +597,11 @@
                     else if (p2 >= 4 && p2 - p1 >= 2) gameWonBy = 2;
                 }
 
-
                 if (gameWonBy !== 0) {
                     if (gameWonBy === 1) g1++; else g2++;
                     p1 = 0; p2 = 0;
                     if (!isFinalGame) State.isUsSrv = !State.isUsSrv;
                 }
-
 
                 State.sc = { p1, p2, g1, g2 };
                 State.st = null; 
@@ -634,7 +610,6 @@
                 return (g1 >= Math.ceil(State.gc/2) || g2 >= Math.ceil(State.gc/2));
             }
         };
-
 
         // --- UI ---
         const UI = {
@@ -648,7 +623,6 @@
                         });
                     }
                 });
-
 
                 const gradeSelectIds = ['in-p1-grade', 'in-p2-grade', 'in-opp-p1-grade', 'in-opp-p2-grade', 'in-opp-p1-grade-internal', 'in-opp-p2-grade-internal'];
                 gradeSelectIds.forEach(id => {
@@ -671,7 +645,6 @@
                     oppPts.insertAdjacentHTML('beforeend', `<button class="pt-btn py-2 sm:py-3 bg-red-700 text-white text-xs sm:text-sm font-black rounded-lg shadow-md active:scale-95 disabled:opacity-20 transition-transform" disabled data-side="2" data-lbl="OPP" data-type="point" data-code="${p.id}">${p.label}</button>`);
                 });
 
-
                 State.MG.forEach(g => {
                     let h1 = `<div class="mb-3"><div class="text-[10px] font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-sm inline-block mb-1">${g}</div><div class="grid grid-cols-2 gap-1 sm:gap-2">`;
                     State.MT.filter(m => m.g === g).forEach(m => {
@@ -679,7 +652,6 @@
                     });
                     h1 += `</div></div>`;
                     usMiss.insertAdjacentHTML('beforeend', h1);
-
 
                     let h2 = `<div class="mb-3"><div class="text-[10px] font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-sm inline-block mb-1">${g}</div><div class="grid grid-cols-2 gap-1 sm:gap-2">`;
                     State.MT.filter(m => m.g === g).forEach(m => {
@@ -704,7 +676,6 @@
                     activeNav.classList.remove('text-slate-400');
                     activeNav.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
                 }
-
 
                 State.view = v;
                 if (v === 'team') UI.renderTeam();
@@ -745,7 +716,6 @@
                 document.getElementById('badge-final').style.display = isFinal ? 'block' : 'none';
                 document.getElementById('badge-normal').style.display = isFinal ? 'none' : 'block';
 
-
                 document.getElementById('disp-us-names').textContent = State.p1 + (State.type === 'doubles' && State.p2 ? ' / ' + State.p2 : '');
                 
                 let oppDisp = State.opp;
@@ -757,16 +727,13 @@
                 }
                 document.getElementById('disp-opp-name').textContent = oppDisp;
 
-
                 document.getElementById('disp-g1').textContent = State.sc.g1;
                 document.getElementById('disp-p1').textContent = State.sc.p1;
                 document.getElementById('disp-g2').textContent = State.sc.g2;
                 document.getElementById('disp-p2').textContent = State.sc.p2;
 
-
                 document.getElementById('srv-us').classList.toggle('hidden', !State.isUsSrv);
                 document.getElementById('srv-opp').classList.toggle('hidden', State.isUsSrv);
-
 
                 const canRecord = (State.st !== null && State.fm !== null);
                 document.querySelectorAll('.pt-btn').forEach(b => b.disabled = !canRecord);
@@ -775,7 +742,6 @@
                     const btn = document.getElementById('btn-st-'+i);
                     if(btn) btn.className = `btn-st flex-1 rounded-xl border-2 font-black text-2xl transition-colors ${State.st == i ? 'btn-active' : 'text-slate-300'}`;
                 });
-
 
                 ['cross_left','straight','cross_right'].forEach(i => {
                     const btn = document.getElementById('btn-fm-'+i);
@@ -803,7 +769,6 @@
                 
                 document.getElementById('sum-us-n').textContent = State.p1 + (State.type === 'doubles' && State.p2 ? ' / ' + State.p2 : '');
                 document.getElementById('sum-us-g').textContent = State.sc.g1;
-
 
                 let oppDisp = State.opp;
                 if (State.opp_p1) {
@@ -866,7 +831,6 @@
                     filteredMatches = State.matches.filter(m => String(Utils.getNendo(m.date || m.createdAt)) === period);
                 }
 
-
                 const list = document.getElementById('team-list');
                 list.innerHTML = filteredMatches.map(m => {
                     const p1Text = m.p1 + (m.p1_grade ? `(${m.p1_grade})` : '');
@@ -883,26 +847,23 @@
                         <div class="flex-1">
                             <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mb-1">${dateText} ${m.t || '交流戦'}</p>
                             <p class="text-sm font-black text-slate-800">${p1Text}${p2Text}</p>
-                            <p class="text-[10px] font-bold text-red-500 mb-1">vs ${oppText}</p>
+                            <p class="text-[10px] font-bold text-red-50 mb-1">vs ${oppText}</p>
                         </div>
                         <div class="flex flex-col items-end gap-1">
                             <div class="flex items-center gap-3">
                                 <span class="text-[10px] px-2 py-0.5 rounded-md font-black text-white ${m.winner===1?'bg-emerald-500':'bg-red-500'}">${m.winner===1?'WIN':'LOSE'}</span>
                                 <span class="font-black text-2xl font-mono text-slate-900">${m.finalScore?.g1 || 0}-${m.finalScore?.g2 || 0}</span>
                             </div>
-                            <button onclick="window.DB.deleteMatch('${m.id}')" class="text-[9px] text-slate-300 underline mt-2">削除</button>
+                            <button onclick="window.deleteMatch('${m.id}')" class="text-[9px] text-slate-400 underline mt-2 hover:text-slate-600">削除</button>
                         </div>
                     </div>
                 `}).join('') || '<div class="py-10 text-center text-slate-300 font-black">該当する試合はありません</div>';
-
 
                 document.getElementById('team-stats').classList.remove('hidden');
                 document.getElementById('team-rank-container').classList.remove('hidden');
                 document.getElementById('team-common-stats').classList.remove('hidden');
 
-
                 const statsMatches = filteredMatches.filter(m => m.t !== '練習試合（対内戦）');
-
 
                 const totalM = statsMatches.length;
                 const wins = statsMatches.filter(m => m.winner===1).length;
@@ -917,7 +878,6 @@
                 }).length;
                 document.getElementById('team-month-matches').textContent = mMatches;
 
-
                 let totalPts = 0, totalMisses = 0;
                 let ptsFm = { cross_left: 0, straight: 0, cross_right: 0, none: 0 };
                 let missFm = { cross_left: 0, straight: 0, cross_right: 0, none: 0 };
@@ -925,7 +885,6 @@
                 let missCode = {};
                 let ptsCross = {};
                 let missCross = {};
-
 
                 filteredMatches.forEach(m => {
                     if (m.pts) {
@@ -944,7 +903,6 @@
                                 }
                             }
 
-
                             if (p.type === 'miss') {
                                 if (!isUsPoint || isInternal) {
                                     missFm[fm] = (missFm[fm] || 0) + 1;
@@ -958,13 +916,11 @@
                     }
                 });
 
-
                 const ptsFmArr = [
                     { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' },
                     { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: '展開なし' }
                 ].map(fmObj => ({ label: fmObj.label, count: ptsFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] }))
                  .filter(d => d.count > 0).sort((a,b) => b.count - a.count);
-
 
                 const missFmArr = [
                     { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' },
@@ -972,10 +928,8 @@
                 ].map(fmObj => ({ label: fmObj.label, count: missFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] }))
                  .filter(d => d.count > 0).sort((a,b) => b.count - a.count);
 
-
                 document.getElementById('team-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
                 document.getElementById('team-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
-
 
                 const ptsCodeArr = Object.keys(ptsCode)
                     .map(c => ({ label: Utils.codeLabel(c), count: ptsCode[c] }))
@@ -987,14 +941,11 @@
                     .sort((a,b)=>b.count-a.count)
                     .map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
 
-
                 document.getElementById('team-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
                 document.getElementById('team-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
 
-
                 document.getElementById('team-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
                 document.getElementById('team-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
-
 
                 const pairs = {};
                 statsMatches.forEach(m => {
@@ -1021,7 +972,6 @@
                     `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 document.getElementById('pair-list').innerHTML = rankHtml;
 
-
                 const schools = {};
                 statsMatches.forEach(m => {
                     if(!m.opp) return;
@@ -1029,7 +979,6 @@
                     schools[m.opp].t++;
                     if(m.winner===1) schools[m.opp].w++;
                 });
-
 
                 const schoolRankHtml = Object.keys(schools).map(k => ({k, wr: schools[k].w/schools[k].t, t: schools[k].t, w: schools[k].w}))
                     .sort((a,b) => b.wr - a.wr || b.t - a.t)
@@ -1047,7 +996,6 @@
                     `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 document.getElementById('school-list').innerHTML = schoolRankHtml;
             },
-
 
             // --- 個人（自チーム）分析 ---
             renderPlayerSelect: function() {
@@ -1087,7 +1035,6 @@
                 if(pm.find(m => m.id === currentM)) selM.value = currentM;
                 else selM.value = 'ALL';
 
-
                 UI.renderPlayerStats();
             },
             renderPlayerStats: function() {
@@ -1097,10 +1044,8 @@
                 
                 if (!selP) { container.classList.add('hidden'); return; }
 
-
                 let pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP || m.opp_p1 === selP || m.opp_p2 === selP);
                 if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
-
 
                 let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, totalPts = 0, totalMisses = 0;
                 let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
@@ -1113,13 +1058,11 @@
                 let extOpp = {};
                 let intOpp = {};
 
-
                 pm.forEach(m => {
                     const isUs = (m.p1 === selP || m.p2 === selP);
                     const isWin = (isUs && m.winner === 1) || (!isUs && m.winner === 2);
                     
                     if(isWin) w++;
-
 
                     let opponents = [];
                     if (isUs) {
@@ -1149,7 +1092,6 @@
                         });
                     }
 
-
                     if(m.pts) m.pts.forEach(p => {
                         const isServing = isUs ? p.isOurServe : !p.isOurServe;
                         if(isServing && p.hitter === selP) { 
@@ -1158,9 +1100,7 @@
                             if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } 
                         }
 
-
                         const fm = p.formation || 'none';
-
 
                         const scoredPoint = isUs ? (p.winnerSide === 1) : (p.winnerSide === 2);
                         if(scoredPoint && p.hitter === selP) { 
@@ -1170,7 +1110,6 @@
                             const crossKey = `${fm}|${p.code}`;
                             ptsCross[crossKey] = (ptsCross[crossKey] || 0) + 1;
                         }
-
 
                         const lostPoint = isUs ? (p.winnerSide === 2) : (p.winnerSide === 1);
                         if(lostPoint && p.hitter === selP) { 
@@ -1183,13 +1122,11 @@
                     });
                 });
 
-
                 const sHit = srvTot + s2in; const sIn = s1in + (s2in - df);
                 const wr = pm.length ? (w/pm.length*100).toFixed(1) : 0;
                 const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
-
 
                 const genRankHtml = (oppObj) => {
                     return Object.keys(oppObj).map(k => ({ k, wr: oppObj[k].w / oppObj[k].t, t: oppObj[k].t, w: oppObj[k].w }))
@@ -1208,7 +1145,6 @@
                         `).join('') || '<p class="text-xs text-slate-400">データなし</p>';
                 };
 
-
                 container.innerHTML = `
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">試合勝率</span>🏆</div><p class="text-3xl font-black">${wr}%</p></div>
@@ -1216,7 +1152,6 @@
                         <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">1stサーブ</span>⚡</div><p class="text-3xl font-black">${s1}%</p></div>
                         <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
                     </div>
-
 
                     <div class="bg-white p-5 rounded-3xl border shadow-sm space-y-5">
                         <h3 class="text-xs font-black text-slate-700 flex items-center gap-1">
@@ -1235,7 +1170,6 @@
                             </div>
                         </div>
 
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                             <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
                                 <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
@@ -1246,7 +1180,6 @@
                                 <div id="player-miss-code-share"></div>
                             </div>
                         </div>
-
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                             <div>
@@ -1259,7 +1192,6 @@
                             </div>
                         </div>
                     </div>
-
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                         <div class="bg-white p-5 rounded-3xl border shadow-sm">
@@ -1274,27 +1206,21 @@
                 `;
                 container.classList.remove('hidden');
 
-
                 const ptsFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: '展開なし' } ].map(fmObj => ({ label: fmObj.label, count: ptsFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
                 const missFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: '展開なし' } ].map(fmObj => ({ label: fmObj.label, count: missFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
-
 
                 document.getElementById('player-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
                 document.getElementById('player-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
 
-
                 const ptsCodeArr = Object.keys(ptsCode).map(c => ({ label: Utils.codeLabel(c), count: ptsCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
                 const missCodeArr = Object.keys(missCode).map(c => ({ label: Utils.codeLabel(c), count: missCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
-
 
                 document.getElementById('player-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
                 document.getElementById('player-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
 
-
                 document.getElementById('player-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
                 document.getElementById('player-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
             },
-
 
             // --- 対戦相手（スカウティング）分析 ---
             renderOpponentSelect: function() {
@@ -1343,16 +1269,14 @@
                 if(pm.find(m => m.id === currentM)) selM.value = currentM;
                 else selM.value = 'ALL';
 
-
                 UI.renderOpponentStats();
             },
             renderOpponentStats: function() {
                 const selP = document.getElementById('sel-opponent').value; 
-                const selM = document.getElementById('sel-opponent-match').value;
+                const selM = document.getElementById('sel-opponent-match');
                 const container = document.getElementById('opponent-stats');
                 
                 if (!selP) { container.classList.add('hidden'); return; }
-
 
                 const externalMatches = State.matches.filter(m => m.t !== '練習試合（対内戦）');
                 
@@ -1363,7 +1287,6 @@
                 });
                 if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
 
-
                 let w = 0, srvTot = 0, s1in = 0, s2in = 0, df = 0, totalPts = 0, totalMisses = 0;
                 let ptsFm = { cross_left:0, straight:0, cross_right:0, none:0 };
                 let missFm = { cross_left:0, straight:0, cross_right:0, none:0 };
@@ -1372,12 +1295,10 @@
                 let ptsCross = {};
                 let missCross = {};
 
-
                 pm.forEach(m => {
                     const rawName = (`${m.opp_p1} (${m.opp})` === selP) ? m.opp_p1 : m.opp_p2;
                     
                     if(m.winner === 2) w++; 
-
 
                     if(m.pts) m.pts.forEach(p => {
                         const isServing = !p.isOurServe; 
@@ -1387,9 +1308,7 @@
                             if(p.serveStatus===2) { s2in++; if(p.code==='W') df++; } 
                         }
 
-
                         const fm = p.formation || 'none';
-
 
                         const scoredPoint = p.winnerSide === 2;
                         if(scoredPoint && p.hitter === rawName) { 
@@ -1399,7 +1318,6 @@
                             const crossKey = `${fm}|${p.code}`;
                             ptsCross[crossKey] = (ptsCross[crossKey] || 0) + 1;
                         }
-
 
                         const lostPoint = p.winnerSide === 1;
                         if(lostPoint && p.hitter === rawName) { 
@@ -1412,13 +1330,11 @@
                     });
                 });
 
-
                 const sHit = srvTot + s2in; const sIn = s1in + (s2in - df);
                 const wr = pm.length ? (w/pm.length*100).toFixed(1) : 0;
                 const sT = sHit ? (sIn/sHit*100).toFixed(1) : 0;
                 const s1 = srvTot ? (s1in/srvTot*100).toFixed(1) : 0;
                 const s2 = s2in ? ((s2in-df)/s2in*100).toFixed(1) : 0;
-
 
                 container.innerHTML = `
                     <div class="grid grid-cols-2 gap-3">
@@ -1427,7 +1343,6 @@
                         <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">1stサーブ</span>⚡</div><p class="text-3xl font-black">${s1}%</p></div>
                         <div class="bg-teal-600 text-white p-4 rounded-2xl shadow-lg stat-card"><div class="flex justify-between opacity-80"><span class="text-[9px] font-black tracking-wider">2ndサーブ</span>✔️</div><p class="text-3xl font-black">${s2}%</p></div>
                     </div>
-
 
                     <div class="bg-white p-5 rounded-3xl border shadow-sm space-y-5 border-red-100">
                         <h3 class="text-xs font-black text-slate-700 flex items-center gap-1">
@@ -1446,7 +1361,6 @@
                             </div>
                         </div>
 
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                             <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
                                 <h4 class="text-[10px] font-black text-blue-800 uppercase tracking-wider flex items-center gap-1">🎯 種類別 得点シェア</h4>
@@ -1457,7 +1371,6 @@
                                 <div id="opp-miss-code-share"></div>
                             </div>
                         </div>
-
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t">
                             <div>
@@ -1473,22 +1386,17 @@
                 `;
                 container.classList.remove('hidden');
 
-
                 const ptsFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: '展開なし' } ].map(fmObj => ({ label: fmObj.label, count: ptsFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
                 const missFmArr = [ { id: 'cross_left', label: '正クロス' }, { id: 'straight', label: 'ストレート' }, { id: 'cross_right', label: '逆クロス' }, { id: 'none', label: '展開なし' } ].map(fmObj => ({ label: fmObj.label, count: missFm[fmObj.id] || 0, color: COLORS.fm[fmObj.id] })).filter(d => d.count > 0).sort((a,b) => b.count - a.count);
-
 
                 document.getElementById('opp-pts-share').innerHTML = Utils.genPieChart(ptsFmArr, totalPts);
                 document.getElementById('opp-miss-share').innerHTML = Utils.genPieChart(missFmArr, totalMisses);
 
-
                 const ptsCodeArr = Object.keys(ptsCode).map(c => ({ label: Utils.codeLabel(c), count: ptsCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
                 const missCodeArr = Object.keys(missCode).map(c => ({ label: Utils.codeLabel(c), count: missCode[c] })).sort((a,b)=>b.count-a.count).map((d, i) => ({...d, color: COLORS.palette[i % COLORS.palette.length]}));
 
-
                 document.getElementById('opp-pts-code-share').innerHTML = Utils.genPieChart(ptsCodeArr, totalPts);
                 document.getElementById('opp-miss-code-share').innerHTML = Utils.genPieChart(missCodeArr, totalMisses);
-
 
                 document.getElementById('opp-pts-cross-share').innerHTML = Utils.genCrossRankHtml(ptsCross, totalPts, 'bg-blue-500', 'text-blue-600');
                 document.getElementById('opp-miss-cross-share').innerHTML = Utils.genCrossRankHtml(missCross, totalMisses, 'bg-red-500', 'text-red-600');
@@ -1497,13 +1405,11 @@
             showPlayerSelect: function(ptData) {
                 if (!ptData) return; 
 
-
                 let targetTeam = '';
                 if (ptData.winnerSide === 1 && ptData.type === 'point') targetTeam = 'us';
                 else if (ptData.winnerSide === 1 && ptData.type === 'miss') targetTeam = 'opp';
                 else if (ptData.winnerSide === 2 && ptData.type === 'point') targetTeam = 'opp';
                 else if (ptData.winnerSide === 2 && ptData.type === 'miss') targetTeam = 'us';
-
 
                 if (State.type === 'singles') {
                     const newPtData = { ...ptData, hitter: targetTeam === 'us' ? State.p1 : State.opp_p1 };
@@ -1514,13 +1420,11 @@
                 State.pendingPoint = { ...ptData };
                 State.pendingTargetTeam = targetTeam;
 
-
                 const titleEl = document.getElementById('modal-player-select-title');
                 if (titleEl) {
                     titleEl.textContent = targetTeam === 'us' ? '対象の自チーム選手を選択' : '対象の相手選手を選択';
                     titleEl.className = targetTeam === 'us' ? 'text-center text-sm font-black text-blue-600 mb-6' : 'text-center text-sm font-black text-red-600 mb-6';
                 }
-
 
                 document.getElementById('btn-sel-p1').textContent = targetTeam === 'us' ? (State.p1 || '自選手1') : (State.opp_p1 || '相手選手1');
                 document.getElementById('btn-sel-p2').textContent = targetTeam === 'us' ? (State.p2 || '自選手2') : (State.opp_p2 || '相手選手2');
@@ -1545,12 +1449,10 @@
                 const container = document.getElementById('live-stats-container');
                 if (!container) return;
 
-
                 if (State.pts.length === 0) {
                     container.innerHTML = '<p class="text-xs text-slate-500 font-bold text-center py-4">ポイントが記録されると表示されます</p>';
                     return;
                 }
-
 
                 // サーブデータ集計 (1stサーブのみ)
                 let serveStats = {};
@@ -1558,16 +1460,13 @@
                     if (!serveStats[name]) serveStats[name] = { totalFirst: 0, inFirst: 0 };
                 };
 
-
                 // 展開×内容のデータ集計
                 let usPtsCross = {};
                 let usMissCross = {};
                 let oppPtsCross = {};
                 let oppMissCross = {};
 
-
                 let usPtsTotal = 0, usMissTotal = 0, oppPtsTotal = 0, oppMissTotal = 0;
-
 
                 State.pts.forEach(p => {
                     // サーブ処理
@@ -1579,12 +1478,10 @@
                         }
                     }
 
-
                     // 展開×内容処理
                     const fm = p.formation || 'none';
                     const isUsPoint = p.winnerSide === 1;
                     const crossKey = `${fm}|${p.code}`;
-
 
                     if (p.type === 'point') {
                         if (isUsPoint) { usPtsCross[crossKey] = (usPtsCross[crossKey] || 0) + 1; usPtsTotal++; }
@@ -1594,7 +1491,6 @@
                         else { oppMissCross[crossKey] = (oppMissCross[crossKey] || 0) + 1; oppMissTotal++; } // 相手のミス
                     }
                 });
-
 
                 // HTML生成: サーブ
                 let serveHtml = '<div class="space-y-1.5 mb-4">';
@@ -1613,7 +1509,6 @@
                     });
                 }
                 serveHtml += '</div>';
-
 
                 // HTML生成: 展開×内容バーグラフ
                 const genCrossBar = (crossObj, total, colorClass) => {
@@ -1634,7 +1529,6 @@
                         `;
                     }).join('');
                 };
-
 
                 container.innerHTML = `
                     <div class="mb-4">
@@ -1665,13 +1559,92 @@
             }
         };
 
+        const DB = {
+            init: async function() {
+                try {
+                    // ★ 1. まず認証処理を待つ
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
 
-        // UIイベントのフック用グローバル露出
-        window.Utils = Utils;
-        window.State = State;
-        window.Logic = Logic;
-        window.UI = UI;
+                    // ★ 2. 認証完了を確認
+                    const user = auth.currentUser;
+                    if (!user) {
+                        throw new Error("認証に失敗しました");
+                    }
 
+                    State.user = user;
+                    const uidDisp = document.getElementById('uid-display');
+                    if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
+                    
+                    // ★ 3. 確実に認証済みの状態でデータベース監視を開始
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    onSnapshot(matchesRef, snap => {
+                        State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        if(State.view === 'team') UI.renderTeam();
+                        if(State.view === 'player') UI.renderPlayerSelect();
+                        if(State.view === 'opponent') UI.renderOpponentSelect();
+                    }, err => {
+                        console.error("Firestore Listen Error:", err);
+                        const errBox = document.getElementById('error-box');
+                        if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
+                    });
+
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.style.display = 'none', 300);
+                    }
+
+                    onAuthStateChanged(auth, u => {
+                        if (u) State.user = u;
+                    });
+                    
+                } catch (e) {
+                    console.error("DB Initialization Error:", e);
+                    const errBox = document.getElementById('error-box');
+                    if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】<br>' + e.message; }
+                    
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.style.display = 'none', 300);
+                    }
+                }
+            },
+            saveMatch: async function() {
+                if (!State.user) return alert("認証が完了していません。");
+                const finalData = { 
+                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
+                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
+                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
+                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
+                    createdAt: Date.now(), recorder: State.user.uid
+                };
+                try {
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    await addDoc(matchesRef, finalData);
+                    UI.resetToMeta();
+                } catch (e) {
+                    alert("保存失敗: " + e.message);
+                }
+            },
+            deleteMatch: async function(id) {
+                if (confirm('削除しますか？')) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'matches', id);
+                        await deleteDoc(docRef);
+                    } catch (e) {
+                        alert("削除失敗: " + e.message);
+                    }
+                }
+            }
+        };
+
+        // --- グローバルへの関数公開 ---
+        window.deleteMatch = DB.deleteMatch;
 
         // --- Events ---
         const Events = {
@@ -1682,7 +1655,6 @@
                 
                 document.getElementById('in-t').addEventListener('change', UI.toggleInnerMatchUI);
 
-
                 document.getElementById('btn-start').onclick = () => {
                     State.date = document.getElementById('in-date').value;
                     State.t = document.getElementById('in-t').value;
@@ -1692,7 +1664,6 @@
                     State.p2_grade = document.getElementById('in-p2-grade').value;
                     
                     const isInternal = State.t === '練習試合（対内戦）';
-
 
                     State.opp = isInternal ? '部内戦' : document.getElementById('in-opp').value;
                     State.opp_p1 = isInternal ? document.getElementById('in-opp-p1-internal').value : document.getElementById('in-opp-p1').value;
@@ -1713,10 +1684,8 @@
                     UI.updateScoreBoard();
                 };
 
-
                 document.getElementById('area-us-srv').onclick = () => { State.isUsSrv = true; UI.updateScoreBoard(); };
                 document.getElementById('area-opp-srv').onclick = () => { State.isUsSrv = false; UI.updateScoreBoard(); };
-
 
                 document.getElementById('btn-undo').onclick = () => {
                     if (State.his.length === 0) return;
@@ -1725,35 +1694,28 @@
                     UI.updateScoreBoard();
                 };
 
-
                 document.getElementById('btn-cancel').onclick = () => {
                     document.getElementById('modal-cancel-confirm').classList.remove('hidden');
                 };
-
 
                 document.getElementById('btn-cancel-yes').onclick = () => {
                     document.getElementById('modal-cancel-confirm').classList.add('hidden');
                     UI.resetToMeta();
                 };
 
-
                 document.getElementById('btn-cancel-no').onclick = () => {
                     document.getElementById('modal-cancel-confirm').classList.add('hidden');
                 };
 
-
                 document.querySelectorAll('.btn-st').forEach(b => b.onclick = () => { State.st = parseInt(b.dataset.val); UI.updateScoreBoard(); });
                 document.querySelectorAll('.btn-fm').forEach(b => b.onclick = () => { State.fm = b.dataset.val; UI.updateScoreBoard(); });
-
 
                 document.getElementById('btn-df').onclick = () => {
                     State.st = 2; 
                     State.fm = 'none'; 
 
-
                     const wSide = State.isUsSrv ? 2 : 1; 
                     const sideLbl = State.isUsSrv ? 'US' : 'OPP';
-
 
                     const ptData = { 
                         winnerSide: wSide, 
@@ -1769,8 +1731,8 @@
                     UI.showPlayerSelect(ptData);
                 };
 
-
-                document.getElementById('btn-save').onclick = () => { window.DB.saveMatch(); };
+                // ★ 保存ボタンのクリックイベントを直接 DB.saveMatch に紐付け
+                document.getElementById('btn-save').onclick = () => { DB.saveMatch(); };
                 
                 document.getElementById('sel-player').onchange = () => { UI.updatePlayerMatchSelect(); };
                 document.getElementById('sel-player-match').onchange = () => { UI.renderPlayerStats(); };
@@ -1778,13 +1740,11 @@
                 document.getElementById('sel-opponent-match').onchange = () => { UI.renderOpponentStats(); };
                 document.getElementById('sel-team-period').onchange = () => { UI.renderTeam(); };
 
-
                 document.getElementById('btn-csv').onclick = () => {
                     let csv = "記録日時,試合日,大会名,種目,自チーム選手1,学年1,自チーム選手2,学年2,相手チーム,相手選手1,相手学年1,相手選手2,相手学年2,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード,打者\n";
                     const period = document.getElementById('sel-team-period').value;
                     let targetMatches = State.matches;
                     if(period !== "ALL") targetMatches = State.matches.filter(m => String(Utils.getNendo(m.date || m.createdAt)) === period);
-
 
                     targetMatches.forEach(m => {
                         const d = m.createdAt ? new Date(m.createdAt).toLocaleString('ja-JP').replace(/,/g, '') : '';
@@ -1807,7 +1767,6 @@
                     link.download = `ST_Data.csv`; link.click();
                 };
 
-
                 document.addEventListener('click', function(e) {
                     const btn = e.target.closest('.pt-btn');
                     if (!btn || btn.disabled) return;
@@ -1821,7 +1780,6 @@
                     
                     UI.showPlayerSelect(ptData);
                 });
-
 
                 document.getElementById('btn-sel-p1').onclick = () => {
                     if(!State.pendingPoint) return;
@@ -1848,113 +1806,19 @@
             }
         };
 
-
         // --- Entry Point ---
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const dateInput = document.getElementById('in-date');
-                if (dateInput) dateInput.value = today;
+        window.addEventListener('load', function() { 
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('in-date');
+            if (dateInput) dateInput.value = today;
 
-
-                UI.initDropdowns();
-                UI.initPointsButtons();
-                Events.init();
-            } catch (err) {
-                const errBox = document.getElementById('error-box');
-                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML += '【UI起動エラー】' + err.message + '<br>'; }
-            }
-        });
-
-
-        // --- Firebase Init ---
-        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : "soft-tennis-v1";
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config)
-            : {
-                apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-                authDomain: "softtennis-data.firebaseapp.com",
-                projectId: "softtennis-data"
-            };
+            UI.initDropdowns();
+            UI.initPointsButtons();
+            Events.init();
             
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-
-        window.DB = {
-            init: async function() {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-
-                    onAuthStateChanged(auth, user => {
-                        if (user) {
-                            State.user = user;
-                            const uidDisp = document.getElementById('uid-display');
-                            if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
-                            
-                            const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
-                            onSnapshot(matchesRef, snap => {
-                                State.matches = snap.docs.map(doc => Object.assign({ id: doc.id }, doc.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                                if(State.view === 'team') UI.renderTeam();
-                                if(State.view === 'player') UI.renderPlayerSelect();
-                                if(State.view === 'opponent') UI.renderOpponentSelect();
-                            }, err => {
-                                console.error("Firestore Listen Error:", err);
-                                const errBox = document.getElementById('error-box');
-                                if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
-                            });
-
-
-                            const loader = document.getElementById('loading-screen');
-                            if (loader) {
-                                loader.style.opacity = '0';
-                                setTimeout(() => loader.style.display = 'none', 300);
-                            }
-                        }
-                    });
-                } catch (e) {
-                    console.error("DB Initialization Error:", e);
-                    const errBox = document.getElementById('error-box');
-                    if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【認証エラー】<br>' + e.message; }
-                }
-            },
-            saveMatch: async function() {
-                const finalData = { 
-                    type: State.type, gc: State.gc, date: State.date, t: State.t, 
-                    p1: State.p1, p1_grade: State.p1_grade, p2: State.p2, p2_grade: State.p2_grade, 
-                    opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: State.opp_p2, opp_p2_grade: State.opp_p2_grade, 
-                    pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
-                    createdAt: Date.now(), recorder: State.user ? State.user.uid : 'anon' 
-                };
-                try {
-                    const matchesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'matches');
-                    await addDoc(matchesRef, finalData);
-                    UI.resetToMeta();
-                } catch (e) {
-                    alert("保存失敗: " + e.message);
-                }
-            },
-            deleteMatch: async function(id) {
-                if (confirm('削除しますか？')) {
-                    try {
-                        const docRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'matches', id);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        alert("削除失敗: " + e.message);
-                    }
-                }
-            }
-        };
-
-
-        // 初期化の起動
-        window.DB.init(); 
+            // 起動タイミングの修正: モジュール実行後、即座に呼び出す
+            DB.init();
+        });
     </script>
 </body>
 </html>
