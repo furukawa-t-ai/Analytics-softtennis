@@ -309,9 +309,12 @@
                 </div>
                 <div class="bg-white p-4 rounded-2xl border shadow-sm">
                     <label class="text-[10px] font-black text-slate-400 block mb-1">対象試合</label>
-                    <select id="sel-player-match" class="w-full p-3 border rounded-xl font-black bg-slate-50 text-sm" disabled>
+                    <select id="sel-player-match" class="w-full p-3 border rounded-xl font-black bg-slate-50 text-sm mb-2" disabled>
                         <option value="ALL">全ての試合</option>
                     </select>
+                    <div id="player-match-action" class="hidden text-right">
+                        <button id="btn-delete-player-match" class="text-[10px] text-red-500 font-bold underline active:opacity-50 hover:text-red-700">この試合データを削除</button>
+                    </div>
                 </div>
             </div>
             <div id="player-stats" class="hidden"></div>
@@ -328,9 +331,12 @@
                 </div>
                 <div class="bg-white p-4 rounded-2xl border shadow-sm border-red-100">
                     <label class="text-[10px] font-black text-red-500 block mb-1">対象試合</label>
-                    <select id="sel-opponent-match" class="w-full p-3 border rounded-xl font-black bg-red-50 text-red-900 text-sm" disabled>
+                    <select id="sel-opponent-match" class="w-full p-3 border rounded-xl font-black bg-red-50 text-red-900 text-sm mb-2" disabled>
                         <option value="ALL">全ての試合</option>
                     </select>
+                    <div id="opponent-match-action" class="hidden text-right">
+                        <button id="btn-delete-opponent-match" class="text-[10px] text-red-500 font-bold underline active:opacity-50 hover:text-red-700">この試合データを削除</button>
+                    </div>
                 </div>
             </div>
             <div id="opponent-stats" class="hidden"></div>
@@ -462,8 +468,8 @@
         const db = getFirestore(app);
 
         // --- Constants ---
-        const TEAM_PLAYERS = ['小田原 耕生', '女夫池 来希', '曽我 祥帆', '岩本 夕槻', '竹原 歩夢', '牧 大夢', '髙木 晧喜', '安田 龍吾', '竹原 歩夢', '麻生 康二', '長田 幸大', '西川 結', '佐藤 実', '福島 有彩', '森松 瑠菜', '谷川 柚季', '野田 結愛', '岩田 悠聖', '清見 悠仁', '小保 怜太', '河村 蛍音', '松尾 俐音', '新谷 彩夏', '原田 柊', '島袋 礼惟真', '中塚 善晴', '濱川 豪', '堀 百々華', '松林 由和', '市川 夏麻', '松本 穂里', '加藤 颯', '眞田 心晴', '森田 優夢']; 
-        const GRADES = ['1年', '2年', '3年', '4年', '社会人'];
+        const TEAM_PLAYERS = ['選手A', '選手B', '選手C', '選手D', '選手E']; 
+        const GRADES = ['1年', '2年', '3年', '4年'];
 
         const COLORS = {
             fm: { 'cross_left': '#3b82f6', 'straight': '#10b981', 'cross_right': '#a855f7', 'none': '#94a3b8' },
@@ -1041,8 +1047,19 @@
                 const selP = document.getElementById('sel-player').value;
                 const selM = document.getElementById('sel-player-match').value;
                 const container = document.getElementById('player-stats');
+                const actionContainer = document.getElementById('player-match-action');
                 
-                if (!selP) { container.classList.add('hidden'); return; }
+                if (!selP) { 
+                    container.classList.add('hidden'); 
+                    if(actionContainer) actionContainer.classList.add('hidden');
+                    return; 
+                }
+
+                if (selM !== 'ALL' && actionContainer) {
+                    actionContainer.classList.remove('hidden');
+                } else if (actionContainer) {
+                    actionContainer.classList.add('hidden');
+                }
 
                 let pm = State.matches.filter(m => m.p1 === selP || m.p2 === selP || m.opp_p1 === selP || m.opp_p2 === selP);
                 if (selM !== 'ALL') pm = pm.filter(m => m.id === selM);
@@ -1273,10 +1290,21 @@
             },
             renderOpponentStats: function() {
                 const selP = document.getElementById('sel-opponent').value; 
-                const selM = document.getElementById('sel-opponent-match');
+                const selM = document.getElementById('sel-opponent-match').value;
                 const container = document.getElementById('opponent-stats');
+                const actionContainer = document.getElementById('opponent-match-action');
                 
-                if (!selP) { container.classList.add('hidden'); return; }
+                if (!selP) { 
+                    container.classList.add('hidden'); 
+                    if(actionContainer) actionContainer.classList.add('hidden');
+                    return; 
+                }
+
+                if (selM !== 'ALL' && actionContainer) {
+                    actionContainer.classList.remove('hidden');
+                } else if (actionContainer) {
+                    actionContainer.classList.add('hidden');
+                }
 
                 const externalMatches = State.matches.filter(m => m.t !== '練習試合（対内戦）');
                 
@@ -1739,6 +1767,28 @@
                 document.getElementById('sel-opponent').onchange = () => { UI.updateOpponentMatchSelect(); };
                 document.getElementById('sel-opponent-match').onchange = () => { UI.renderOpponentStats(); };
                 document.getElementById('sel-team-period').onchange = () => { UI.renderTeam(); };
+
+                const btnDeletePlayerMatch = document.getElementById('btn-delete-player-match');
+                if (btnDeletePlayerMatch) {
+                    btnDeletePlayerMatch.onclick = () => {
+                        const matchId = document.getElementById('sel-player-match').value;
+                        if (matchId && matchId !== 'ALL') {
+                            window.DB.deleteMatch(matchId);
+                            document.getElementById('sel-player-match').value = 'ALL';
+                        }
+                    };
+                }
+
+                const btnDeleteOppMatch = document.getElementById('btn-delete-opponent-match');
+                if (btnDeleteOppMatch) {
+                    btnDeleteOppMatch.onclick = () => {
+                        const matchId = document.getElementById('sel-opponent-match').value;
+                        if (matchId && matchId !== 'ALL') {
+                            window.DB.deleteMatch(matchId);
+                            document.getElementById('sel-opponent-match').value = 'ALL';
+                        }
+                    };
+                }
 
                 document.getElementById('btn-csv').onclick = () => {
                     let csv = "記録日時,試合日,大会名,種目,自チーム選手1,学年1,自チーム選手2,学年2,相手チーム,相手選手1,相手学年1,相手選手2,相手学年2,試合結果,自G,相G,ポイントIndex,ゲームIndex,サーブ権,1st/2nd,展開,得点チーム,得点/ミス,コード,打者\n";
