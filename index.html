@@ -460,6 +460,8 @@
         import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = (window.ENV_APP_ID != null && String(window.ENV_APP_ID).length > 0) ? String(window.ENV_APP_ID) : "soft-tennis-v1";
+        // appId 宣言の直後に追加（462行の直下）
+        const safeAppId = (appId != null && String(appId).length > 0) ? String(appId) : 'soft-tennis-v1';
         const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
         const firebaseConfig = configStr ? JSON.parse(configStr) : {
             apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
@@ -1800,7 +1802,7 @@
                     const uidDisp = document.getElementById('uid-display');
                     if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
                     
-                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    const matchesRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
                     onSnapshot(matchesRef, snap => {
                         State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                         if(State.view === 'team') UI.renderTeam();
@@ -1844,7 +1846,7 @@
                     createdAt: Date.now(), recorder: State.user.uid
                 };
                 try {
-                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    const matchesRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
                     await addDoc(matchesRef, finalData);
                     UI.resetToMeta();
                 } catch (e) {
@@ -1854,7 +1856,7 @@
             deleteMatch: async function(id) {
                 if (confirm('削除しますか？')) {
                     try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'matches', id);
+                        const docRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'matches', id);
                         await deleteDoc(docRef);
                     } catch (e) {
                         alert("削除失敗: " + e.message);
