@@ -459,7 +459,7 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof window.ENV_APP_ID !== 'undefined' ? window.ENV_APP_ID : "soft-tennis-v1";
+        const appId = (window.ENV_APP_ID != null && String(window.ENV_APP_ID).length > 0) ? String(window.ENV_APP_ID) : "soft-tennis-v1";
         const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
         const firebaseConfig = configStr ? JSON.parse(configStr) : {
             apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
