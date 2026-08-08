@@ -1802,15 +1802,14 @@ State.user = user;
 const uidDisp = document.getElementById('uid-display');
 if(uidDisp) uidDisp.textContent = user.uid.substring(0,8);
 
-const matchesRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
-
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    const matchesRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
 onSnapshot(matchesRef, snap => {
-  State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-  if(State.view === 'team') UI.renderTeam();
-  if(State.view === 'player') UI.renderPlayerSelect();
-  if(State.view === 'opponent') UI.renderOpponentSelect();
+State.matches = snap.docs.map(document => Object.assign({ id: document.id }, document.data())).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+if(State.view === 'team') UI.renderTeam();
+if(State.view === 'player') UI.renderPlayerSelect();
+if(State.view === 'opponent') UI.renderOpponentSelect();
 }, err => {
-
 console.error("Firestore Listen Error:", err);
 const errBox = document.getElementById('error-box');
 if(errBox) { errBox.classList.remove('hidden'); errBox.innerHTML = '【データベース接続エラー】権限または接続環境を確認してください。<br>' + err.message; }
@@ -1847,7 +1846,10 @@ opp: State.opp, opp_p1: State.opp_p1, opp_p1_grade: State.opp_p1_grade, opp_p2: 
 pts: State.pts, finalScore: State.sc, winner: State.sc.g1 > State.sc.g2 ? 1 : 2, 
 createdAt: Date.now(), recorder: State.user.uid
 };
-try {await addDoc(matchesRef, finalData);
+try {
+                    const matchesRef = collection(db, 'artifacts', appId, 'public', 'data', 'matches');
+                    const matchesRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
+await addDoc(matchesRef, finalData);
 UI.resetToMeta();
 } catch (e) {
 alert("保存失敗: " + e.message);
@@ -1856,8 +1858,15 @@ alert("保存失敗: " + e.message);
 deleteMatch: async function(id) {
 if (confirm('削除しますか？')) {
 try {
-  const docRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'matches', id);
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'matches', id);
+                        const docRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'matches', id);
 await deleteDoc(docRef);
+} catch (e) {
+alert("削除失敗: " + e.message);
+}
+}
+}
+};
 
 // ★ 完全なグローバル関数の公開（エラーの元凶を確実に回避）
 window.DB = DB;
