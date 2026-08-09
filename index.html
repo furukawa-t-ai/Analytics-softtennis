@@ -417,6 +417,92 @@ CSV
 <!-- アプリケーション・ロジック -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+// 追加インポート（既存 import 行の後に追記してください）
+// import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// --- デバッグ & 認証フォールバック ---
+// (db 初期化直後に挿入)
+try { if (typeof setLogLevel === 'function') setLogLevel('debug'); } catch(e){ console.warn('[DBG] setLogLevel error', e); }
+
+console.log('[ENV] ENV_APP_ID:', window.ENV_APP_ID, 'safeAppId:', safeAppId);
+console.log('[ENV] initialAuthToken present:', !!initialAuthToken);
+console.log('[ENV] firebaseConfig.projectId:', firebaseConfig && firebaseConfig.projectId);
+
+function startMatchesListener(uid) {
+  console.log('[DB] startMatchesListener — uid:', uid, 'appId:', safeAppId);
+
+  if (!safeAppId) {
+    console.warn('[DB] safeAppId is empty, aborting listener');
+    return;
+  }
+
+  try {
+    // 正しいネストされたコレクション参照：apps/{safeAppId}/matches
+    const colRef = collection(db, 'apps', safeAppId, 'matches');
+
+    // 既にリスナーがあれば外す（多重登録防止）
+    if (window._matchesUnsub) {
+      try { window._matchesUnsub(); } catch (e) { /* ignore */ }
+      window._matchesUnsub = null;
+    }
+
+    const unsub = onSnapshot(colRef, snap => {
+      console.log('[DB] onSnapshot snapshot received, size:', snap.size);
+      // ここで既存の snapshot -> State.matches の処理を呼ぶ
+      // 例: handleMatchesSnapshot(snap);
+    }, err => {
+      console.error('[DB] onSnapshot ERROR', err.code || err.message || err);
+    });
+
+    window._matchesUnsub = unsub;
+    return unsub;
+  } catch (err) {
+    console.error('[DB] startMatchesListener thrown', err);
+  }
+}
+    
+// 認証フロー: custom token を試し、失敗したら匿名でフォールバック
+if (initialAuthToken && String(initialAuthToken).length > 0) {
+  console.log('[AUTH] trying signInWithCustomToken');
+  signInWithCustomToken(auth, initialAuthToken).catch(err => {
+    console.error('[AUTH] signInWithCustomToken failed', err.code, err.message);
+    console.log('[AUTH] falling back to anonymous sign-in');
+    signInAnonymously(auth).catch(e => console.error('[AUTH] signInAnonymously failed', e));
+  });
+} else {
+  console.log('[AUTH] no initial token, using signInAnonymously');
+  signInAnonymously(auth).catch(e => console.error('[AUTH] signInAnonymously failed', e));
+}
+
+onAuthStateChanged(auth, user => {
+  console.log('[AUTH] onAuthStateChanged', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : null);
+  if (user) {
+    State.user = user;
+    const uidEl = document.getElementById('uid-display');
+    if(uidEl) uidEl.textContent = user.uid;
+    if (!window._matchesUnsub) startMatchesListener(user.uid);
+  } else {
+    console.log('[AUTH] no user yet');
+  }
+});
+
+// delete の周りに詳細ログを追加（既存の DB.deleteMatch 等を置き換えるか呼び出し元で利用してください）
+async function debugDeleteMatch(docRef) {
+  try {
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) {
+      console.warn('[DB.deleteMatch] target doc not found', docRef.path);
+      return;
+    }
+    console.log('[DB.deleteMatch] doc exists, attempting delete:', docRef.path);
+    await deleteDoc(docRef);
+    console.log('[DB.deleteMatch] delete success:', docRef.path);
+  } catch (err) {
+    console.error('[DB.deleteMatch] delete ERROR', err.code || err.message || err);
+  }
+}
+    
 import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
