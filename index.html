@@ -416,16 +416,40 @@ CSV
 </nav>
 <!-- アプリケーション・ロジック -->
 <script type="module">
+// 1) imports (先頭)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
- // --- デバッグ & 認証フォールバック ---
-// (db 初期化直後に挿入)
-try { if (typeof setLogLevel === 'function') setLogLevel('debug'); } catch(e){ console.warn('[DBG] setLogLevel error', e); }
-  
-console.log('[ENV] ENV_APP_ID:', window.ENV_APP_ID, 'safeAppId:', safeAppId);
+import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, setLogLevel }
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// 2) firebaseConfig のパースと初期化（既存コード）
+const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
+let firebaseConfig;
+if (configStr) {
+  try {
+    firebaseConfig = JSON.parse(configStr);
+  } catch(e) {
+    console.error('[ENV] Invalid ENV_FIREBASE_CONFIG, using fallback', e);
+    firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
+  }
+} else {
+  firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
+}
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 3) デバッグ（db 初期化直後に置く）
+try {
+  if (typeof setLogLevel === 'function') setLogLevel('debug');
+} catch (e) {
+  console.warn('[DBG] setLogLevel error', e);
+}
+
+console.log('[ENV] firebaseConfig.projectId:', firebaseConfig.projectId);
 console.log('[ENV] initialAuthToken present:', !!initialAuthToken);
-console.log('[ENV] firebaseConfig.projectId:', firebaseConfig && firebaseConfig.projectId);
 
 function startMatchesListener(uid) {
   console.log('[DB] startMatchesListener — uid:', uid, 'appId:', safeAppId);
