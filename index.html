@@ -417,14 +417,12 @@ CSV
 <!-- アプリケーション・ロジック -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-// 追加インポート（既存 import 行の後に追記してください）
-// import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-// --- デバッグ & 認証フォールバック ---
+ // --- デバッグ & 認証フォールバック ---
 // (db 初期化直後に挿入)
 try { if (typeof setLogLevel === 'function') setLogLevel('debug'); } catch(e){ console.warn('[DBG] setLogLevel error', e); }
-
+  
 console.log('[ENV] ENV_APP_ID:', window.ENV_APP_ID, 'safeAppId:', safeAppId);
 console.log('[ENV] initialAuthToken present:', !!initialAuthToken);
 console.log('[ENV] firebaseConfig.projectId:', firebaseConfig && firebaseConfig.projectId);
