@@ -423,13 +423,14 @@ import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged }
 import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, setLogLevel }
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// 2) firebaseConfig のパースと初期化（既存コード）
-const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
+// 統合された ENV / Firebase 初期化ブロック
+const envConfigStr = (typeof window.ENV_FIREBASE_CONFIG !== 'undefined') ? window.ENV_FIREBASE_CONFIG : null;
 let firebaseConfig;
-if (configStr) {
+if (envConfigStr) {
   try {
-    firebaseConfig = JSON.parse(configStr);
-  } catch(e) {
+    // ENV_FIREBASE_CONFIG が文字列で渡される想定だが、オブジェクトの場合も対応
+    firebaseConfig = (typeof envConfigStr === 'string') ? JSON.parse(envConfigStr) : envConfigStr;
+  } catch (e) {
     console.error('[ENV] Invalid ENV_FIREBASE_CONFIG, using fallback', e);
     firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
   }
@@ -437,9 +438,18 @@ if (configStr) {
   firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
 }
 
+const initialAuthToken = (typeof window.ENV_AUTH_TOKEN !== 'undefined') ? window.ENV_AUTH_TOKEN : null;
+const appId = (typeof window.ENV_APP_ID !== 'undefined' && String(window.ENV_APP_ID).length > 0) ? String(window.ENV_APP_ID) : "soft-tennis-v1";
+const safeAppId = (appId != null && String(appId).length > 0) ? String(appId) : 'soft-tennis-v1';
+
+// Firebase 初期化（ここで一度だけ）
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// （必要なら）デバッグログ — initialAuthToken を参照する場合はここ以降で
+console.log('[ENV] firebaseConfig.projectId:', firebaseConfig.projectId);
+console.log('[ENV] initialAuthToken present:', !!initialAuthToken); 
 
 // 3) デバッグ（db 初期化直後に置く）
 try {
@@ -508,36 +518,6 @@ onAuthStateChanged(auth, user => {
     console.log('[AUTH] no user yet');
   }
 });
-
-// delete の周りに詳細ログを追加（既存の DB.deleteMatch 等を置き換えるか呼び出し元で利用してください）
-async function debugDeleteMatch(docRef) {
-  try {
-    const snapshot = await getDoc(docRef);
-    if (!snapshot.exists()) {
-      console.warn('[DB.deleteMatch] target doc not found', docRef.path);
-      return;
-    }
-    console.log('[DB.deleteMatch] doc exists, attempting delete:', docRef.path);
-    await deleteDoc(docRef);
-    console.log('[DB.deleteMatch] delete success:', docRef.path);
-  } catch (err) {
-    console.error('[DB.deleteMatch] delete ERROR', err.code || err.message || err);
-  }
-}
-    
-const appId = (window.ENV_APP_ID != null && String(window.ENV_APP_ID).length > 0) ? String(window.ENV_APP_ID) : "soft-tennis-v1";
-const safeAppId = (appId != null && String(appId).length > 0) ? String(appId) : 'soft-tennis-v1';
-const configStr = typeof window.ENV_FIREBASE_CONFIG !== 'undefined' ? window.ENV_FIREBASE_CONFIG : null;
-const firebaseConfig = configStr ? JSON.parse(configStr) : {
-    apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
-    authDomain: "softtennis-data.firebaseapp.com",
-    projectId: "softtennis-data"
-};
-
-const initialAuthToken = window.ENV_AUTH_TOKEN;
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 // --- Constants ---
 const TEAM_PLAYERS = ['小田原 耕生', '女夫池 来希', '曽我 祥帆', '岩本 夕槻', '竹原 歩夢', '牧 大夢', '髙木 晧喜', '安田 龍吾', '竹原 歩夢', '麻生 康二', '長田 幸大', '西川 結', '佐藤 実', '福島 有彩', '森松 瑠菜', '谷川 柚季', '野田 結愛', '岩田 悠聖', '清見 悠仁', '小保 怜太', '河村 蛍音', '松尾 俐音', '新谷 彩夏', '原田 柊', '島袋 礼惟真', '中塚 善晴', '濱川 豪', '堀 百々華', '松林 由和', '市川 夏麻', '松本 穂里', '加藤 颯', '眞田 心晴', '森田 優夢']; 
