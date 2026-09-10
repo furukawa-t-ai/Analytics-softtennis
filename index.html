@@ -501,7 +501,7 @@ function startMatchesListener(uid) {
 
   try {
     // 正しいネストされたコレクション参照：apps/{safeAppId}/matches
-    const colRef = collection(db, 'apps', safeAppId, 'matches');
+    const colRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
 
     // 既にリスナーがあれば外す（多重登録防止）
     if (window._matchesUnsub) {
@@ -1494,7 +1494,7 @@ const App = {
     },
     loadData: () => {
         if(!State.user) return;
-        const ref = collection(db, 'apps', safeAppId, 'matches');
+        const ref = collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches');
         onSnapshot(ref, snap => {
             State.matches = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => {
                 const da = a.date || a.createdAt || '';
@@ -1521,7 +1521,7 @@ const App = {
             winner: State.sc.g1 > State.sc.g2 ? 1 : 2
         };
         try {
-            await addDoc(collection(db, 'apps', safeAppId, 'matches'), m);
+            await addDoc(collection(db, 'artifacts', safeAppId, 'public', 'data', 'matches'), m);
             alert("保存しました。");
             UI.resetToMeta();
             UI.switchNav('team');
