@@ -424,6 +424,25 @@ import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, getDoc, s
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // 統合された ENV / Firebase 初期化ブロック
+//
+// ★修正ポイント★
+// 元のコードは Canvas 環境が自動注入する `__firebase_config` を前提にしており、
+// 一般的なホスティング環境ではこの変数が存在しないため window.ENV_FIREBASE_CONFIG が
+// null になり、apiKey: "..." というダミー値のフォールバックが使われてしまっていました。
+// これが「auth/api-key-not-valid」エラーの直接原因です。
+//
+// → Firebaseコンソール（プロジェクト設定 > 全般 > マイアプリ > SDK の設定と構成）
+//    から実際の値をコピーして、下記オブジェクトに直接入力してください。
+const REAL_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCP4fUJBAKU7TaZ8jIRWxHzRMLLoE_T-wE",
+  authDomain: "softtennis-data.firebaseapp.com",
+  projectId: "softtennis-data",
+  storageBucket: "softtennis-data.firebasestorage.app",
+  messagingSenderId: "1082808525053",
+  appId: "1:1082808525053:web:76ad357138a2b81a9a1e94",
+  measurementId: "G-N9EYK4ZNSR"
+};
+
 const envConfigStr = (typeof window.ENV_FIREBASE_CONFIG !== 'undefined') ? window.ENV_FIREBASE_CONFIG : null;
 let firebaseConfig;
 if (envConfigStr) {
@@ -432,10 +451,21 @@ if (envConfigStr) {
     firebaseConfig = (typeof envConfigStr === 'string') ? JSON.parse(envConfigStr) : envConfigStr;
   } catch (e) {
     console.error('[ENV] Invalid ENV_FIREBASE_CONFIG, using fallback', e);
-    firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
+    firebaseConfig = REAL_FIREBASE_CONFIG;
   }
 } else {
-  firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "softtennis-data" };
+  // Canvas環境外（通常のホスティング）ではここに来る。実際のconfigを使用する。
+  firebaseConfig = REAL_FIREBASE_CONFIG;
+}
+
+// apiKeyが未設定のプレースホルダーのままだと分かりやすいエラーを出す
+if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('*') || firebaseConfig.apiKey === '...') {
+  console.error('[ENV] firebaseConfig.apiKey が未設定です。Firebaseコンソールから実際の値を設定してください。');
+  const errBox = document.getElementById('error-box');
+  if (errBox) {
+    errBox.classList.remove('hidden');
+    errBox.innerHTML += '【設定エラー】Firebaseの設定(apiKey等)が未入力です。コード内のREAL_FIREBASE_CONFIGを実際の値に置き換えてください。<br>';
+  }
 }
 
 const initialAuthToken = (typeof window.ENV_AUTH_TOKEN !== 'undefined') ? window.ENV_AUTH_TOKEN : null;
